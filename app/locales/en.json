@@ -1,0 +1,16 @@
+{
+  "navbar": {
+    "deliveryNotice": "FREE DELIVERY OVER $30",
+    "home": "Home",
+    "categories": "Categories",
+    "discount": "Discounts",
+    "about": "About Us",
+    "contact": "Contact",
+    "login": "Login",
+    "signUp": "Sign Up",
+    "welcome": "Welcome to TosLouk",
+    "heroSubtitle": "Find the best deals here",
+    "addToCart": "Add to Cart",
+    "outOfStock": "Out of Stock"
+  }
+}
