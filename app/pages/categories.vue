@@ -26,7 +26,7 @@
             @click="selectCategory(cat.slug)"
           >
             <div class="img-container position-relative">
-              <img :src="cat.image" :alt="cat.name" class="w-100 h-100 object-fit-cover" />
+              <NuxtImg :src="cat.image" :alt="cat.name" class="w-100 h-100 object-fit-cover" />
               <div class="img-overlay"></div>
               <span class="badge position-absolute top-0 end-0 m-3 item-count-badge">
                 {{ cat.count }} Items

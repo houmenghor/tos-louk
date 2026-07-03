@@ -19,7 +19,7 @@
 
     <!-- Product Image -->
     <div class="image-wrapper position-relative overflow-hidden">
-      <img :src="product.image" :alt="product.title" class="w-100 h-100 object-fit-cover product-image" />
+      <NuxtImg :src="product.image" :alt="product.title" class="w-100 h-100 object-fit-cover product-image" />
       
       <!-- Action Hover Overlay -->
       <div class="image-overlay d-flex align-items-center justify-content-center">

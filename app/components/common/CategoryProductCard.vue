@@ -3,7 +3,7 @@
     <!-- Image Area -->
     <div class="image-container position-relative overflow-hidden bg-light-custom">
       <!-- Image Zoom-in hover -->
-      <img :src="product.image" :alt="product.title" class="product-img w-100 h-100 object-fit-cover" />
+      <NuxtImg :src="product.image" :alt="product.title" class="product-img w-100 h-100 object-fit-cover" />
       
       <!-- Badges (Top Left) -->
       <div class="position-absolute top-0 start-0 m-3 z-2 d-flex flex-column gap-2">
