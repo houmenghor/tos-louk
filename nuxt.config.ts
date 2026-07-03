@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   
   // 1. Remove @nuxt/ui completely
-  modules: ['nuxt-auth-utils', '@nuxtjs/i18n'],
+  modules: ['nuxt-auth-utils', '@nuxtjs/i18n', '@nuxt/image'],
 
   i18n: {
     strategy: 'no_prefix',
