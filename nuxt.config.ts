@@ -21,7 +21,7 @@ export default defineNuxtConfig({
     head: {
       title: 'Tos Louk',  
       link: [
-        { rel: 'icon', type: 'image/png', sizes: '40x40', href: '/image.png' }
+        { rel: 'icon', type: 'image/png', sizes: '40x40', href: '/image.png?v=2' }
       ],
       // 2. Inject Bootstrap's JavaScript bundle for dynamic components like Offcanvas
       script: [

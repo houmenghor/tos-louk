@@ -1,7 +1,7 @@
 <template>
   <div class="product-card">
     <div class="image-wrapper">
-      <img :src="product.image" :alt="product.title" />
+      <NuxtImg :src="product.image" :alt="product.title" />
       <span class="badge">{{ product.badge }}</span>
       <div class="icon-actions">
         <button class="action-btn"><i class="bi bi-heart"></i></button>

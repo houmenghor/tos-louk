@@ -47,7 +47,7 @@
                                 <div class="card glass-card h-100 border-0 shadow-sm p-3 position-relative">
                                     <span class="badge custom-badge position-absolute top-0 start-0 m-3">Best
                                         Seller</span>
-                                    <img src="https://placehold.co/200x200/png"
+                                    <NuxtImg src="https://placehold.co/200x200/png"
                                         class="card-img-top w-75 mx-auto mt-4 mb-2 object-fit-contain" alt="Backpack"
                                         draggable="false" />
                                     <div class="card-body px-1 pb-0 mt-auto">
@@ -63,7 +63,7 @@
                                 <div class="card glass-card h-100 border-0 shadow-sm p-3 position-relative">
                                     <span class="badge custom-badge position-absolute top-0 start-0 m-3">Trending
                                         Now</span>
-                                    <img src="https://placehold.co/300x150/png"
+                                    <NuxtImg src="https://placehold.co/300x150/png"
                                         class="card-img-top w-75 mx-auto mt-4 mb-2 object-fit-contain" alt="Sunglasses"
                                         draggable="false" />
                                     <div class="card-body px-1 pb-0 mt-auto">
@@ -81,7 +81,7 @@
                                         Launched</span>
                                     <div class="row g-0 align-items-center mt-4">
                                         <div class="col-sm-4 text-center">
-                                            <img src="https://placehold.co/150x200/png"
+                                            <NuxtImg src="https://placehold.co/150x200/png"
                                                 class="img-fluid rounded-start w-75 object-fit-contain" alt="Polo Shirt"
                                                 draggable="false" />
                                         </div>
@@ -124,7 +124,7 @@
                                 class="badge custom-badge position-absolute top-0 start-0 m-3 z-1">
                                 {{ product.badge }}
                             </span>
-                            <img :src="product.image" class="card-img-top w-75 mx-auto mt-4 mb-3 object-fit-contain"
+                            <NuxtImg :src="product.image" class="card-img-top w-75 mx-auto mt-4 mb-3 object-fit-contain"
                                 :alt="product.title" draggable="false" />
                             <div class="card-body p-0 mt-auto">
                                 <h6 class="card-title fw-semibold mb-1">{{ product.title }}</h6>

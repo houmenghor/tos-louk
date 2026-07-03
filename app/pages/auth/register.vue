@@ -4,7 +4,7 @@
       <!-- Banner Column (Hidden on mobile) -->
       <div class="col-12 col-md-6 d-none d-md-block">
         <div class="image-banner text-center animate-fade-in">
-          <img :src="banner" alt="Authentication Banner" class="img-fluid auth-banner-img" />
+          <NuxtImg :src="banner" alt="Authentication Banner" class="img-fluid auth-banner-img" />
         </div>
       </div>
 
@@ -80,7 +80,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 const router = useRouter();
-import banner from '@/assets/images/auth/banner.png';
+import banner from '/images/auth/banner.png';
 
 definePageMeta({
   layout: 'auth'

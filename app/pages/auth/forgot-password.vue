@@ -28,7 +28,7 @@
 
             <div class="col-12 col-md-6 d-none d-md-block">
                 <div class="image-banner text-center animate-fade-in">
-                    <img :src="banner" alt="Forgot Password Banner" class="img-fluid auth-banner-img" />
+                    <NuxtImg :src="banner" alt="Forgot Password Banner" class="img-fluid auth-banner-img" />
                 </div>
             </div>
 
@@ -40,7 +40,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 const router = useRouter();
-import banner from '@/assets/images/auth/forgotPass.png';
+import banner from '/images/auth/forgotPass.png';
 
 definePageMeta({
     layout: 'auth'
