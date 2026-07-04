@@ -6,13 +6,15 @@
                 <div class="glass-card mx-auto">
                     <form @submit.prevent="handleLogin" autocomplete="off">
                         <h2 class="form-title">Welcome Back</h2>
-                        <p class="form-subtitle">Welcome back! Please enter your details to login.</p>
+                        <p class="form-subtitle">
+                            Welcome back! Please enter your details to login.
+                        </p>
 
-                        <BaseInput label="Email" placeholder="Enter your email" id="email" type="email"
-                            v-model="formData.email" class="mb-3" />
+                        <BaseInput label="Email" placeholder="Enter your email" id="email" type="email" v-model="email"
+                            :error="emailError" :disabled="isSubmitting" class="mb-3" />
 
                         <BaseInputPassword label="Password" placeholder="Enter your password" id="password"
-                            v-model="formData.password" class="mb-3" />
+                            v-model="password" :error="passwordError" :disabled="isSubmitting" class="mb-3" />
 
                         <div class="d-flex justify-content-end align-items-center mb-4">
                             <NuxtLink to="/auth/forgot-password"
@@ -21,7 +23,16 @@
                             </NuxtLink>
                         </div>
 
-                        <BaseButton type="submit" class="w-100 mb-3 btn-submit-glass">Log In</BaseButton>
+                      <BaseTurnstile ref="turnstileRef" v-model="turnstileToken" />
+
+                        <BaseButton statusType="submit" class="w-100 mb-3 btn-submit-glass" :isLoading="isSubmitting"
+                            :isDisable="isSubmitting">
+                            Login
+                        </BaseButton>
+
+                        <div v-if="errorMessage" class="text-danger small mb-3 text-center">
+                            {{ errorMessage }}
+                        </div>
 
                         <!-- Divider Line -->
                         <div class="divider-container mb-2">
@@ -47,7 +58,7 @@
             <!-- Banner Column -->
             <div class="col-12 col-md-6 d-none d-md-block">
                 <div class="image-banner text-center animate-fade-in">
-                   <NuxtImg :src="banner" alt="Authentication Banner" class="img-fluid auth-banner-img" />
+                    <NuxtImg :src="banner" alt="Authentication Banner" class="img-fluid auth-banner-img" />
                 </div>
             </div>
         </div>
@@ -55,26 +66,71 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import banner from '/images/auth/banner.png';
+import { ref } from "vue";
+import banner from "/images/auth/banner.png";
+import { useAppToast } from "~/composables/ui/useAppToast";
+import { useField, useForm } from "vee-validate";
+import { toTypedSchema } from "@vee-validate/zod";
+import { loginSchema } from "~/composables/forms/auth";
 
 definePageMeta({
-    layout: 'auth'
+    layout: "auth",
 });
 
-const formData = ref({
-    email: '',
-    password: '',
-    rememberMe: false
+const router = useRouter();
+const authStore = useAuthStore();
+
+const { showSuccess } = useAppToast();
+
+const turnstileRef = ref(null);
+const turnstileToken = ref("");
+const errorMessage = ref("");
+
+const { handleSubmit, isSubmitting } = useForm({
+    validationSchema: toTypedSchema(loginSchema),
+    initialValues: {
+        email: "",
+        password: "",
+    },
 });
 
-const handleLogin = () => {
-    console.log('Submitting standard login data:', formData.value);
-};
+const { value: email, errorMessage: emailError } = useField("email");
+const { value: password, errorMessage: passwordError } = useField("password");
 
-// Added Google integration handler placeholder
+const handleLogin = handleSubmit(async (value) => {
+
+    if (!turnstileToken.value) {
+        errorMessage.value = "Please complete the CAPTCHA challenge.";
+        return;
+    }
+
+    try {
+        await authStore.login({
+            email: value.email,
+            password: value.password,
+            "cf-turnstile-response": turnstileToken.value,
+        });
+
+        showSuccess("Login successful!");
+        router.push("/");
+    } catch (error) {
+        if (error.data?.statusCode === 401) {
+            errorMessage.value = "Invalid email or password. Please try again.";
+        }
+
+        if (error.data?.statusCode === 429) {
+            errorMessage.value = "Too many login attempts. Please try again later.";
+        }
+
+        // console.log("Error", error?.data);
+
+        turnstileToken.value = "";
+        turnstileRef.value?.reset();
+    }
+});
+
 const handleGoogleLogin = () => {
-    console.log('Initiating Google OAuth flow...');
+    console.log("Initiating Google OAuth flow...");
 };
 </script>
 
@@ -89,7 +145,9 @@ const handleGoogleLogin = () => {
     border: 1px solid var(--glass-border);
     border-radius: 16px;
     box-shadow: var(--glass-shadow);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
 .glass-card:hover {
@@ -174,7 +232,7 @@ const handleGoogleLogin = () => {
 
 .divider-container::before,
 .divider-container::after {
-    content: '';
+    content: "";
     flex: 1;
     border-bottom: 1px solid var(--color-border);
     opacity: 0.6;

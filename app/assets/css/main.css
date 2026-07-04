@@ -84,3 +84,21 @@ body {
     --glass-blur: blur(12px);
     --glass-hover-bg: rgba(0, 220, 130, 0.2);
 }
+
+/* ========================================
+   VUE3-TOASTIFY CUSTOM COLORS
+======================================== */
+.Toastify__toast-theme--colored.Toastify__toast--success {
+    background-color: var(--color-primary) !important;
+    /* Using whitesmoke or your dark text variable for contrast against the neon green */
+    color: #111827 !important; 
+}
+
+.Toastify__toast-theme--colored.Toastify__toast--success .Toastify__close-button {
+    color: #111827 !important;
+}
+
+.Toastify__toast-theme--colored.Toastify__toast--error {
+    background-color: var(--color-danger) !important;
+    color: #ffffff !important;
+}
