@@ -2,9 +2,8 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
-  
-  // 1. Remove @nuxt/ui completely
-  modules: ['nuxt-auth-utils', '@nuxtjs/i18n', '@nuxt/image'],
+
+  modules: ['nuxt-auth-utils', '@nuxtjs/i18n', '@nuxt/image', '@pinia/nuxt', '@nuxtjs/turnstile'],
 
   i18n: {
     strategy: 'no_prefix',
@@ -19,11 +18,10 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Tos Louk',  
+      title: 'Tos Louk',
       link: [
         { rel: 'icon', type: 'image/png', sizes: '40x40', href: '/image.png?v=2' }
       ],
-      // 2. Inject Bootstrap's JavaScript bundle for dynamic components like Offcanvas
       script: [
         {
           src: 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js',
@@ -33,10 +31,18 @@ export default defineNuxtConfig({
     }
   },
 
-  // 3. Register Bootstrap core CSS files and Icon packages globally
   css: [
     'bootstrap/dist/css/bootstrap.min.css',
     'bootstrap-icons/font/bootstrap-icons.css',
     '@/assets/css/main.css'
-  ]
+  ],
+
+  runtimeConfig: {
+    public: {
+      apiBase: 'http://127.0.0.1:8000/api/v1'
+    }
+  },
+  turnstile: {
+    siteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY || '',
+  },
 })

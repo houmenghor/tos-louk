@@ -1,7 +1,8 @@
 <template>
   <div class="mb-3">
+    <label v-if="label" :for="id" class="form-label">{{ label }} *</label>
+    
     <div class="position-relative">
-      <label v-if="label" :for="id" class="form-label">{{ label }} *</label>
       <input 
         autocomplete="off" 
         :id="id"  
@@ -13,13 +14,16 @@
         @input="$emit('update:modelValue', $event.target.value)" 
         @blur="$emit('blur')"
       />
-      <div v-if="error" class="invalid-feedback">{{ error }}</div>
+      
       <i 
         :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'" 
         class="password-toggle-icon"
         @click="togglePass"
       ></i>
     </div>
+
+    <div v-if="error" class="invalid-feedback">{{ error }}</div>
+    
   </div>
 </template>
 
@@ -93,6 +97,7 @@ const togglePass = () => {
 }
 
 .invalid-feedback {
+  display: block;
   font-size: 12px;
   color: var(--color-danger);
   margin-top: 4px;
@@ -102,13 +107,13 @@ const togglePass = () => {
 .password-toggle-icon {
   position: absolute;
   right: 14px;
-  bottom: 8px; /* Shifts up accurately relative to input layout */
+  top: 50%;
+  transform: translateY(-50%);
   cursor: pointer;
   z-index: 10;
   color: var(--color-text-secondary);
   transition: color 0.2s ease;
 }
-
 .password-toggle-icon:hover {
   color: var(--color-text);
 }

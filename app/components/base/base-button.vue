@@ -6,7 +6,7 @@
     ]" :disabled="isDisable || isLoading" @click="handleClick">
         <span v-if="isLoading" class="content-wrapper">
             <span class="spinner-border spinner-base" role="status" aria-hidden="true"></span>
-            <span class="loading-text">{{ $t('loading.button_loading') }}</span>
+            <span class="loading-text">loading...</span>
         </span>
 
         <span v-else class="content-wrapper">
