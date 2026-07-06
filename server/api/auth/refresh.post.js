@@ -1,10 +1,9 @@
 export default defineEventHandler(async (event) => {
-
     const body = await readBody(event);
-
-    const response = await $apiFetch(event, '/auth/login', {
+    
+    const response = await $apiFetch(event, '/auth/refresh', {
         method: 'POST',
-        body: body
+        body
     });
 
     const accessToken = response.data?.access_token;
@@ -35,5 +34,4 @@ export default defineEventHandler(async (event) => {
         access_token: accessToken,
         refresh_token: refreshToken
     }
-
-})
+});

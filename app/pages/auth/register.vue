@@ -15,40 +15,27 @@
             <h2 class="form-title">Create an Account</h2>
             <p class="form-subtitle">Join us today! Please enter your details.</p>
 
-            <BaseInput 
-              label="Username" 
-              placeholder="Enter your username" 
-              id="username"
-              v-model="formData.username" 
-              class="mb-2" 
-            />
+            <BaseInput label="Full Name" placeholder="Enter your Full Name" id="full_name" v-model="full_name"
+              :error="nameError" class="mb-2" />
 
-            <BaseInput 
-              label="Email" 
-              placeholder="Enter your email" 
-              id="email" 
-              type="email"
-              v-model="formData.email" 
-              class="mb-2" 
-            />
+            <BaseInput label="Email" placeholder="Enter your email" id="email" type="email" v-model="email"
+              :error="emailError" class="mb-2" />
 
-            <BaseInputPassword 
-              label="Password" 
-              placeholder="Enter your password" 
-              id="password"
-              v-model="formData.password" 
-              class="mb-2" 
-            />
+            <BaseInputPassword label="Password" placeholder="Enter your password" id="password" v-model="password"
+              :error="passwordError" class="mb-2" />
 
-            <BaseInputPassword 
-              label="Confirm Password" 
-              placeholder="Confirm your password"
-              id="confirmPassword" 
-              v-model="formData.confirmPassword" 
-              class="mb-4" 
-            />
+            <BaseInputPassword label="Confirm Password" placeholder="Confirm your password" id="password_confirmation"
+              v-model="password_confirmation" :error="confirmPasswordError" class="mb-4" />
 
-            <BaseButton type="submit" size="sm" class="w-100 mb-2 btn-submit-glass">Sign Up</BaseButton>
+            <BaseTurnstile ref="turnstileRef" v-model="turnstileToken" />
+
+            <BaseButton statusType="submit" size="sm" :isLoading="isSubmitting"
+              :isDisable="!turnstileToken || isSubmitting" class="w-100 mb-2 btn-submit-glass">Sign Up
+            </BaseButton>
+
+            <div v-if="errorMessage" class="text-danger small mb-3 text-center">
+              {{ errorMessage }}
+            </div>
 
             <!-- Divider Line -->
             <div class="divider-container mb-2">
@@ -56,14 +43,12 @@
             </div>
 
             <!-- Google OAuth Sign Up Button -->
-            <button 
-              type="button" 
-              @click="handleGoogleRegister" 
-              class="btn w-100 mb-4 btn-google-glass d-flex align-items-center justify-content-center gap-2"
-            >
+            <BaseButton statusType="button" class="w-100 mb-4 btn-google-glass"
+              @click="handleGoogleRegister" :isDisable="!turnstileToken">
               <i class="bi bi-google"></i>
               <span>Sign up with Google</span>
-            </button>
+            </BaseButton>
+
 
             <p class="text-center text-secondary-custom mb-0">
               Already have an account?
@@ -77,30 +62,85 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-const router = useRouter();
 import banner from '/images/auth/banner.png';
+import { registerSchema } from '~/composables/forms/auth';
+import { useField, useForm } from 'vee-validate';
+import { toTypedSchema } from '@vee-validate/zod';
+import { useAppToast } from '~/composables/ui/useAppToast';
+import BaseTurnstile from '~/components/base/base-turnstile.vue';
+import { getApiError } from '~/utils/apiError';
 
 definePageMeta({
   layout: 'auth'
 });
 
-const formData = ref({
-  username: '',
-  email: '',
-  password: '',
-  confirmPassword: '',
+const settingStore = useSettingStore();
+const authStore = useAuthStore();
+const { showSuccess } = useAppToast();
+const errorMessage = ref("");
+const turnstileRef = ref(null);
+const turnstileToken = ref("");
+
+await settingStore.getSettings();
+
+const isForcePassword = computed(() => {
+  return settingStore.settings?.maintenance?.force_strong_passwords == 1;
 });
 
-const handleRegister = () => {
-  console.log('Submitting registration data:', formData.value);
-  router.push('/auth/verify-otp');
-};
+const dynamicSchema = computed(() => {
+  return toTypedSchema(registerSchema(isForcePassword.value));
+});
 
-// Google OAuth registration click handler
+const { handleSubmit, isSubmitting } = useForm({
+  validationSchema: dynamicSchema,
+  initialValues: {
+    full_name: '',
+    email: '',
+    password: '',
+    password_confirmation: ''
+  }
+});
+
+const { value: full_name, errorMessage: nameError } = useField("full_name");
+const { value: email, errorMessage: emailError } = useField("email");
+const { value: password, errorMessage: passwordError } = useField("password");
+const { value: password_confirmation, errorMessage: confirmPasswordError } = useField("password_confirmation");
+
+
+const handleRegister = handleSubmit(async (value) => {
+  if (!turnstileToken.value) {
+    errorMessage.value = "Please complete the CAPTCHA challenge.";
+    return;
+  }
+  errorMessage.value = "";
+
+  try {
+    await authStore.register({
+      ...value,
+      "cf-turnstile-response": turnstileToken.value
+    });
+
+    showSuccess("Registration successful! Please check your email.");
+    await authStore.startOtpFlow(value.email, 'email_verify');
+
+  } catch (error) {
+    console.error("Error on registration:", error);
+    errorMessage.value = getApiError(error, "Registration failed. Please try again.");
+
+    turnstileToken.value = "";
+    turnstileRef.value.reset();
+  }
+});
+
+// Google OAuth registration handler
+const config = useRuntimeConfig();
 const handleGoogleRegister = () => {
-  console.log('Initiating Google Registration OAuth flow...');
+  navigateTo(`${config.public.apiBase}/auth/google/redirect`, {
+    external: true,
+    replace: true
+  });
 };
 </script>
 
@@ -222,6 +262,7 @@ const handleGoogleRegister = () => {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

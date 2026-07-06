@@ -23,10 +23,10 @@
                             </NuxtLink>
                         </div>
 
-                      <BaseTurnstile ref="turnstileRef" v-model="turnstileToken" />
+                        <BaseTurnstile ref="turnstileRef" v-model="turnstileToken" />
 
                         <BaseButton statusType="submit" class="w-100 mb-3 btn-submit-glass" :isLoading="isSubmitting"
-                            :isDisable="isSubmitting">
+                            :isDisable="!turnstileToken || isSubmitting">
                             Login
                         </BaseButton>
 
@@ -40,11 +40,11 @@
                         </div>
 
                         <!-- Google OAuth Button -->
-                        <button type="button" @click="handleGoogleLogin"
-                            class="btn w-100 mb-4 btn-google-glass d-flex align-items-center justify-content-center gap-2">
+                        <BaseButton statusType="button" class="w-100 mb-4 btn-google-glass"
+                            @click="handleGoogleLogin" :isDisable="!turnstileToken">
                             <i class="bi bi-google"></i>
                             <span>Sign in with Google</span>
-                        </button>
+                        </BaseButton>
 
                         <p class="text-center text-secondary-custom mb-0">
                             Don't have an account yet?
@@ -58,7 +58,7 @@
             <!-- Banner Column -->
             <div class="col-12 col-md-6 d-none d-md-block">
                 <div class="image-banner text-center animate-fade-in">
-                    <NuxtImg :src="banner" alt="Authentication Banner" class="img-fluid auth-banner-img" />
+                   <NuxtImg :src="banner" alt="Authentication Banner" class="img-fluid auth-banner-img" loading="eager" preload />
                 </div>
             </div>
         </div>
@@ -72,12 +72,12 @@ import { useAppToast } from "~/composables/ui/useAppToast";
 import { useField, useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
 import { loginSchema } from "~/composables/forms/auth";
+import { getApiError } from "~/utils/apiError";
 
 definePageMeta({
     layout: "auth",
 });
 
-const router = useRouter();
 const authStore = useAuthStore();
 
 const { showSuccess } = useAppToast();
@@ -98,11 +98,12 @@ const { value: email, errorMessage: emailError } = useField("email");
 const { value: password, errorMessage: passwordError } = useField("password");
 
 const handleLogin = handleSubmit(async (value) => {
-
     if (!turnstileToken.value) {
         errorMessage.value = "Please complete the CAPTCHA challenge.";
         return;
     }
+
+    errorMessage.value = "";
 
     try {
         await authStore.login({
@@ -112,26 +113,32 @@ const handleLogin = handleSubmit(async (value) => {
         });
 
         showSuccess("Login successful!");
-        router.push("/");
+        await navigateTo("/");
     } catch (error) {
-        if (error.data?.statusCode === 401) {
-            errorMessage.value = "Invalid email or password. Please try again.";
+        if (error.data?.statusCode === 403) {
+            showSuccess(error.data?.message || "Please verify your email address.");
+            return await authStore.startOtpFlow(value.email, 'email_verify');
         }
 
-        if (error.data?.statusCode === 429) {
-            errorMessage.value = "Too many login attempts. Please try again later.";
-        }
-
-        // console.log("Error", error?.data);
+        errorMessage.value = getApiError(error, {
+            429: "Too many login attempts. Please try again later."
+        });
 
         turnstileToken.value = "";
         turnstileRef.value?.reset();
     }
 });
 
+const config = useRuntimeConfig();
+
 const handleGoogleLogin = () => {
-    console.log("Initiating Google OAuth flow...");
+    navigateTo(`${config.public.apiBase}/auth/google/redirect`, {
+        external: true,
+        replace: true
+    });
 };
+
+
 </script>
 
 <style scoped>
