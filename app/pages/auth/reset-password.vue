@@ -11,34 +11,70 @@
                 <p class="form-subtitle">Please enter your new security credentials below.</p>
 
                 <BaseInputPassword label="New password" placeholder="••••••••••••" id="newPassword"
-                    v-model="formData.password" class="mb-3 text-start" />
+                    v-model="newPassword" :error="errorNewPassword" class="mb-3 text-start" />
 
                 <BaseInputPassword label="Re-enter password" placeholder="••••••••••••" id="confirmPassword"
-                    v-model="formData.confirmPassword" class="mb-4 text-start" />
+                    v-model="confirmPassword" :error="errorConfirmPassword" class="mb-4 text-start" />
 
-                <BaseButton type="submit" class="w-100 mb-2 btn-submit-glass">
+                <BaseButton type="submit" :isDisable="!newPassword || !confirmPassword" :isLoading="isSubmitting" class="w-100 mb-2 btn-submit-glass">
                     Reset Password
                 </BaseButton>
+
+                <div v-if="errorMessage" class="text-danger small mb-3 text-center">
+                    {{ errorMessage }}
+                </div>
             </form>
         </div>
     </div>
 </template>
 
 <script setup>
+import { toTypedSchema } from '@vee-validate/zod';
+import { useField, useForm } from 'vee-validate';
 import { ref } from 'vue';
+import { resetPasswordSchema } from '~/composables/forms/auth';
+import { useAppToast } from '~/composables/ui/useAppToast';
+import { getApiError } from '~/utils/apiError';
 
 definePageMeta({
     layout: 'auth'
 });
 
-const formData = ref({
-    password: '',
-    confirmPassword: ''
+const authStore = useAuthStore();
+const { showSuccess } = useAppToast();
+const errorMessage = ref("");
+
+const { handleSubmit, isSubmitting } = useForm({
+    validationSchema: toTypedSchema(resetPasswordSchema()),
+    initialValues: {
+        new_password: '',
+        confirm_password: ''
+    }
 });
 
-const handleResetPassword = () => {
-    console.log('Updating password...', formData.value);
-};
+const { value: newPassword, errorMessage: errorNewPassword } = useField("new_password");
+const { value: confirmPassword, errorMessage: errorConfirmPassword } = useField("confirm_password");
+
+const handleResetPassword = handleSubmit(async (values) => {
+    errorMessage.value = "";
+
+    try {
+        await authStore.resetPassword({
+            email: authStore.otpEmail,
+            token: authStore.resetToken,
+            new_password: values.new_password,
+            confirm_password: values.confirm_password
+        });
+
+
+        showSuccess('Password reset successfully', 'You can now login with your new password.');
+        await navigateTo('/auth/login');
+
+    } catch (error) {
+        errorMessage.value = getApiError(error);
+    }
+});
+
 </script>
 
 <style scoped>

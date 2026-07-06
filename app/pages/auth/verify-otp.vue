@@ -10,7 +10,7 @@
                     </div>
                 </div>
 
-                <h2 class="form-title">Two-Step Verification</h2>
+                <h2 class="form-title">Verify Your Email</h2>
                 <p class="form-subtitle">
                     We've sent a 6-digit verification code to your email. Please enter it below to verify your identity.
                 </p>
@@ -20,19 +20,25 @@
                     <input v-for="(digit, index) in 6" :key="index" :id="'otp-' + index" type="text" maxlength="1"
                         class="form-control otp-input text-center fw-bold" v-model="otpDigits[index]"
                         @input="handleInput($event, index)" @keydown.delete="handleBackspace($event, index)"
-                        placeholder="-" inputmode="numeric" pattern="[0-9]*" required />
+                        @paste="handlePaste" placeholder="-" required />
                 </div>
 
-                <BaseButton type="submit" class="w-100 mb-4 btn-submit-glass" :disabled="!isOtpComplete">
+                <BaseButton type="submit" class="w-100 mb-4 btn-submit-glass" :isLoading="isSubmitting"
+                    :isDisable="!isOtpComplete || isSubmitting">
                     Verify Code
                 </BaseButton>
+
+                <div v-if="errorMessage || codeError" class="text-danger small mb-3 text-center">
+                    {{ errorMessage || codeError }}
+                </div>
+
 
                 <!-- Countdown & Resend Option -->
                 <p class="text-secondary-custom mb-0">
                     Didn't receive the code?
                     <button type="button" @click="handleResend" class="btn btn-link p-0 glass-link-primary fw-bold ms-1"
                         :disabled="countdown > 0">
-                        {{ countdown > 0 ? `Resend in ${countdown}s` : 'Resend Code' }}
+                        {{ countdown > 0 ? `Resend in ${formattedCountdown}` : 'Resend Code' }}
                     </button>
                 </p>
             </form>
@@ -41,71 +47,109 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { toTypedSchema } from '@vee-validate/zod';
+import { useField, useForm } from 'vee-validate';
+import { onMounted, onBeforeUnmount } from 'vue';
+import { verifyOtpSchema } from '~/composables/forms/auth';
+import { useAppToast } from '~/composables/ui/useAppToast';
+import { useOtpInput } from '~/composables/ui/useOtpInput';
+import { getApiError } from '~/utils/apiError';
 
 definePageMeta({
     layout: 'auth'
 });
 
-// Array updated to hold exactly 6 inputs
-const otpDigits = ref(['', '', '', '', '', '']);
-const countdown = ref(30);
-let timerInterval = null;
+const {
+    otpDigits,
+    countdown,
+    formattedCountdown,
+    isOtpComplete,
+    handleInput,
+    handleBackspace,
+    handlePaste,
+    startTimer,
+    stopTimer
+} = useOtpInput(6, 600);
 
-// Ensure all 6 fields are filled before enabling submit button
-const isOtpComplete = computed(() => {
-    return otpDigits.value.every(digit => digit !== '');
+const authStore = useAuthStore();
+const { showSuccess } = useAppToast();
+
+const email = computed(() => authStore.otpEmail || authStore.registerEmail);
+const purpose = computed(() => authStore.otpPurpose || 'email_verify');
+const errorMessage = ref("");
+
+if (!email.value) {
+    navigateTo('/auth/register');
+}
+
+const { handleSubmit, isSubmitting } = useForm({
+    validationSchema: toTypedSchema(verifyOtpSchema),
+    initialValues: {
+        code: "",
+    }
 });
 
-// Auto-focus next input array item dynamically up to index 5
-const handleInput = (event, index) => {
-    const value = event.target.value;
-    // Strip non-numeric inputs
-    otpDigits.value[index] = value.replace(/[^0-9]/g, '');
+const { value: code, errorMessage: codeError, validate } = useField("code");
 
-    if (otpDigits.value[index] && index < 5) {
-        const nextInput = document.getElementById(`otp-${index + 1}`);
-        nextInput?.focus();
-    }
-};
+watch(otpDigits, (newDigits) => {
+    code.value = newDigits.join('');
+    validate();
+}, { deep: true });
 
-// Jump back gracefully on Backspace key trigger
-const handleBackspace = (event, index) => {
-    if (!otpDigits.value[index] && index > 0) {
-        const prevInput = document.getElementById(`otp-${index - 1}`);
-        prevInput?.focus();
-    }
-};
+const handleVerifyOTP = handleSubmit(async (values) => {
+    errorMessage.value = "";
 
-const startTimer = () => {
-    countdown.value = 30;
-    timerInterval = setInterval(() => {
-        if (countdown.value > 0) {
-            countdown.value--;
+    try {
+        const res = await authStore.verifyOtp({
+            email: email.value,
+            purpose: purpose.value,
+            code: values.code
+        });
+
+        showSuccess("OTP Verified Successfully");
+        if (purpose.value === 'reset_password') {
+            authStore.resetToken = res?.data?.token
+            await navigateTo('/auth/reset-password');
         } else {
-            clearInterval(timerInterval);
+            await navigateTo('/auth/login');
         }
-    }, 1000);
-};
 
-const handleVerifyOTP = () => {
-    const fullCode = otpDigits.value.join('');
-    console.log('Verifying security token payload:', fullCode);
-};
+    } catch (error) {
+        errorMessage.value = getApiError(error);
+        otpDigits.value = Array(6).fill('');
+        document.getElementById('otp-0')?.focus();
+    }
+});
 
-const handleResend = () => {
-    console.log('Requesting new security code token generation...');
-    startTimer();
+watch(isOtpComplete, (complete) => {
+    if (complete && !isSubmitting.value) {
+        handleVerifyOTP();
+    }
+})
+
+const handleResend = async () => {
+    try {
+        await authStore.resendOtp({
+            email: email.value,
+            purpose: purpose.value
+        });
+
+        showSuccess("OTP Resend Successfully");
+        startTimer();
+    } catch (error) {
+        errorMessage.value = getApiError(error);
+        otpDigits.value = Array(6).fill('');
+        document.getElementById('otp-0')?.focus();
+    }
 };
 
 onMounted(() => {
     startTimer();
-    // Autofocus first input slot safely
     document.getElementById('otp-0')?.focus();
 });
 
 onBeforeUnmount(() => {
-    clearInterval(timerInterval);
+    stopTimer();
 });
 </script>
 

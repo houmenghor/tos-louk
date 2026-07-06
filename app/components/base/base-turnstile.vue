@@ -1,6 +1,7 @@
 <template>
   <div class="d-flex justify-content-center align-items-center mb-4">
     <NuxtTurnstile 
+      :key="turnstileTheme"
       ref="turnstileRef" 
       :model-value="modelValue" 
       @update:modelValue="$emit('update:modelValue', $event)"
@@ -10,7 +11,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 
 defineProps({
   modelValue: {
@@ -23,16 +24,25 @@ defineEmits(["update:modelValue"]);
 
 const turnstileRef = ref(null);
 const turnstileTheme = ref("light");
+let observer = null;
 
-onMounted(() => {
-    const savedTheme = localStorage.getItem('theme');
-    
-    if (savedTheme === 'dark') {
-        turnstileTheme.value = 'dark';
-    } else if (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+const updateTheme = () => {
+    if (document.documentElement.classList.contains('dark')) {
         turnstileTheme.value = 'dark';
     } else {
         turnstileTheme.value = 'light';
+    }
+};
+
+onMounted(() => {
+    updateTheme();
+    observer = new MutationObserver(updateTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+});
+
+onUnmounted(() => {
+    if (observer) {
+        observer.disconnect();
     }
 });
 

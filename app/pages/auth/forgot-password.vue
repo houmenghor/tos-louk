@@ -12,11 +12,16 @@
                         </p>
 
                         <BaseInput label="Email Address" placeholder="Enter your email" id="forgotEmail" type="email"
-                            v-model="email" class="mb-4" required />
+                            v-model="email" :error="emailError" class="mb-4" required />
 
-                        <BaseButton type="submit" class="w-100 mb-4 btn-submit-glass">
-                            Reset Password
+                        <BaseButton type="submit" class="w-100 mb-4 btn-submit-glass" :isDisable="!email"
+                            :isLoading="isSubmitting">
+                            Send Reset Code
                         </BaseButton>
+
+                        <div v-if="errorMessage" class="text-danger small mb-3 text-center">
+                            {{ errorMessage }}
+                        </div>
 
                         <p class="text-center text-secondary-custom mb-0">
                             Remember your password?
@@ -38,20 +43,51 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-const router = useRouter();
 import banner from '/images/auth/forgotPass.png';
+import { useAppToast } from '~/composables/ui/useAppToast';
+import { useField, useForm } from 'vee-validate';
+import { toTypedSchema } from '@vee-validate/zod';
+import { forgotPasswordSchema } from '~/composables/forms/auth';
+import { getApiError } from '~/utils/apiError';
 
 definePageMeta({
     layout: 'auth'
 });
 
-const email = ref('');
+const { showSuccess } = useAppToast();
+const authStore = useAuthStore();
+const errorMessage = ref('');
+const purpose = 'reset_password';
 
-const handleForgotPassword = () => {
-    console.log('Sending recovery email request to:', email.value);
-    router.push('/auth/reset-password');
-};
+const { handleSubmit, isSubmitting } = useForm({
+    validationSchema: toTypedSchema(forgotPasswordSchema),
+    initialValues: {
+        email: ''
+    }
+})
+
+const { value: email, errorMessage: emailError } = useField("email");
+
+
+const handleForgotPassword = handleSubmit(async (value) => {
+    errorMessage.value = "";
+
+    try {
+        await authStore.forgotPassword({
+            email: value.email,
+            purpose: purpose
+        });
+        
+        showSuccess('Email sent successfully', 'Please check your email for the reset code.');
+        await authStore.startOtpFlow(value.email, 'reset_password');
+
+    } catch (error) {
+        errorMessage.value = getApiError(error, {
+            422: 'The user with this email does not exist.'
+        });
+    }
+});
+
 </script>
 
 <style scoped>

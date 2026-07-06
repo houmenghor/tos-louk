@@ -48,7 +48,8 @@
         <!-- Desktop Navigation Only (Hidden on mobile) -->
         <nav class="d-none d-lg-flex align-items-center gap-4 small fw-semibold">
           <NuxtLink to="/" class="nav-custom-link text-decoration-none">{{ t('navbar.home') }}</NuxtLink>
-          <NuxtLink to="/categories" class="nav-custom-link text-decoration-none">{{ t('navbar.categories') }}</NuxtLink>
+          <NuxtLink to="/categories" class="nav-custom-link text-decoration-none">{{ t('navbar.categories') }}
+          </NuxtLink>
           <NuxtLink to="/discount" class="nav-custom-link text-decoration-none">{{ t('navbar.discount') }}</NuxtLink>
           <NuxtLink to="/about" class="nav-custom-link text-decoration-none">{{ t('navbar.about') }}</NuxtLink>
           <NuxtLink to="/contact" class="nav-custom-link text-decoration-none">{{ t('navbar.contact') }}</NuxtLink>
@@ -70,29 +71,70 @@
           </button>
 
           <div class="dropdown">
-            <button class="btn btn-link glass-icon-btn p-1 dropdown-toggle no-arrow" type="button"
-              id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User Account">
-              <i class="bi bi-person fs-5 fw-bold"></i>
+            <button class="btn btn-link glass-icon-btn p-1 dropdown-toggle no-arrow" type="button" id="profileDropdown"
+              data-bs-toggle="dropdown" aria-expanded="false" aria-label="User Account">
+              <template v-if="auth.isAuthenticated && auth.userProfile">
+                <img
+                  :src="auth.userProfile?.userProfile?.profile_image || auth.userProfile?.profile_image || '/image.png'"
+                  class="rounded-circle object-fit-cover" width="32" height="32" alt="Profile" @error="(e) => {
+                    e.target.onerror = null;
+                    e.target.src = '/image.png';
+                  }" />
+              </template>
+
+              <template v-else>
+                <i class="bi bi-person fs-5 fw-bold"></i>
+              </template>
             </button>
+
             <ul class="dropdown-menu dropdown-menu-end glass-dropdown shadow border-0 mt-3 animate slideIn"
               aria-labelledby="profileDropdown">
-              <li>
-                <NuxtLink to="/auth/login" class="dropdown-item py-2 fw-medium">
-                  <i class="bi bi-box-arrow-in-right me-2 text-primary-brand"></i> {{ t('navbar.login') }}
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink to="/auth/register" class="dropdown-item py-2 fw-medium">
-                  <i class="bi bi-person-plus me-2 text-primary-brand"></i> {{ t('navbar.signUp') }}
-                </NuxtLink>
-              </li>
+
+              <!-- Authenticated User Menu -->
+              <template v-if="auth.isAuthenticated && auth.userProfile">
+                <li class="px-3 py-2 border-bottom border-custom-glass mb-1">
+                  <div class="fw-bold text-main">{{ auth.userProfile.full_name }}</div>
+                  <div class="text-muted small" style="font-size: 0.75rem;">{{ auth.userProfile.email }}</div>
+                </li>
+                <li>
+                  <NuxtLink to="/profile" class="dropdown-item py-2 fw-medium">
+                    <i class="bi bi-person-circle me-2 text-primary-brand"></i> My Profile
+                  </NuxtLink>
+                </li>
+                <li>
+                  <NuxtLink to="/orders" class="dropdown-item py-2 fw-medium">
+                    <i class="bi bi-bag-check me-2 text-primary-brand"></i> My Orders
+                  </NuxtLink>
+                </li>
+                <li>
+                  <hr class="dropdown-divider border-custom-glass my-1">
+                </li>
+                <li>
+                  <button @click="handleLogout" class="dropdown-item py-2 fw-medium text-danger">
+                    <i class="bi bi-box-arrow-right me-2"></i> {{ t('navbar.logout', 'Logout') }}
+                  </button>
+                </li>
+              </template>
+
+              <!-- Guest Menu -->
+              <template v-else>
+                <li>
+                  <NuxtLink to="/auth/login" class="dropdown-item py-2 fw-medium">
+                    <i class="bi bi-box-arrow-in-right me-2 text-primary-brand"></i> {{ t('navbar.login') }}
+                  </NuxtLink>
+                </li>
+                <li>
+                  <NuxtLink to="/auth/register" class="dropdown-item py-2 fw-medium">
+                    <i class="bi bi-person-plus me-2 text-primary-brand"></i> {{ t('navbar.signUp') }}
+                  </NuxtLink>
+                </li>
+              </template>
             </ul>
           </div>
 
           <!-- Offcanvas Mobile Menu Toggle Button -->
-          <button class="btn btn-link glass-icon-btn p-1 d-lg-none" type="button" 
-            data-bs-toggle="offcanvas" data-bs-target="#mobileNavbar" 
-            aria-controls="mobileNavbar" aria-label="Toggle Navigation Options">
+          <button class="btn btn-link glass-icon-btn p-1 d-lg-none" type="button" data-bs-toggle="offcanvas"
+            data-bs-target="#mobileNavbar" aria-controls="mobileNavbar" aria-label="Toggle Navigation Options">
             <i class="bi bi-list fs-4 fw-bold"></i>
           </button>
 
@@ -102,21 +144,31 @@
 
     <!-- Responsive Glassmorphic Mobile Offcanvas Sidebar Container -->
     <!-- FIXED: Added ref="offcanvasRef" to target programmatic closure -->
-    <div ref="offcanvasRef" class="offcanvas offcanvas-start mobile-glass-offcanvas d-lg-none" tabindex="-1" id="mobileNavbar" aria-labelledby="mobileNavbarLabel">
+    <div ref="offcanvasRef" class="offcanvas offcanvas-start mobile-glass-offcanvas d-lg-none" tabindex="-1"
+      id="mobileNavbar" aria-labelledby="mobileNavbarLabel">
       <div class="offcanvas-header border-bottom border-custom-glass">
         <h5 class="offcanvas-title brand-text text-main" id="mobileNavbarLabel">
           Tos<span class="text-primary-brand font-black">Louk</span><span class="brand-dot">.</span>
         </h5>
-        <button type="button" class="btn-close btn-close-custom" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-custom" data-bs-dismiss="offcanvas"
+          aria-label="Close"></button>
       </div>
       <div class="offcanvas-body py-4">
         <nav class="d-flex flex-column gap-3 small fw-semibold">
           <!-- FIXED: Replaced data-bs-dismiss with programmatic click handlers -->
-          <NuxtLink to="/" class="nav-custom-link mobile-nav-link text-decoration-none" @click="closeMobileMenu">{{ t('navbar.home') }}</NuxtLink>
-          <NuxtLink to="/categories" class="nav-custom-link mobile-nav-link text-decoration-none" @click="closeMobileMenu">{{ t('navbar.categories') }}</NuxtLink>
-          <NuxtLink to="/discount" class="nav-custom-link mobile-nav-link text-decoration-none" @click="closeMobileMenu">{{ t('navbar.discount') }}</NuxtLink>
-          <NuxtLink to="/about" class="nav-custom-link mobile-nav-link text-decoration-none" @click="closeMobileMenu">{{ t('navbar.about') }}</NuxtLink>
-          <NuxtLink to="/contact" class="nav-custom-link mobile-nav-link text-decoration-none" @click="closeMobileMenu">{{ t('navbar.contact') }}</NuxtLink>
+          <NuxtLink to="/" class="nav-custom-link mobile-nav-link text-decoration-none" @click="closeMobileMenu">{{
+            t('navbar.home') }}</NuxtLink>
+          <NuxtLink to="/categories" class="nav-custom-link mobile-nav-link text-decoration-none"
+            @click="closeMobileMenu">
+            {{ t('navbar.categories') }}</NuxtLink>
+          <NuxtLink to="/discount" class="nav-custom-link mobile-nav-link text-decoration-none"
+            @click="closeMobileMenu">{{
+              t('navbar.discount') }}</NuxtLink>
+          <NuxtLink to="/about" class="nav-custom-link mobile-nav-link text-decoration-none" @click="closeMobileMenu">{{
+            t('navbar.about') }}</NuxtLink>
+          <NuxtLink to="/contact" class="nav-custom-link mobile-nav-link text-decoration-none" @click="closeMobileMenu">
+            {{
+              t('navbar.contact') }}</NuxtLink>
         </nav>
       </div>
     </div>
@@ -126,12 +178,19 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useAuthStore } from '~/stores/authStore'
+
 const { t, locale, setLocale } = useI18n()
+const auth = useAuthStore()
 
 const cartCount = ref(3)
 const isDark = ref(false)
 const offcanvasRef = ref(null)
 const isScrolled = ref(false)
+
+const handleLogout = async () => {
+  await auth.logout()
+}
 
 const handleScroll = () => {
   if (window.scrollY > 55) {
@@ -242,11 +301,25 @@ onUnmounted(() => {
 }
 
 /* Color and Branding Helpers */
-.text-main { color: var(--color-text); }
-.text-primary-brand { color: var(--color-primary); }
-.bg-primary-brand { background-color: var(--color-primary) !important; }
-.text-accent { color: var(--color-warning) !important; }
-.text-white-muted { color: rgba(255, 255, 255, 0.4); }
+.text-main {
+  color: var(--color-text);
+}
+
+.text-primary-brand {
+  color: var(--color-primary);
+}
+
+.bg-primary-brand {
+  background-color: var(--color-primary) !important;
+}
+
+.text-accent {
+  color: var(--color-warning) !important;
+}
+
+.text-white-muted {
+  color: rgba(255, 255, 255, 0.4);
+}
 
 .brand-text {
   font-size: 1.45rem;
@@ -309,15 +382,20 @@ onUnmounted(() => {
   opacity: 1 !important;
 }
 
-.opacity-70 { opacity: 0.7; }
-.no-arrow::after { display: none !important; }
+.opacity-70 {
+  opacity: 0.7;
+}
+
+.no-arrow::after {
+  display: none !important;
+}
 
 /* ========================================================
    ULTRA-SMOOTH GPU-ACCELERATED MOBILE OFFCANVAS STYLING
 ======================================================== */
 .mobile-glass-offcanvas {
   /* FIXED: Adjusted Light-mode color contrast fallback opacity to look crisp over active views */
-  background: rgba(245, 245, 245, 0.85) !important; 
+  background: rgba(245, 245, 245, 0.85) !important;
   backdrop-filter: var(--glass-blur) !important;
   -webkit-backdrop-filter: var(--glass-blur) !important;
   border-right: 1px solid var(--glass-border) !important;
@@ -345,11 +423,25 @@ onUnmounted(() => {
 }
 
 /* Stagger item lookups */
-.mobile-glass-offcanvas.show .mobile-nav-link:nth-child(1) { transition-delay: 0.05s; }
-.mobile-glass-offcanvas.show .mobile-nav-link:nth-child(2) { transition-delay: 0.10s; }
-.mobile-glass-offcanvas.show .mobile-nav-link:nth-child(3) { transition-delay: 0.15s; }
-.mobile-glass-offcanvas.show .mobile-nav-link:nth-child(4) { transition-delay: 0.20s; }
-.mobile-glass-offcanvas.show .mobile-nav-link:nth-child(5) { transition-delay: 0.25s; }
+.mobile-glass-offcanvas.show .mobile-nav-link:nth-child(1) {
+  transition-delay: 0.05s;
+}
+
+.mobile-glass-offcanvas.show .mobile-nav-link:nth-child(2) {
+  transition-delay: 0.10s;
+}
+
+.mobile-glass-offcanvas.show .mobile-nav-link:nth-child(3) {
+  transition-delay: 0.15s;
+}
+
+.mobile-glass-offcanvas.show .mobile-nav-link:nth-child(4) {
+  transition-delay: 0.20s;
+}
+
+.mobile-glass-offcanvas.show .mobile-nav-link:nth-child(5) {
+  transition-delay: 0.25s;
+}
 
 .border-custom-glass {
   border-color: var(--glass-border) !important;

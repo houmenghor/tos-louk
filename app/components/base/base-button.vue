@@ -67,7 +67,7 @@ const handleClick = (event) => {
     justify-content: center;
     gap: 6px;
     width: 100%;
-    color:#ffffff;
+    color:inherit;
 }
 
 /* Accessibility Focus Ring */
