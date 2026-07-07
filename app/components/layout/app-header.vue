@@ -177,14 +177,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '~/stores/authStore'
 
 const { t, locale, setLocale } = useI18n()
 const auth = useAuthStore()
+const colorMode = useColorMode()
 
 const cartCount = ref(3)
-const isDark = ref(false)
+const isDark = computed(() => colorMode.value === 'dark')
 const offcanvasRef = ref(null)
 const isScrolled = ref(false)
 
@@ -213,22 +214,10 @@ const closeMobileMenu = () => {
 }
 
 const toggleTheme = () => {
-  isDark.value = !isDark.value
-  if (isDark.value) {
-    document.documentElement.classList.add('dark')
-    localStorage.setItem('theme', 'dark')
-  } else {
-    document.documentElement.classList.remove('dark')
-    localStorage.setItem('theme', 'light')
-  }
+  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
 }
 
 onMounted(() => {
-  const savedTheme = localStorage.getItem('theme')
-  if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    isDark.value = true
-    document.documentElement.classList.add('dark')
-  }
   window.addEventListener('scroll', handleScroll)
 })
 

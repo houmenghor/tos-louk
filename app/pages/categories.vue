@@ -789,7 +789,7 @@ const handleAddToCart = (product) => {
   left: 0;
   background: none;
   pointer-events: none;
-  -webkit-appearance: none;
+  appearance: none;
   margin: 0;
 }
 

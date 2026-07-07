@@ -123,7 +123,7 @@ const currentYear = computed(() => new Date().getFullYear());
 
 .text-gradient {
   background: linear-gradient(135deg, var(--color-primary) 0%, #00c16f 100%);
-  -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 

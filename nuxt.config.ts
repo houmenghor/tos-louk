@@ -3,7 +3,20 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
 
-  modules: ['nuxt-auth-utils', '@nuxtjs/i18n', '@nuxt/image', '@pinia/nuxt', '@nuxtjs/turnstile'],
+  modules: [
+    'nuxt-auth-utils',
+    '@nuxtjs/i18n',
+    '@nuxt/image',
+    '@pinia/nuxt',
+    '@nuxtjs/turnstile',
+    '@nuxtjs/color-mode',
+  ],
+  colorMode: {
+    classSuffix: '', // so it applies 'dark' instead of 'dark-mode'
+    preference: 'system',
+    fallback: 'light',
+    storageKey: 'theme' // Match existing localStorage key used previously
+  },
 
   i18n: {
     strategy: 'no_prefix',
