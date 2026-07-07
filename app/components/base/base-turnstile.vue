@@ -1,17 +1,12 @@
 <template>
   <div class="d-flex justify-content-center align-items-center mb-4">
-    <NuxtTurnstile 
-      :key="turnstileTheme"
-      ref="turnstileRef" 
-      :model-value="modelValue" 
-      @update:modelValue="$emit('update:modelValue', $event)"
-      :options="{ theme: turnstileTheme }" 
-    />
+    <NuxtTurnstile :key="turnstileTheme" ref="turnstileRef" :model-value="modelValue"
+      @update:modelValue="$emit('update:modelValue', $event)" :options="{ theme: turnstileTheme }" />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, computed } from "vue";
 
 defineProps({
   modelValue: {
@@ -23,34 +18,23 @@ defineProps({
 defineEmits(["update:modelValue"]);
 
 const turnstileRef = ref(null);
-const turnstileTheme = ref("light");
-let observer = null;
-
-const updateTheme = () => {
-    if (document.documentElement.classList.contains('dark')) {
-        turnstileTheme.value = 'dark';
-    } else {
-        turnstileTheme.value = 'light';
-    }
-};
-
-onMounted(() => {
-    updateTheme();
-    observer = new MutationObserver(updateTheme);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-});
-
-onUnmounted(() => {
-    if (observer) {
-        observer.disconnect();
-    }
-});
+const colorMode = useColorMode();
+const turnstileTheme = computed(() => colorMode.value === 'dark' ? 'dark' : 'light');
 
 const reset = () => {
-    if (turnstileRef.value) {
-        turnstileRef.value.reset();
-    }
+  if (turnstileRef.value) {
+    turnstileRef.value.reset();
+  }
 };
 
 defineExpose({ reset });
 </script>
+
+<style scoped>
+:deep(iframe) {
+  border: none !important;
+  outline: none !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+</style>
