@@ -23,6 +23,9 @@
         <i class="bi bi-arrow-up"></i>
       </button>
     </transition>
+
+    <!-- Add to Cart Offcanvas Sidebar -->
+    <CartOffcanvas />
   </div>
 </template>
 
@@ -30,6 +33,7 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import AppHeader from '~/components/layout/app-header.vue';
 import AppFooter from '~/components/layout/app-footer.vue';
+import CartOffcanvas from '~/components/common/CartOffcanvas.vue';
 
 const showScrollTop = ref(false);
 const isLaunching = ref(false);
