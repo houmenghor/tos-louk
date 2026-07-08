@@ -302,6 +302,11 @@
 <script setup>
 import { ref, computed } from 'vue';
 import CategoryProductCard from '~/components/common/CategoryProductCard.vue';
+import { useCartStore } from '~/stores/cartStore';
+import { useAppToast } from '~/composables/ui/useAppToast';
+
+const cartStore = useCartStore();
+const { showSuccess } = useAppToast();
 
 const selectedCategory = ref('all');
 const searchQuery = ref('');
@@ -520,7 +525,8 @@ const filteredProducts = computed(() => {
 });
 
 const handleAddToCart = (product) => {
-  console.log('Added to cart from Category Page:', product.title);
+  cartStore.addToCart(product);
+  showSuccess(`${product.title} added to cart!`);
 };
 </script>
 

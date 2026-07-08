@@ -74,16 +74,19 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed } from 'vue';
+import { useWishlistStore } from '~/stores/wishlistStore';
 
-defineProps({
+const props = defineProps({
   product: { type: Object, required: true }
 });
 defineEmits(['add-to-cart']);
 
-const isWishlisted = ref(false);
+const wishlistStore = useWishlistStore();
+
+const isWishlisted = computed(() => wishlistStore.isInWishlist(props.product.id));
 const toggleWishlist = () => {
-  isWishlisted.value = !isWishlisted.value;
+  wishlistStore.toggleWishlist(props.product);
 };
 </script>
 
@@ -157,7 +160,7 @@ const toggleWishlist = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.25s ease;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   padding: 0;
 }
 
@@ -166,6 +169,18 @@ const toggleWishlist = () => {
   color: #ffffff !important;
   border-color: var(--color-primary) !important;
   transform: scale(1.1);
+}
+
+.action-circle-btn:active {
+  transform: scale(0.82) !important;
+  background-color: var(--color-primary-light) !important;
+  color: var(--color-primary) !important;
+}
+
+.action-circle-btn.wishlisted:active {
+  transform: scale(0.82) !important;
+  background-color: rgba(239, 68, 68, 0.15) !important;
+  color: #ef4444 !important;
 }
 
 .action-circle-btn.wishlisted {
@@ -219,11 +234,18 @@ const toggleWishlist = () => {
   background-color: var(--color-primary);
   color: #ffffff;
   border: none;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
   border-radius: 8px;
 }
 
 .btn-primary-custom:hover {
   background-color: var(--color-primary-hover);
+  transform: translateY(-1px);
+}
+
+.btn-primary-custom:active {
+  transform: translateY(1px) scale(0.92) !important;
+  background-color: var(--color-primary-hover) !important;
+  opacity: 0.88 !important;
 }
 </style>

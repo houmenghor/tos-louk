@@ -35,8 +35,8 @@
     </div>
 
     <!-- Main Navigation Header Area -->
-    <header class="glass-header sticky-top py-2" :class="{ 'scrolled-header': isScrolled }">
-      <div class="container-xl d-flex align-items-center justify-content-between">
+    <header class="glass-header sticky-top" :class="{ 'scrolled-header': isScrolled }">
+      <div class="container-xl h-100 d-flex align-items-center justify-content-between">
 
         <!-- Logo Container -->
         <NuxtLink to="/" class="d-flex align-items-center gap-2 text-decoration-none group-logo">
@@ -58,15 +58,19 @@
         <!-- Actions Interface Menu -->
         <div class="d-flex align-items-center gap-2 gap-sm-3">
 
-          <button class="btn btn-link glass-icon-btn p-1" aria-label="Wishlist">
+          <NuxtLink to="/wishlist" class="btn btn-link glass-icon-btn p-1 position-relative" aria-label="Wishlist">
             <i class="bi bi-heart fw-bold"></i>
-          </button>
+            <span v-if="wishlistStore.wishlistCount > 0"
+              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-white cart-badge shadow-sm">
+              {{ wishlistStore.wishlistCount }}
+            </span>
+          </NuxtLink>
 
-          <button class="btn btn-link glass-icon-btn p-1 position-relative" aria-label="Shopping Cart">
+          <button @click="cartStore.toggleCart(true)" class="btn btn-link glass-icon-btn p-1 position-relative" aria-label="Shopping Cart">
             <i class="bi bi-bag fs-5 fw-bold"></i>
-            <span v-if="cartCount > 0"
+            <span v-if="cartStore.cartCount > 0"
               class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary-brand text-white cart-badge shadow-sm">
-              {{ cartCount }}
+              {{ cartStore.cartCount }}
             </span>
           </button>
 
@@ -178,12 +182,14 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '~/stores/authStore'
+import { useCartStore } from '~/stores/cartStore'
+import { useWishlistStore } from '~/stores/wishlistStore'
 
 const { t, locale, setLocale } = useI18n()
 const auth = useAuthStore()
+const cartStore = useCartStore()
+const wishlistStore = useWishlistStore()
 const colorMode = useColorMode()
-
-const cartCount = ref(3)
 const isDark = computed(() => colorMode.value === 'dark')
 const offcanvasRef = ref(null)
 const isScrolled = ref(false)
@@ -235,6 +241,7 @@ const toggleTheme = () => {
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
+  wishlistStore.initWishlist()
 })
 
 onUnmounted(() => {
@@ -262,6 +269,7 @@ onUnmounted(() => {
 .glass-header {
   position: sticky;
   top: 0;
+  height: 60px;
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
@@ -274,8 +282,6 @@ onUnmounted(() => {
 .glass-header.scrolled-header {
   background: rgba(255, 255, 255, 0.9) !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  padding-top: 4px !important;
-  padding-bottom: 4px !important;
 }
 
 .dark .glass-header.scrolled-header {
@@ -351,6 +357,12 @@ onUnmounted(() => {
 
 .glass-icon-btn:hover {
   background: var(--glass-hover-bg);
+  color: var(--color-primary) !important;
+}
+
+.glass-icon-btn:active {
+  transform: scale(0.85) !important;
+  background-color: var(--color-primary-light) !important;
   color: var(--color-primary) !important;
 }
 
