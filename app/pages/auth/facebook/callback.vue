@@ -4,12 +4,12 @@
       <!-- Premium Glass Icon Badge & Spinner -->
       <div class="loader-wrapper mb-4 position-relative">
         <div class="custom-spinner"></div>
-        <div class="google-icon-holder d-flex align-items-center justify-content-center">
-          <i class="bi bi-google text-primary-brand fs-4"></i>
+        <div class="facebook-icon-holder d-flex align-items-center justify-content-center">
+          <i class="bi bi-facebook text-primary-brand fs-4"></i>
         </div>
       </div>
 
-      <h3 class="form-title mb-2">Google Authentication</h3>
+      <h3 class="form-title mb-2">Facebook Authentication</h3>
       <p class="form-subtitle">
         Completing login, please hold on a moment...
       </p>
@@ -34,7 +34,7 @@ onMounted(async () => {
   const errorQuery = route.query.error || route.query.message;
 
   if (errorQuery) {
-    showError("Google Auth Error", decodeURIComponent(errorQuery));
+    showError("Facebook Auth Error", decodeURIComponent(errorQuery));
     await navigateTo('/auth/login');
     return;
   }
@@ -43,14 +43,14 @@ onMounted(async () => {
     authStore.access_token = token;
     try {
       await authStore.fetchProfile(true);
-      showSuccess("Welcome back!", "Google login successful.");
+      showSuccess("Welcome back!", "Facebook login successful.");
       await navigateTo('/', { replace: true });
     } catch (error) {
       showError("Login failed", getApiError(error, "Could not fetch profile."));
       await navigateTo('/auth/login');
     }
   } else {
-    showError("Google Auth Error", "No token received.");
+    showError("Facebook Auth Error", "No token received.");
     await navigateTo('/auth/login');
   }
 });
@@ -88,8 +88,9 @@ onMounted(async () => {
   margin-bottom: 0;
 }
 
+/* Facebook theme color */
 .text-primary-brand {
-  color: var(--color-primary);
+  color: #1877f2;
 }
 
 /* Premium Spinner */
@@ -103,12 +104,12 @@ onMounted(async () => {
   width: 100%;
   height: 100%;
   border: 3px solid var(--color-border);
-  border-top: 3px solid var(--color-primary);
+  border-top: 3px solid #1877f2;
   border-radius: 50%;
   animation: spin 1s cubic-bezier(0.55, 0.055, 0.675, 0.19) infinite;
 }
 
-.google-icon-holder {
+.facebook-icon-holder {
   position: absolute;
   top: 50%;
   left: 50%;

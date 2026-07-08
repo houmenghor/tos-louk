@@ -7,7 +7,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
     '/auth/verify-otp',
     '/auth/forgot-password',
     '/auth/reset-password',
-    '/auth/google/callback'
+    '/auth/google/callback',
+    '/auth/facebook/callback'
   ];
 
   if (to.path === '/auth/login' && auth.access_token) {

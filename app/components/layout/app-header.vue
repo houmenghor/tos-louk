@@ -75,11 +75,10 @@
               data-bs-toggle="dropdown" aria-expanded="false" aria-label="User Account">
               <template v-if="auth.isAuthenticated && auth.userProfile">
                 <img
-                  :src="auth.userProfile?.userProfile?.profile_image || auth.userProfile?.profile_image || '/image.png'"
-                  class="rounded-circle object-fit-cover" width="32" height="32" alt="Profile" @error="(e) => {
-                    e.target.onerror = null;
-                    e.target.src = '/image.png';
-                  }" />
+                  :src="profileImageSrc"
+                  class="rounded-circle object-fit-cover" width="32" height="32" alt="Profile"
+                  referrerpolicy="no-referrer"
+                  @error="handleImageError" />
               </template>
 
               <template v-else>
@@ -94,7 +93,7 @@
               <template v-if="auth.isAuthenticated && auth.userProfile">
                 <li class="px-3 py-2 border-bottom border-custom-glass mb-1">
                   <div class="fw-bold text-main">{{ auth.userProfile.full_name }}</div>
-                  <div class="text-muted small" style="font-size: 0.75rem;">{{ auth.userProfile.email }}</div>
+                  <div class="small" style="color: var(--color-text-secondary); font-size: 0.75rem;">{{ auth.userProfile.email }}</div>
                 </li>
                 <li>
                   <NuxtLink to="/profile" class="dropdown-item py-2 fw-medium">
@@ -177,7 +176,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '~/stores/authStore'
 
 const { t, locale, setLocale } = useI18n()
@@ -188,6 +187,23 @@ const cartCount = ref(3)
 const isDark = computed(() => colorMode.value === 'dark')
 const offcanvasRef = ref(null)
 const isScrolled = ref(false)
+const imageError = ref(false)
+
+const profileImageSrc = computed(() => {
+  if (imageError.value) {
+    return '/image.png'
+  }
+  const img = auth.userProfile?.userProfile?.profile_image || auth.userProfile?.profile_image
+  return img || '/image.png'
+})
+
+const handleImageError = () => {
+  imageError.value = true
+}
+
+watch(() => auth.userProfile, () => {
+  imageError.value = false
+}, { deep: true })
 
 const handleLogout = async () => {
   await auth.logout()
