@@ -43,10 +43,17 @@
             </div>
 
             <!-- Google OAuth Sign Up Button -->
-            <BaseButton statusType="button" class="w-100 mb-4 btn-google-glass"
+            <BaseButton statusType="button" class="w-100 mb-2 btn-google-glass"
               @click="handleGoogleRegister" :isDisable="!turnstileToken">
               <i class="bi bi-google"></i>
               <span>Sign up with Google</span>
+            </BaseButton>
+
+            <!-- Facebook OAuth Sign Up Button -->
+            <BaseButton statusType="button" class="w-100 mb-4 btn-facebook-glass"
+              @click="handleFacebookRegister" :isDisable="!turnstileToken">
+              <i class="bi bi-facebook"></i>
+              <span>Sign up with Facebook</span>
             </BaseButton>
 
 
@@ -142,6 +149,13 @@ const handleGoogleRegister = () => {
     replace: true
   });
 };
+
+const handleFacebookRegister = () => {
+  navigateTo(`${config.public.apiBase}/auth/facebook/redirect`, {
+    external: true,
+    replace: true
+  });
+};
 </script>
 
 <style scoped>
@@ -223,6 +237,24 @@ const handleGoogleRegister = () => {
   background: var(--glass-hover-bg);
   color: var(--color-primary);
   border-color: var(--color-primary);
+}
+
+/* Custom Glassmorphic Facebook OAuth Button */
+.btn-facebook-glass {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  padding: 8px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.btn-facebook-glass:hover {
+  background: rgba(24, 119, 242, 0.1);
+  color: #1877f2;
+  border-color: #1877f2;
 }
 
 /* Text and Line Divider Element styling */
