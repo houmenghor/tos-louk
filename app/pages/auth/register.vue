@@ -25,7 +25,7 @@
               :error="passwordError" class="mb-2" />
 
             <BaseInputPassword label="Confirm Password" placeholder="Confirm your password" id="password_confirmation"
-              v-model="password_confirmation" :error="confirmPasswordError" class="mb-4" />
+              v-model="password_confirmation" :error="confirmPasswordError" class="mb-3" />
 
             <BaseTurnstile ref="turnstileRef" v-model="turnstileToken" />
 
@@ -43,15 +43,15 @@
             </div>
 
             <!-- Google OAuth Sign Up Button -->
-            <BaseButton statusType="button" class="w-100 mb-2 btn-google-glass"
-              @click="handleGoogleRegister" :isDisable="!turnstileToken">
+            <BaseButton statusType="button" class="w-100 mb-2 btn-google-glass" @click="handleGoogleRegister"
+              :isDisable="!turnstileToken">
               <i class="bi bi-google"></i>
               <span>Sign up with Google</span>
             </BaseButton>
 
             <!-- Facebook OAuth Sign Up Button -->
-            <BaseButton statusType="button" class="w-100 mb-4 btn-facebook-glass"
-              @click="handleFacebookRegister" :isDisable="!turnstileToken">
+            <BaseButton statusType="button" class="w-100 mb-4 btn-facebook-glass" @click="handleFacebookRegister"
+              :isDisable="!turnstileToken">
               <i class="bi bi-facebook"></i>
               <span>Sign up with Facebook</span>
             </BaseButton>
