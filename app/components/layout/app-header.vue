@@ -58,7 +58,7 @@
         <!-- Actions Interface Menu -->
         <div class="d-flex align-items-center gap-2 gap-sm-3">
 
-          <NuxtLink to="/wishlist" class="btn btn-link glass-icon-btn p-1 position-relative" aria-label="Wishlist">
+          <NuxtLink :to="auth.access_token ? '/user/wishlist' : '/wishlist'" class="btn btn-link glass-icon-btn p-1 position-relative" aria-label="Wishlist">
             <i class="bi bi-heart fw-bold"></i>
             <span v-if="wishlistStore.wishlistCount > 0"
               class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-white cart-badge shadow-sm">
@@ -66,10 +66,17 @@
             </span>
           </NuxtLink>
 
-          <button @click="cartStore.toggleCart(true)" class="btn btn-link glass-icon-btn p-1 position-relative" aria-label="Shopping Cart">
+          <!-- Cart Button: always opens offcanvas. Guest login prompt is shown inside CartOffcanvas.vue -->
+          <button
+            @click="cartStore.toggleCart(true)"
+            class="btn btn-link glass-icon-btn p-1 position-relative"
+            aria-label="Shopping Cart"
+          >
             <i class="bi bi-bag fs-5 fw-bold"></i>
-            <span v-if="cartStore.cartCount > 0"
-              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary-brand text-white cart-badge shadow-sm">
+            <span
+              v-if="auth.access_token && cartStore.cartCount > 0"
+              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary-brand text-white cart-badge shadow-sm"
+            >
               {{ cartStore.cartCount }}
             </span>
           </button>
@@ -77,14 +84,15 @@
           <div class="dropdown">
             <button class="btn btn-link glass-icon-btn p-1 dropdown-toggle no-arrow" type="button" id="profileDropdown"
               data-bs-toggle="dropdown" aria-expanded="false" aria-label="User Account">
-              <template v-if="auth.isAuthenticated && auth.userProfile">
+              <!-- Show avatar when logged in AND profile data is loaded -->
+              <template v-if="auth.access_token && auth.userProfile">
                 <img
                   :src="profileImageSrc"
                   class="rounded-circle object-fit-cover" width="32" height="32" alt="Profile"
                   referrerpolicy="no-referrer"
                   @error="handleImageError" />
               </template>
-
+              <!-- Show person icon for guests OR when profile hasn't loaded yet -->
               <template v-else>
                 <i class="bi bi-person fs-5 fw-bold"></i>
               </template>
@@ -94,19 +102,23 @@
               aria-labelledby="profileDropdown">
 
               <!-- Authenticated User Menu -->
-              <template v-if="auth.isAuthenticated && auth.userProfile">
-                <li class="px-3 py-2 border-bottom border-custom-glass mb-1">
+              <template v-if="auth.access_token">
+                <!-- Profile info header (only if profile data is loaded) -->
+                <li v-if="auth.userProfile" class="px-3 py-2 border-bottom border-custom-glass mb-1">
                   <div class="fw-bold text-main">{{ auth.userProfile.full_name }}</div>
                   <div class="small" style="color: var(--color-text-secondary); font-size: 0.75rem;">{{ auth.userProfile.email }}</div>
                 </li>
+                <li v-else class="px-3 py-2 border-bottom border-custom-glass mb-1">
+                  <div class="fw-bold text-main">My Account</div>
+                </li>
                 <li>
-                  <NuxtLink to="/profile" class="dropdown-item py-2 fw-medium">
-                    <i class="bi bi-person-circle me-2 text-primary-brand"></i> My Profile
+                  <NuxtLink to="/user" class="dropdown-item py-2 fw-medium">
+                    <i class="bi bi-person-circle me-2 text-primary-brand"></i> My Dashboard
                   </NuxtLink>
                 </li>
                 <li>
-                  <NuxtLink to="/orders" class="dropdown-item py-2 fw-medium">
-                    <i class="bi bi-bag-check me-2 text-primary-brand"></i> My Orders
+                  <NuxtLink to="/user/wishlist" class="dropdown-item py-2 fw-medium">
+                    <i class="bi bi-heart me-2 text-primary-brand"></i> My Wishlist
                   </NuxtLink>
                 </li>
                 <li>
@@ -190,6 +202,7 @@ const auth = useAuthStore()
 const cartStore = useCartStore()
 const wishlistStore = useWishlistStore()
 const colorMode = useColorMode()
+const router = useRouter()
 const isDark = computed(() => colorMode.value === 'dark')
 const offcanvasRef = ref(null)
 const isScrolled = ref(false)

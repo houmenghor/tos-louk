@@ -150,6 +150,35 @@ export const useAuthStore = defineStore("auth", () => {
         return response;
     };
 
+    const updateProfile = async (payload) => {
+        const response = await $fetch("/api/auth/profile", {
+            method: "PUT",
+            body: payload,
+        });
+
+        userProfile.value = response.data || response;
+        return response;
+    };
+
+    const changePassword = async (payload) => {
+        const response = await $fetch("/api/auth/change-password", {
+            method: "POST",
+            body: payload,
+        });
+
+        return response;
+    };
+
+    const updateAvatar = async (formData) => {
+        const response = await $fetch("/api/auth/upload-avatar", {
+            method: "POST",
+            body: formData,
+        });
+
+        await fetchProfile(true);
+        return response;
+    };
+
     return {
         registerEmail,
         resetToken,
@@ -169,5 +198,8 @@ export const useAuthStore = defineStore("auth", () => {
         resendOtp,
         forgotPassword,
         resetPassword,
+        updateProfile,
+        changePassword,
+        updateAvatar,
     };
 });
