@@ -1,299 +1,386 @@
 <template>
-  <div class="card discount-card h-100 border-0 overflow-hidden position-relative shadow-sm">
+  <div class="discount-card h-100 position-relative overflow-hidden" @mouseenter="hovered = true" @mouseleave="hovered = false">
+
     <!-- Discount Badge -->
-    <div v-if="product.badge" class="discount-badge position-absolute top-0 start-0 m-3 z-2">
-      <span class="badge rounded-pill bg-danger-gradient shadow-sm">
-        <i class="bi bi-lightning-fill text-warning me-1"></i>{{ product.badge }}
+    <div v-if="product.badge" class="deal-badge position-absolute z-2">
+      <span class="deal-badge-pill">
+        <i class="bi bi-lightning-fill me-1"></i>{{ product.badge }}
       </span>
     </div>
 
-    <!-- Heart Wishlist Button -->
-    <button 
-      class="btn wishlist-btn rounded-circle position-absolute top-0 end-0 m-3 z-2 d-flex align-items-center justify-content-center shadow-sm"
-      :class="{ 'active': isWishlisted }"
-      @click.stop="toggleWishlist"
-      title="Add to Wishlist"
+    <!-- Wishlist Button -->
+    <button
+      class="wishlist-btn position-absolute z-2"
+      :class="{ 'wishlisted': wishlistStore.isInWishlist(product.id) }"
+      @click.stop="handleToggleWishlist"
+      :title="wishlistStore.isInWishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist'"
     >
-      <i class="bi" :class="isWishlisted ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
+      <i class="bi" :class="wishlistStore.isInWishlist(product.id) ? 'bi-heart-fill' : 'bi-heart'"></i>
     </button>
 
     <!-- Product Image -->
-    <div class="image-wrapper position-relative overflow-hidden">
-      <NuxtImg :src="product.image" :alt="product.title" class="w-100 h-100 object-fit-cover product-image" />
-      
-      <!-- Action Hover Overlay -->
-      <div class="image-overlay d-flex align-items-center justify-content-center">
-        <button class="btn btn-blur rounded-pill px-4 py-2 fw-semibold add-to-cart-btn" @click="$emit('add-to-cart', product)">
-          <i class="bi bi-cart-plus-fill me-2"></i> Add to Cart
+    <div class="image-area">
+      <NuxtImg
+        :src="product.image"
+        :alt="product.title"
+        class="product-img"
+        :class="{ 'img-zoomed': hovered }"
+      />
+      <!-- Hover overlay CTA -->
+      <div class="img-overlay" :class="{ 'overlay-visible': hovered }">
+        <button class="overlay-cart-btn" @click="handleAddToCart">
+          <i class="bi bi-cart-plus-fill me-2"></i>Quick Add
         </button>
       </div>
     </div>
 
-    <!-- Product Details -->
-    <div class="card-body p-4 d-flex flex-column justify-content-between">
-      <div>
-        <h6 class="product-title fw-bold mb-2">{{ product.title }}</h6>
-        
-        <!-- Price Display -->
-        <div class="d-flex align-items-center gap-2 mb-3">
-          <span class="price-discounted fw-bold fs-5">${{ product.price }}</span>
-          <del v-if="product.oldPrice" class="price-original">${{ product.oldPrice }}</del>
-          <span v-if="savings" class="savings-label badge ms-auto">
-            Save ${{ savings }}
+    <!-- Card Content -->
+    <div class="card-content">
+
+      <!-- Category tag -->
+      <span v-if="product.category" class="category-tag">{{ product.category }}</span>
+
+      <!-- Title -->
+      <h6 class="product-title">{{ product.title }}</h6>
+
+      <!-- Price Row -->
+      <div class="price-row">
+        <span class="price-now">${{ product.price }}</span>
+        <del v-if="product.oldPrice" class="price-was">${{ product.oldPrice }}</del>
+        <span v-if="savings" class="save-chip">-${{ savings }}</span>
+      </div>
+
+      <!-- Stock urgency bar -->
+      <div class="stock-section">
+        <div class="stock-labels">
+          <span class="stock-left">
+            <i class="bi bi-fire text-danger me-1"></i>
+            Only <strong>{{ itemsLeft }}</strong> left
           </span>
+          <span class="stock-percent">{{ progress }}% sold</span>
         </div>
-
-        <!-- Stock Progress Bar (Urgency Feature) -->
-        <div class="stock-urgency mb-3">
-          <div class="d-flex justify-content-between small mb-1">
-            <span class="stock-text">Only <strong class="text-danger-custom">{{ itemsLeft }}</strong> left!</span>
-            <span class="stock-text">{{ progress }}% sold</span>
-          </div>
-          <div class="progress" style="height: 6px;">
-            <div 
-              class="progress-bar progress-bar-striped progress-bar-animated bg-danger-bar" 
-              role="progressbar" 
-              :style="{ width: progress + '%' }" 
-              :aria-valuenow="progress" 
-              aria-valuemin="0" 
-              aria-valuemax="100"
-            ></div>
-          </div>
+        <div class="stock-track">
+          <div class="stock-fill" :style="{ width: progress + '%' }"></div>
         </div>
       </div>
 
-      <!-- Quick Actions (Visible always on small screen / on hover on large) -->
-      <div class="d-flex gap-2 mt-2 card-actions">
-        <button class="btn btn-outline-primary-custom flex-grow-1 py-2 text-sm fw-semibold rounded-3" @click="$emit('add-to-cart', product)">
-          Add to Cart
-        </button>
-        <button class="btn btn-primary-custom px-3 py-2 rounded-3" title="Buy Now" @click="handleBuyNow">
-          <i class="bi bi-wallet2"></i>
-        </button>
+      <!-- Actions -->
+      <div class="action-row">
+        <BaseButton
+          variants="primary"
+          size="md"
+          class="flex-grow-1"
+          @click="handleAddToCart"
+        >
+          <i class="bi bi-cart-plus-fill me-1"></i> Add to Cart
+        </BaseButton>
       </div>
+
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
+import { useAuthStore } from '~/stores/authStore';
+import { useCartStore } from '~/stores/cartStore';
+import { useWishlistStore } from '~/stores/wishlistStore';
+import { useAppToast } from '~/composables/ui/useAppToast';
 
 const props = defineProps({
-  product: {
-    type: Object,
-    required: true
-  }
+  product: { type: Object, required: true }
 });
 
 const emit = defineEmits(['add-to-cart']);
 
-const isWishlisted = ref(false);
+const authStore = useAuthStore();
+const cartStore = useCartStore();
+const wishlistStore = useWishlistStore();
+const { showSuccess, showError } = useAppToast();
+const { locale } = useI18n();
+const hovered = ref(false);
 
-const toggleWishlist = () => {
-  isWishlisted.value = !isWishlisted.value;
+// ── Auth Guard ──
+const verifyLogin = (actionName) => {
+  if (!authStore.access_token) {
+    showError(
+      locale.value === 'kh'
+        ? `សូមចូលគណនីជាមុនសិនដើម្បី ${actionName}!`
+        : `Please login first to ${actionName}!`
+    );
+    navigateTo('/auth/login');
+    return false;
+  }
+  return true;
 };
 
-// Calculate savings
+// ── Actions ──
+const handleAddToCart = () => {
+  if (verifyLogin(locale.value === 'kh' ? 'បន្ថែមទៅកន្ត្រក' : 'add to cart')) {
+    cartStore.addToCart(props.product);
+    emit('add-to-cart', props.product);
+    showSuccess(
+      locale.value === 'kh' ? 'បានបន្ថែមទៅក្នុងកន្ត្រកជោគជ័យ!' : 'Added to cart successfully!'
+    );
+  }
+};
+
+const handleToggleWishlist = () => {
+  if (verifyLogin(locale.value === 'kh' ? 'បន្ថែមទៅបញ្ជីប្រាថ្នា' : 'add to wishlist')) {
+    wishlistStore.toggleWishlist(props.product);
+    const isNowAdded = wishlistStore.isInWishlist(props.product.id);
+    showSuccess(
+      isNowAdded
+        ? (locale.value === 'kh' ? 'បានបន្ថែមទៅក្នុងបញ្ជីប្រាថ្នា!' : 'Added to wishlist!')
+        : (locale.value === 'kh' ? 'បានដកចេញពីបញ្ជីប្រាថ្នា!' : 'Removed from wishlist!')
+    );
+  }
+};
+
+// ── Computed ──
 const savings = computed(() => {
   if (props.product.oldPrice && props.product.price) {
-    return (props.product.oldPrice - props.product.price).toFixed(0);
+    const s = (props.product.oldPrice - props.product.price).toFixed(0);
+    return s > 0 ? s : null;
   }
   return null;
 });
 
-// Urgency mock progress bar
-const progress = computed(() => {
-  return Math.min(95, Math.max(30, ((props.product.id || 0) * 13) % 100));
-});
+const progress = computed(() =>
+  Math.min(95, Math.max(30, ((props.product.id || 0) * 13) % 100))
+);
 
-const itemsLeft = computed(() => {
-  return Math.max(2, ((props.product.id || 0) * 7) % 12);
-});
+const itemsLeft = computed(() =>
+  Math.max(2, ((props.product.id || 0) * 7) % 12)
+);
 
-const handleBuyNow = () => {
-  emit('add-to-cart', props.product);
-};
+const handleBuyNow = () => emit('add-to-cart', props.product);
 </script>
 
 <style scoped>
+/* ── Card Shell ── */
 .discount-card {
-  background: var(--color-bg-secondary);
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: 16px;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  border-radius: 20px;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
   color: var(--color-text);
 }
 
 .discount-card:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-md), 0 10px 25px -5px rgba(0, 220, 130, 0.15);
-  border-color: var(--color-primary);
+  transform: translateY(-6px);
+  border-color: rgba(0, 220, 130, 0.4);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.12),
+              0 0 0 1px rgba(0, 220, 130, 0.1);
 }
 
-/* Badge with vibrant gradient */
-.bg-danger-gradient {
-  background: linear-gradient(135deg, var(--color-danger, #ef4444), #ff6b6b);
-  border: none;
+/* ── Deal Badge ── */
+.deal-badge {
+  top: 14px;
+  left: 14px;
+}
+.deal-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 11px;
   font-weight: 700;
-  font-size: 0.8rem;
-  letter-spacing: 0.5px;
-  padding: 6px 12px;
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, #ef4444, #f97316);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.35);
 }
 
-/* Wishlist Button */
+/* ── Wishlist Button ── */
 .wishlist-btn {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  color: var(--color-text);
+  top: 14px;
+  right: 14px;
   width: 36px;
   height: 36px;
-  transition: all 0.3s ease;
-}
-
-.wishlist-btn:hover {
-  background: var(--color-bg-secondary);
-  color: var(--color-danger, #ef4444);
-  transform: scale(1.1);
-}
-
-.wishlist-btn.active {
-  background: var(--color-primary-light);
-  border-color: rgba(0, 220, 130, 0.2);
-  color: var(--color-danger, #ef4444);
-}
-
-/* Image wrapper and effect */
-.image-wrapper {
-  height: 260px;
-  background-color: var(--color-surface);
+  border-radius: 50%;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(8px);
+}
+.wishlist-btn:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+  transform: scale(1.1);
+}
+.wishlist-btn.wishlisted {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
 }
 
-.product-image {
-  transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+/* ── Image Area ── */
+.image-area {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+  background: var(--color-bg-secondary);
+  border-radius: 20px 20px 0 0;
 }
-
-.discount-card:hover .product-image {
-  transform: scale(1.08);
-}
-
-/* Hover Overlay for Cart Action */
-.image-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
+.product-img {
   width: 100%;
   height: 100%;
-  background: rgba(15, 23, 42, 0.55);
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.img-zoomed {
+  transform: scale(1.07);
+}
+
+/* Hover overlay */
+.img-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 15, 30, 0.5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 20px;
   opacity: 0;
   transition: opacity 0.3s ease;
-  z-index: 1;
 }
-
-.discount-card:hover .image-overlay {
+.overlay-visible {
   opacity: 1;
 }
-
-.btn-blur {
-  background: var(--color-surface);
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
-  transform: translateY(20px);
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+.overlay-cart-btn {
+  padding: 9px 22px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.95);
+  color: #111;
+  border: none;
+  cursor: pointer;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  backdrop-filter: blur(8px);
 }
-
-.discount-card:hover .btn-blur {
+.overlay-visible .overlay-cart-btn {
   transform: translateY(0);
 }
-
-.btn-blur:hover {
+.overlay-cart-btn:hover {
   background: var(--color-primary);
-  color: #ffffff;
-  border-color: var(--color-primary);
-  transform: translateY(0) scale(1.05);
+  color: #fff;
 }
 
-/* Typography & Price styling */
+/* ── Card Content ── */
+.card-content {
+  padding: 18px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Category tag */
+.category-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-primary);
+  background: rgba(0, 220, 130, 0.1);
+  border: 1px solid rgba(0, 220, 130, 0.2);
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+/* Title */
 .product-title {
+  font-size: 0.92rem;
+  font-weight: 700;
   color: var(--color-text);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  height: 2.4rem;
-  line-height: 1.2rem;
-  font-size: 0.95rem;
+  line-height: 1.4;
+  margin: 0;
 }
 
-.price-discounted {
-  color: var(--color-danger, #ef4444);
+/* Price */
+.price-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
-
-.price-original {
-  font-size: 0.9rem;
+.price-now {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #ef4444;
+}
+.price-was {
+  font-size: 0.85rem;
   color: var(--color-text-secondary);
   text-decoration: line-through;
 }
-
-.savings-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 4px 8px;
-  background-color: var(--color-primary-light);
+.save-chip {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(0, 220, 130, 0.12);
   color: var(--color-primary);
   border: 1px solid rgba(0, 220, 130, 0.2);
+  padding: 3px 8px;
+  border-radius: 999px;
 }
 
-.stock-text {
+/* Stock urgency */
+.stock-section {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.stock-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11.5px;
+}
+.stock-left {
   color: var(--color-text-secondary);
+  font-weight: 500;
 }
-
-.text-danger-custom {
-  color: var(--color-danger, #ef4444);
+.stock-left strong {
+  color: #ef4444;
 }
-
-/* Progress bar customizations */
-.progress {
-  background-color: var(--color-border);
-  border-radius: 10px;
+.stock-percent {
+  color: var(--color-text-secondary);
+  font-size: 11px;
+}
+.stock-track {
+  height: 5px;
+  border-radius: 999px;
+  background: var(--color-border);
   overflow: hidden;
 }
-
-.progress-bar {
-  border-radius: 10px;
+.stock-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ef4444, #f97316);
+  transition: width 0.6s ease;
 }
 
-.bg-danger-bar {
-  background-color: var(--color-danger, #ef4444) !important;
+/* Actions */
+.action-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 2px;
 }
 
-/* Quick Actions buttons */
-.btn-outline-primary-custom {
-  border: 1px solid var(--color-primary);
-  background: transparent;
-  color: var(--color-primary);
-  transition: all 0.2s ease;
-}
-
-.btn-outline-primary-custom:hover {
-  background-color: var(--color-primary);
-  color: #ffffff;
-}
-
-.btn-primary-custom {
-  background-color: var(--color-primary);
-  color: #ffffff;
-  border: none;
-  transition: all 0.2s ease;
-}
-
-.btn-primary-custom:hover {
-  background-color: var(--color-primary-hover);
-}
-
-.text-sm {
-  font-size: 0.875rem;
-}
 </style>
