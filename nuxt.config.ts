@@ -33,7 +33,7 @@ export default defineNuxtConfig({
     head: {
       title: 'Tos Louk',
       link: [
-        { rel: 'icon', type: 'image/png', sizes: '40x40', href: '/image.png?v=2' }
+        { rel: 'icon', type: 'image/png', sizes: '40x40', href: '/tos-louk.webp?v=1' }
       ],
       script: [
         {

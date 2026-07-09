@@ -16,7 +16,7 @@
                         <BaseInputPassword label="Password" placeholder="Enter your password" id="password"
                             v-model="password" :error="passwordError" :disabled="isSubmitting" class="mb-3" />
 
-                        <div class="d-flex justify-content-end align-items-center mb-4">
+                        <div class="d-flex justify-content-end align-items-center mb-3">
                             <NuxtLink to="/auth/forgot-password"
                                 class="text-forgetpass glass-link-primary small fw-medium">
                                 Forgot Password?
@@ -40,8 +40,8 @@
                         </div>
 
                         <!-- Google OAuth Button -->
-                        <BaseButton statusType="button" class="w-100 mb-2 btn-google-glass"
-                            @click="handleGoogleLogin" :isDisable="!turnstileToken">
+                        <BaseButton statusType="button" class="w-100 mb-2 btn-google-glass" @click="handleGoogleLogin"
+                            :isDisable="!turnstileToken">
                             <i class="bi bi-google"></i>
                             <span>Sign in with Google</span>
                         </BaseButton>
@@ -65,7 +65,8 @@
             <!-- Banner Column -->
             <div class="col-12 col-md-6 d-none d-md-block">
                 <div class="image-banner text-center animate-fade-in">
-                   <NuxtImg :src="banner" alt="Authentication Banner" class="img-fluid auth-banner-img" loading="eager" preload />
+                    <NuxtImg :src="banner" alt="Authentication Banner" class="img-fluid auth-banner-img" loading="eager"
+                        preload />
                 </div>
             </div>
         </div>
