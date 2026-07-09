@@ -46,7 +46,7 @@
             <div>
               <div class="text-secondary-custom text-xxs fw-bold text-uppercase mb-1">My Wishlist</div>
               <h3 class="fw-extrabold text-main mb-1">{{ wishlistStore.wishlistCount }} items</h3>
-              <NuxtLink to="/wishlist" class="text-primary text-xs fw-semibold text-decoration-none">
+              <NuxtLink to="/user/wishlist" class="text-primary text-xs fw-semibold text-decoration-none">
                 View wishlist <i class="bi bi-arrow-right-short"></i>
               </NuxtLink>
             </div>

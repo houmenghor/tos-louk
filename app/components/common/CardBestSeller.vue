@@ -2,10 +2,18 @@
   <div class="product-card">
     <div class="image-wrapper">
       <NuxtImg :src="product.image" :alt="product.title" />
-      <span class="badge">{{ product.badge }}</span>
+      <span v-if="product.badge" class="badge">{{ product.badge }}</span>
       <div class="icon-actions">
-        <button class="action-btn"><i class="bi bi-heart"></i></button>
-        <button class="action-btn"><i class="bi bi-eye"></i></button>
+        <!-- Wishlist Toggle Button -->
+        <button 
+          class="action-btn" 
+          :class="{ 'active': wishlistStore.isInWishlist(product.id) }" 
+          @click.stop="handleToggleWishlist"
+          title="Add to Wishlist"
+        >
+          <i class="bi" :class="wishlistStore.isInWishlist(product.id) ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
+        </button>
+        <button class="action-btn" title="Quick View"><i class="bi bi-eye"></i></button>
       </div>
     </div>
 
@@ -31,7 +39,8 @@
         </div>
       </div>
 
-      <button class="add-to-cart-btn">
+      <!-- Add to Cart Button -->
+      <button class="add-to-cart-btn" @click.stop="handleAddToCart">
         Add to Cart <i class="bi bi-bag-plus"></i>
       </button>
     </div>
@@ -39,12 +48,68 @@
 </template>
 
 <script setup>
-defineProps({
+import { useAuthStore } from '~/stores/authStore';
+import { useCartStore } from '~/stores/cartStore';
+import { useWishlistStore } from '~/stores/wishlistStore';
+import { useAppToast } from '~/composables/ui/useAppToast';
+
+const props = defineProps({
   product: {
     type: Object,
     required: true
   }
 });
+
+const authStore = useAuthStore();
+const cartStore = useCartStore();
+const wishlistStore = useWishlistStore();
+const { showSuccess, showError } = useAppToast();
+const { locale } = useI18n();
+
+// Reusable login verification checker
+const verifyLogin = (actionName) => {
+  if (!authStore.access_token) {
+    showError(
+      locale.value === 'kh' 
+        ? `សូមចូលគណនីជាមុនសិនដើម្បី ${actionName}!` 
+        : `Please login first to ${actionName}!`
+    );
+    navigateTo('/auth/login');
+    return false;
+  }
+  return true;
+};
+
+const handleAddToCart = () => {
+  if (verifyLogin(locale.value === 'kh' ? 'បន្ថែមទៅកន្ត្រក' : 'add to cart')) {
+    cartStore.addToCart(props.product);
+    showSuccess(
+      locale.value === 'kh' 
+        ? 'បានបន្ថែមទៅក្នុងកន្ត្រកជោគជ័យ!' 
+        : 'Added to cart successfully!'
+    );
+  }
+};
+
+const handleToggleWishlist = () => {
+  if (verifyLogin(locale.value === 'kh' ? 'បន្ថែមទៅបញ្ជីប្រាថ្នា' : 'add to wishlist')) {
+    wishlistStore.toggleWishlist(props.product);
+    const isNowAdded = wishlistStore.isInWishlist(props.product.id);
+    if (isNowAdded) {
+      showSuccess(
+        locale.value === 'kh' 
+          ? 'បានបន្ថែមទៅក្នុងបញ្ជីប្រាថ្នា!' 
+          : 'Added to wishlist!'
+      );
+    } else {
+      showSuccess(
+        locale.value === 'kh' 
+          ? 'បានលុបចេញពីបញ្ជីប្រាថ្នា!' 
+          : 'Removed from wishlist!'
+      );
+    }
+  }
+};
 </script>
 
 <style scoped>
@@ -126,11 +191,23 @@ defineProps({
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease;
 }
 
 .action-btn:hover {
   background: var(--color-primary);
   color: #000;
+}
+
+.action-btn.active {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.action-btn.active:hover {
+  background: var(--color-danger, #ef4444);
+  color: #fff;
+  border-color: var(--color-danger, #ef4444);
 }
 
 .meta-row {
