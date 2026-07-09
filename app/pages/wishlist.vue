@@ -1,37 +1,58 @@
 <template>
-  <div class="wishlist-page py-5 bg-body-custom min-vh-100">
-    <div class="container max-w-container">
-      
-      <!-- Wishlist Hero Section -->
-      <div class="wishlist-hero p-4 p-md-5 rounded-4 mb-5 text-center position-relative overflow-hidden border shadow-sm">
-        <div class="glow-bubble-red-1"></div>
-        <div class="glow-bubble-red-2"></div>
-        <div class="position-relative z-1">
-          <span class="badge rounded-pill bg-danger-light text-danger mb-3 px-3 py-2 fw-semibold text-uppercase tracking-wider text-xxs">
-            Curated Favorites
-          </span>
-          <h1 class="display-5 fw-extrabold text-main mb-3">Your Wishlist</h1>
-          <p class="lead subtitle-text mx-auto mb-0 text-sm" style="max-width: 600px;">
-            Save your favorite design pieces, modern tech gadgets, and active essentials here. Add them directly to your cart at any time.
-          </p>
+  <div class="wishlist-guest-page min-vh-100 d-flex align-items-center justify-content-center">
+
+    <!-- Ambient Background -->
+    <div class="ambient-bg" aria-hidden="true">
+      <div class="ambient-blob blob-1"></div>
+      <div class="ambient-blob blob-2"></div>
+    </div>
+
+    <!-- Floating Hearts -->
+    <div class="floating-hearts-container" aria-hidden="true">
+      <i class="bi bi-heart-fill floating-heart heart-1"></i>
+      <i class="bi bi-heart floating-heart heart-2"></i>
+      <i class="bi bi-heart-fill floating-heart heart-3"></i>
+      <i class="bi bi-heart floating-heart heart-4"></i>
+      <i class="bi bi-heart-fill floating-heart heart-5"></i>
+      <i class="bi bi-heart floating-heart heart-6"></i>
+    </div>
+
+    <!-- Hero Content -->
+    <div class="hero-content text-center position-relative z-1 px-3">
+
+      <!-- Animated Heart Icon -->
+      <div class="hero-icon-wrapper mx-auto mb-4">
+        <div class="icon-glow"></div>
+        <div class="hero-icon-ring">
+          <i class="bi bi-heart-fill hero-heart-icon"></i>
         </div>
       </div>
 
-      <!-- Guest Warning State -->
-      <div class="text-center py-5 empty-state-wrapper rounded-4 border bg-surface-custom p-4 p-md-5 shadow-sm">
-        <div class="empty-state-icon-container mb-4 position-relative">
-          <div class="glow-halo-red"></div>
-          <i class="bi bi-shield-lock display-1 text-muted position-relative z-1"></i>
-        </div>
-        <h3 class="fw-bold text-main mb-2">Sign In to Save Favorites</h3>
-        <p class="subtitle-text mb-4 mx-auto text-xs" style="max-width: 420px;">
-          Saving items to a wishlist is a member-only feature. Please login to your account to save your favorite items and access them from any device.
-        </p>
-        <NuxtLink 
-          to="/auth/login" 
-          class="btn btn-primary-custom px-4 py-2.5 rounded-pill fw-bold text-xs d-inline-flex align-items-center gap-2 transition-all shadow-sm"
-        >
-          <i class="bi bi-box-arrow-in-right"></i> Log In to Account
+      <!-- Members Only Badge -->
+      <div class="mb-3">
+        <span class="guest-pill">
+          <i class="bi bi-lock-fill me-1"></i> Members Only Feature
+        </span>
+      </div>
+
+      <!-- Heading -->
+      <h1 class="hero-title mb-3">Your Wishlist Awaits</h1>
+
+      <!-- Subtitle -->
+      <p class="hero-subtitle mx-auto mb-5">
+        Save the products you love, build your dream collection, and add
+        them to cart whenever you're ready. It only takes a moment to sign in.
+      </p>
+
+      <!-- CTA Buttons -->
+      <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center align-items-center">
+        <NuxtLink to="/auth/login" class="btn-cta-primary" id="wishlist-login-btn">
+          <i class="bi bi-box-arrow-in-right"></i>
+          Log In to My Account
+        </NuxtLink>
+        <NuxtLink to="/auth/register" class="btn-cta-outline" id="wishlist-register-btn">
+          <i class="bi bi-person-plus"></i>
+          Create Free Account
         </NuxtLink>
       </div>
 
@@ -40,117 +61,190 @@
 </template>
 
 <script setup>
-import { useAuthStore } from '~/stores/authStore';
-
-// Page Settings (Public Access)
-definePageMeta({
-  layout: 'default'
-});
-
-const authStore = useAuthStore();
+definePageMeta({ layout: 'default' });
 </script>
 
 <style scoped>
-.wishlist-page {
+/* ── Page Base ── */
+.wishlist-guest-page {
   background-color: var(--color-bg);
   color: var(--color-text);
-  box-sizing: border-box;
-  font-family: var(--font-main);
+  font-family: var(--font-main, 'Inter', sans-serif);
+  position: relative;
+  overflow: hidden;
 }
 
-.max-w-container {
-  max-width: 1040px;
+/* ── Ambient Glow ── */
+.ambient-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.ambient-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+}
+.blob-1 {
+  width: 500px; height: 500px;
+  top: -150px; left: -150px;
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.1), transparent 70%);
+  animation: drift 12s ease-in-out infinite alternate;
+}
+.blob-2 {
+  width: 400px; height: 400px;
+  bottom: -100px; right: -100px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.08), transparent 70%);
+  animation: drift 16s ease-in-out infinite alternate-reverse;
 }
 
-.bg-body-custom {
-  background-color: var(--color-bg);
+/* ── Floating Hearts ── */
+.floating-hearts-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.floating-heart {
+  position: absolute;
+  color: rgba(239, 68, 68, 0.13);
+  animation: floatUp linear infinite;
+}
+.heart-1 { font-size: 24px; left: 8%;  animation-duration: 10s; animation-delay: 0s;  }
+.heart-2 { font-size: 14px; left: 18%; animation-duration: 14s; animation-delay: 2s;  }
+.heart-3 { font-size: 18px; left: 40%; animation-duration: 12s; animation-delay: 5s;  }
+.heart-4 { font-size: 10px; left: 60%; animation-duration: 16s; animation-delay: 1s;  }
+.heart-5 { font-size: 22px; left: 78%; animation-duration: 11s; animation-delay: 3s;  }
+.heart-6 { font-size: 12px; left: 90%; animation-duration: 13s; animation-delay: 7s;  }
+
+/* ── Hero Icon ── */
+.hero-icon-wrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-glow {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.2), transparent 70%);
+  animation: pulseGlow 2.5s ease-in-out infinite;
+}
+.hero-icon-ring {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+  border: 2px solid rgba(239, 68, 68, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 1;
+}
+.hero-heart-icon {
+  font-size: 2.8rem;
+  color: #ef4444;
+  animation: heartbeat 1.8s ease-in-out infinite;
 }
 
-.bg-surface-custom {
-  background-color: var(--color-surface);
+/* ── Badge ── */
+.guest-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
-.text-main {
+/* ── Text ── */
+.hero-title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
   color: var(--color-text);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
-
-.subtitle-text {
+.hero-subtitle {
+  font-size: 1rem;
   color: var(--color-text-secondary);
+  max-width: 480px;
+  line-height: 1.7;
 }
 
-/* Wishlist Hero Banner */
-.wishlist-hero {
-  background: var(--color-surface);
-  border-color: var(--color-border) !important;
-  box-shadow: var(--shadow-sm);
-}
-
-/* Red Glow Bubbles inside Hero */
-.glow-bubble-red-1 {
-  position: absolute;
-  top: -80px;
-  right: -80px;
-  width: 250px;
-  height: 250px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(239, 68, 68, 0.08) 0%, transparent 70%);
-  filter: blur(50px);
-  pointer-events: none;
-}
-
-.glow-bubble-red-2 {
-  position: absolute;
-  bottom: -100px;
-  left: -100px;
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(239, 68, 68, 0.06) 0%, transparent 70%);
-  filter: blur(60px);
-  pointer-events: none;
-}
-
-.glow-halo-red {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(239, 68, 68, 0.08) 0%, transparent 75%);
-  pointer-events: none;
-}
-
-/* App Buttons */
-.btn-primary-custom {
-  background-color: var(--color-primary) !important;
-  color: #111827 !important;
-  border: none !important;
+/* ── Buttons ── */
+.btn-cta-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 30px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+  border: none;
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.35);
   transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-  box-shadow: 0 4px 14px var(--color-primary-light);
 }
-
-.btn-primary-custom:hover {
-  background-color: var(--color-primary-hover) !important;
+.btn-cta-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px rgba(239, 68, 68, 0.45);
+  color: #fff;
+}
+.btn-cta-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 28px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  background: transparent;
+  color: var(--color-text);
+  border: 1.5px solid var(--color-border);
+  transition: all 0.3s ease;
+}
+.btn-cta-outline:hover {
+  border-color: #ef4444;
+  color: #ef4444;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 220, 130, 0.3);
+  background: rgba(239, 68, 68, 0.05);
 }
 
-.text-xxs {
-  font-size: 10px;
+/* ── Animations ── */
+@keyframes drift {
+  0%   { transform: translate(0, 0); }
+  100% { transform: translate(30px, 30px); }
 }
-
-.text-xs {
-  font-size: 12px;
+@keyframes floatUp {
+  0%   { transform: translateY(110vh) rotate(-10deg); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.8; }
+  100% { transform: translateY(-10vh) rotate(10deg); opacity: 0; }
 }
-
-.text-sm {
-  font-size: 14px;
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.1); }
 }
-
-.bg-danger-light {
-  background-color: rgba(239, 68, 68, 0.1);
-  color: var(--color-danger) !important;
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  25%       { transform: scale(1.12); }
+  75%       { transform: scale(1.08); }
 }
 </style>
