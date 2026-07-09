@@ -44,17 +44,8 @@
         
         <!-- Product Title -->
         <h6 class="product-title mb-1.5 text-main fw-bold">{{ product.title }}</h6>
-        
-        <!-- Rating -->
-        <div class="d-flex align-items-center gap-2 rating-container mb-3">
-          <div class="stars d-flex gap-0.5 text-warning small">
-            <i v-for="n in 5" :key="n" :class="[n <= Math.floor(product.rating || 4.5) ? 'bi bi-star-fill' : 'bi bi-star']"></i>
-          </div>
-          <span class="reviews-text small text-muted-custom">
-            {{ product.id * 13 % 40 + 15 }} reviews
-          </span>
-        </div>
       </div>
+
 
       <!-- Price & Cart button row -->
       <div class="d-flex align-items-center justify-content-between mt-auto pt-2">

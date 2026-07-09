@@ -209,11 +209,11 @@
                     <div class="row align-items-center justify-content-between position-relative z-1 gy-4">
                         <div class="col-lg-6">
                             <span class="badge rounded-pill bg-primary-light text-primary mb-3 px-3 py-2 fw-semibold text-uppercase letter-spacing-1">
-                                <i class="bi bi-envelope-paper-fill me-2"></i>Newsletter
+                                <i class="bi bi-telegram me-2"></i>Telegram Alerts
                             </span>
                             <h2 class="fw-extrabold mb-2 newsletter-title">Stay in the Loop</h2>
                             <p class="newsletter-subtitle mb-0">
-                                Subscribe to receive early access to weekly deals, curated collections, and exclusive product drops.
+                                Subscribe with your Telegram number to receive instant notifications, early access to weekly deals, and exclusive product drops from our admin.
                             </p>
                         </div>
                         
@@ -227,12 +227,12 @@
                                 <div v-else>
                                     <form @submit.prevent="handleSubscribe" class="subscribe-form d-flex gap-2 p-2 rounded-3 bg-input-wrapper border">
                                         <div class="input-icon-group flex-grow-1 position-relative">
-                                            <i class="bi bi-envelope position-absolute start-0 top-50 translate-middle-y ms-3 envelope-icon"></i>
+                                            <i class="bi bi-telegram position-absolute start-0 top-50 translate-middle-y ms-3 envelope-icon text-primary"></i>
                                             <input 
-                                                v-model="emailInput"
-                                                type="email" 
+                                                v-model="telegramInput"
+                                                type="tel" 
                                                 class="form-control border-0 bg-transparent py-2 ps-5 subscribe-input" 
-                                                placeholder="Enter your email address"
+                                                placeholder="Enter your Telegram number"
                                                 required 
                                             />
                                         </div>
@@ -436,14 +436,14 @@ const discountProducts = [
     { id: 104, title: 'Artisan Porcelain Collection', price: 43, oldPrice: 95, badge: '-55%', image: 'https://placehold.co/200x200' }
 ];
 
-// Newsletter Subscription State & Handlers
-const emailInput = ref('');
+// Telegram Subscription State & Handlers
+const telegramInput = ref('');
 const isSubscribed = ref(false);
 
 const handleSubscribe = () => {
-    if (emailInput.value) {
+    if (telegramInput.value) {
         isSubscribed.value = true;
-        emailInput.value = '';
+        telegramInput.value = '';
         setTimeout(() => {
             isSubscribed.value = false;
         }, 5000);
