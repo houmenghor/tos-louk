@@ -2,6 +2,13 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const auth = useAuthStore();
 
   const publicRoutes = [
+    '/',
+    '/about',
+    '/contact',
+    '/categories',
+    '/discount',
+    '/wishlist',
+    '/order',
     '/auth/login',
     '/auth/register',
     '/auth/verify-otp',
@@ -50,7 +57,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
   }
 
-   if (publicRoutes.includes(to.path) && auth.access_token) {
+  if (publicRoutes.includes(to.path) && auth.access_token) {
     return navigateTo('/');
   }
 });

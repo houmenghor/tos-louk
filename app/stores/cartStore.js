@@ -35,11 +35,11 @@ export const useCartStore = defineStore('cart', () => {
 
   const freeShippingThreshold = 150
   const isFreeShipping = computed(() => cartSubtotal.value >= freeShippingThreshold)
-  
+
   const amountToFreeShipping = computed(() => {
     return Math.max(0, freeShippingThreshold - cartSubtotal.value)
   })
-  
+
   const shippingProgress = computed(() => {
     return Math.min(100, (cartSubtotal.value / freeShippingThreshold) * 100)
   })
