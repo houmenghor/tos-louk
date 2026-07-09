@@ -136,19 +136,14 @@
                       />
                     </div>
                     <div class="col-md-6">
-                      <div class="mb-3">
-                        <label for="gender" class="form-label">{{ $t('profile.gender') }}</label>
-                        <select 
-                          id="gender" 
-                          v-model="profileForm.gender" 
-                          class="form-select custom-select-box"
-                        >
-                          <option value="">{{ $t('profile.selectGender') }}</option>
-                          <option value="Male">{{ $t('profile.male') }}</option>
-                          <option value="Female">{{ $t('profile.female') }}</option>
-                          <option value="Other">{{ $t('profile.other') }}</option>
-                        </select>
-                      </div>
+                      <BaseSelectOption
+                        id="gender"
+                        :label="$t('profile.gender')"
+                        :placeholder="$t('profile.selectGender')"
+                        v-model="profileForm.gender"
+                        :options="genderOptions"
+                        :error="profileErrors.gender"
+                      />
                     </div>
                     <div class="col-md-6">
                       <BaseSelectDate
@@ -362,6 +357,7 @@ import { getApiError } from '~/utils/apiError';
 import BaseInput from '~/components/base/base-input.vue';
 import BaseInputPassword from '~/components/base/base-input-password.vue';
 import BaseSelectDate from '~/components/base/base-select-date.vue';
+import BaseSelectOption from '~/components/base/base-select-option.vue';
 
 const defaultAvatar = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23a1a1aa"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-1-5.48-2.58C7.64 15.84 10 15 12 15s4.36.84 5.48 2.42C16.43 19 14.03 20 12 20z"/></svg>';
 
@@ -386,6 +382,12 @@ const tabs = [
 ];
 
 const activeTab = ref('personal');
+
+const genderOptions = computed(() => [
+  { value: 'Male', label: locale.value === 'kh' ? 'ប្រុស' : 'Male' },
+  { value: 'Female', label: locale.value === 'kh' ? 'ស្រី' : 'Female' },
+  { value: 'Other', label: locale.value === 'kh' ? 'ផ្សេងៗ' : 'Other' }
+]);
 
 // Fetch user dynamic data on client mounting
 onMounted(async () => {
