@@ -26,12 +26,13 @@
               {{ wishlistStore.wishlistCount }} {{ wishlistStore.wishlistCount === 1 ? 'item' : 'items' }}
             </span>
           </div>
-          <button 
-            @click="wishlistStore.clearWishlist" 
-            class="btn btn-outline-danger btn-sm rounded-pill px-3 py-1.5 fw-semibold d-flex align-items-center gap-1.5 hover-scale"
+          <BaseButton
+            variants="outline-danger"
+            size="sm"
+            @click="wishlistStore.clearWishlist"
           >
             <i class="bi bi-trash-fill"></i> Clear All
-          </button>
+          </BaseButton>
         </div>
 
         <transition-group name="grid" tag="div" class="row g-4">
@@ -55,12 +56,13 @@
         <p class="subtitle-text mb-4 mx-auto" style="max-width: 320px;">
           Tap the heart icon on any product to save it to your wishlist and view it here later.
         </p>
-        <NuxtLink 
-          to="/categories" 
-          class="btn btn-primary-custom px-4 py-2.5 rounded-pill fw-bold text-sm d-inline-flex align-items-center gap-2"
+        <BaseButton
+          variants="primary"
+          size="lg"
+          @click="router.push('/categories')"
         >
           Explore Catalog <i class="bi bi-arrow-right"></i>
-        </NuxtLink>
+        </BaseButton>
       </div>
 
     </div>
@@ -76,6 +78,7 @@ import CategoryProductCard from '~/components/common/CategoryProductCard.vue';
 const wishlistStore = useWishlistStore();
 const cartStore = useCartStore();
 const { showSuccess } = useAppToast();
+const router = useRouter();
 
 // Fetch wishlist state on component load
 if (process.client) {
@@ -239,20 +242,7 @@ const handleAddToCart = (product) => {
   transform: scale(1.03);
 }
 
-/* App Buttons */
-.btn-primary-custom {
-  background-color: var(--color-primary) !important;
-  color: #111827 !important;
-  border: none !important;
-  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-  box-shadow: 0 4px 14px var(--color-primary-light);
-}
 
-.btn-primary-custom:hover {
-  background-color: var(--color-primary-hover) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 220, 130, 0.3);
-}
 
 /* Animations */
 @keyframes heartbeat {

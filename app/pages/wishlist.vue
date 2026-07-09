@@ -44,16 +44,27 @@
         them to cart whenever you're ready. It only takes a moment to sign in.
       </p>
 
-      <!-- CTA Buttons -->
+      <!-- CTA Buttons using BaseButton -->
       <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center align-items-center">
-        <NuxtLink to="/auth/login" class="btn-cta-primary" id="wishlist-login-btn">
+        <BaseButton
+          variants="danger"
+          size="lg"
+          @click="router.push('/auth/login')"
+          id="wishlist-login-btn"
+        >
           <i class="bi bi-box-arrow-in-right"></i>
           Log In to My Account
-        </NuxtLink>
-        <NuxtLink to="/auth/register" class="btn-cta-outline" id="wishlist-register-btn">
+        </BaseButton>
+
+        <BaseButton
+          variants="outline-danger"
+          size="lg"
+          @click="router.push('/auth/register')"
+          id="wishlist-register-btn"
+        >
           <i class="bi bi-person-plus"></i>
           Create Free Account
-        </NuxtLink>
+        </BaseButton>
       </div>
 
     </div>
@@ -62,6 +73,8 @@
 
 <script setup>
 definePageMeta({ layout: 'default' });
+
+const router = useRouter();
 </script>
 
 <style scoped>
@@ -183,48 +196,6 @@ definePageMeta({ layout: 'default' });
   color: var(--color-text-secondary);
   max-width: 480px;
   line-height: 1.7;
-}
-
-/* ── Buttons ── */
-.btn-cta-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 30px;
-  border-radius: 999px;
-  font-weight: 700;
-  font-size: 0.95rem;
-  text-decoration: none;
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  color: #fff;
-  border: none;
-  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.35);
-  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-.btn-cta-primary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 32px rgba(239, 68, 68, 0.45);
-  color: #fff;
-}
-.btn-cta-outline {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 13px 28px;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  text-decoration: none;
-  background: transparent;
-  color: var(--color-text);
-  border: 1.5px solid var(--color-border);
-  transition: all 0.3s ease;
-}
-.btn-cta-outline:hover {
-  border-color: #ef4444;
-  color: #ef4444;
-  transform: translateY(-2px);
-  background: rgba(239, 68, 68, 0.05);
 }
 
 /* ── Animations ── */
