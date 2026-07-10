@@ -5,15 +5,24 @@
       <span v-if="product.badge" class="badge">{{ product.badge }}</span>
       <div class="icon-actions">
         <!-- Wishlist Toggle Button -->
-        <button 
-          class="action-btn" 
-          :class="{ 'active': wishlistStore.isInWishlist(product.id) }" 
+        <button
+          class="action-btn"
+          :class="{ active: wishlistStore.isInWishlist(product.id) }"
           @click.stop="handleToggleWishlist"
           title="Add to Wishlist"
         >
-          <i class="bi" :class="wishlistStore.isInWishlist(product.id) ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
+          <i
+            class="bi"
+            :class="
+              wishlistStore.isInWishlist(product.id)
+                ? 'bi-heart-fill text-danger'
+                : 'bi-heart'
+            "
+          ></i>
         </button>
-        <button class="action-btn" title="Quick View"><i class="bi bi-eye"></i></button>
+        <button class="action-btn" title="Quick View">
+          <i class="bi bi-eye"></i>
+        </button>
       </div>
     </div>
 
@@ -21,7 +30,7 @@
       <div class="meta-row">
         <span class="category">{{ product.category }}</span>
         <span class="rating">
-          <i class="bi bi-star-fill" style="color: var(--color-warning)"></i> 
+          <i class="bi bi-star-fill" style="color: var(--color-warning)"></i>
           {{ product.rating }}
         </span>
       </div>
@@ -48,16 +57,16 @@
 </template>
 
 <script setup>
-import { useAuthStore } from '~/stores/authStore';
-import { useCartStore } from '~/stores/cartStore';
-import { useWishlistStore } from '~/stores/wishlistStore';
-import { useAppToast } from '~/composables/ui/useAppToast';
+import { useAuthStore } from "~/stores/authStore";
+import { useCartStore } from "~/stores/cartStore";
+import { useWishlistStore } from "~/stores/wishlistStore";
+import { useAppToast } from "~/composables/ui/useAppToast";
 
 const props = defineProps({
   product: {
     type: Object,
-    required: true
-  }
+    required: true,
+  },
 });
 
 const authStore = useAuthStore();
@@ -70,42 +79,46 @@ const { locale } = useI18n();
 const verifyLogin = (actionName) => {
   if (!authStore.access_token) {
     showError(
-      locale.value === 'kh' 
-        ? `សូមចូលគណនីជាមុនសិនដើម្បី ${actionName}!` 
-        : `Please login first to ${actionName}!`
+      locale.value === "kh"
+        ? `សូមចូលគណនីជាមុនសិនដើម្បី ${actionName}!`
+        : `Please login first to ${actionName}!`,
     );
-    navigateTo('/auth/login');
+    navigateTo("/auth/login");
     return false;
   }
   return true;
 };
 
 const handleAddToCart = () => {
-  if (verifyLogin(locale.value === 'kh' ? 'បន្ថែមទៅកន្ត្រក' : 'add to cart')) {
+  if (verifyLogin(locale.value === "kh" ? "បន្ថែមទៅកន្ត្រក" : "add to cart")) {
     cartStore.addToCart(props.product);
     showSuccess(
-      locale.value === 'kh' 
-        ? 'បានបន្ថែមទៅក្នុងកន្ត្រកជោគជ័យ!' 
-        : 'Added to cart successfully!'
+      locale.value === "kh"
+        ? "បានបន្ថែមទៅក្នុងកន្ត្រកជោគជ័យ!"
+        : "Added to cart successfully!",
     );
   }
 };
 
 const handleToggleWishlist = () => {
-  if (verifyLogin(locale.value === 'kh' ? 'បន្ថែមទៅបញ្ជីប្រាថ្នា' : 'add to wishlist')) {
+  if (
+    verifyLogin(
+      locale.value === "kh" ? "បន្ថែមទៅបញ្ជីប្រាថ្នា" : "add to wishlist",
+    )
+  ) {
     wishlistStore.toggleWishlist(props.product);
     const isNowAdded = wishlistStore.isInWishlist(props.product.id);
     if (isNowAdded) {
       showSuccess(
-        locale.value === 'kh' 
-          ? 'បានបន្ថែមទៅក្នុងបញ្ជីប្រាថ្នា!' 
-          : 'Added to wishlist!'
+        locale.value === "kh"
+          ? "បានបន្ថែមទៅក្នុងបញ្ជីប្រាថ្នា!"
+          : "Added to wishlist!",
       );
     } else {
       showSuccess(
-        locale.value === 'kh' 
-          ? 'បានលុបចេញពីបញ្ជីប្រាថ្នា!' 
-          : 'Removed from wishlist!'
+        locale.value === "kh"
+          ? "បានលុបចេញពីបញ្ជីប្រាថ្នា!"
+          : "Removed from wishlist!",
       );
     }
   }

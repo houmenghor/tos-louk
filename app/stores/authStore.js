@@ -1,205 +1,205 @@
 export const useAuthStore = defineStore("auth", () => {
-    const userProfile = ref(null);
-    const access_token = useCookie("at", {
-        path: "/",
-        sameSite: "lax",
-        maxAge: 60 * 60,
+  const userProfile = ref(null);
+  const access_token = useCookie("at", {
+    path: "/",
+    sameSite: "lax",
+    maxAge: 60 * 60,
+  });
+  const refresh_token = useCookie("rft", {
+    path: "/",
+    sameSite: "lax",
+    maxAge: 7 * 24 * 60 * 60,
+  });
+  const isAuthenticated = computed(() => !!userProfile.value);
+  const registerEmail = ref("");
+  const otpEmail = ref(null);
+  const otpPurpose = ref("email_verify");
+  const resetToken = ref(null);
+
+  const startOtpFlow = async (email, purpose) => {
+    otpEmail.value = email;
+    otpPurpose.value = purpose;
+    await navigateTo("/auth/verify-otp");
+  };
+
+  const refreshToken = async () => {
+    const currentRft = refresh_token.value;
+
+    if (!currentRft) {
+      await logout();
+      throw new Error("No refresh token available");
+    }
+
+    const headers = useRequestHeaders(["cookie"]);
+
+    const response = await $fetch("/api/auth/refresh", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        ...headers,
+      },
+      body: {
+        refresh_token: currentRft,
+      },
     });
-    const refresh_token = useCookie("rft", {
-        path: "/",
-        sameSite: "lax",
-        maxAge: 7 * 24 * 60 * 60,
+
+    if (response.access_token) {
+      access_token.value = response.access_token;
+    }
+    if (response.refresh_token) {
+      refresh_token.value = response.refresh_token;
+    }
+
+    return response.access_token;
+  };
+
+  const login = async (payload) => {
+    const response = await $fetch("/api/auth/login", {
+      method: "POST",
+      body: payload,
     });
-    const isAuthenticated = computed(() => !!userProfile.value);
-    const registerEmail = ref("");
-    const otpEmail = ref(null);
-    const otpPurpose = ref("email_verify");
-    const resetToken = ref(null);
 
-    const startOtpFlow = async (email, purpose) => {
-        otpEmail.value = email;
-        otpPurpose.value = purpose;
-        await navigateTo("/auth/verify-otp");
-    };
+    access_token.value = response.access_token;
+    refresh_token.value = response.refresh_token;
 
-    const refreshToken = async () => {
-        const currentRft = refresh_token.value;
+    await fetchProfile(true);
 
-        if (!currentRft) {
-            await logout();
-            throw new Error("No refresh token available");
-        }
+    return response;
+  };
 
-        const headers = useRequestHeaders(["cookie"]);
+  const fetchProfile = async (force = false) => {
+    if (userProfile.value && !force) return userProfile.value;
 
-        const response = await $fetch("/api/auth/refresh", {
-            method: "POST",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                ...headers,
-            },
-            body: {
-                refresh_token: currentRft,
-            },
-        });
+    const headers = useRequestHeaders(["cookie"]);
+    if (access_token.value) {
+      headers.Authorization = `Bearer ${access_token.value}`;
+    }
 
-        if (response.access_token) {
-            access_token.value = response.access_token;
-        }
-        if (response.refresh_token) {
-            refresh_token.value = response.refresh_token;
-        }
+    const response = await $fetch("/api/auth/me", {
+      headers,
+    });
 
-        return response.access_token;
-    };
+    userProfile.value = response.data || response;
 
-    const login = async (payload) => {
-        const response = await $fetch("/api/auth/login", {
-            method: "POST",
-            body: payload,
-        });
+    return userProfile.value;
+  };
 
-        access_token.value = response.access_token;
-        refresh_token.value = response.refresh_token;
+  const logout = async () => {
+    const headers = useRequestHeaders(["cookie"]);
+    if (access_token.value) {
+      headers.Authorization = `Bearer ${access_token.value}`;
+    }
 
-        await fetchProfile(true);
+    await $fetch("/api/auth/logout", {
+      method: "POST",
+      headers,
+    });
 
-        return response;
-    };
+    access_token.value = null;
+    refresh_token.value = null;
+    userProfile.value = null;
 
-    const fetchProfile = async (force = false) => {
-        if (userProfile.value && !force) return userProfile.value;
+    await navigateTo("/auth/login");
+  };
 
-        const headers = useRequestHeaders(["cookie"]);
-        if (access_token.value) {
-            headers.Authorization = `Bearer ${access_token.value}`;
-        }
+  const register = async (payload) => {
+    const response = await $fetch("/api/auth/register", {
+      method: "POST",
+      body: payload,
+    });
 
-        const response = await $fetch("/api/auth/me", {
-            headers,
-        });
+    registerEmail.value = payload.email;
 
-        userProfile.value = response.data || response;
+    return response;
+  };
 
-        return userProfile.value;
-    };
+  const verifyOtp = async (payload) => {
+    const response = await $fetch("/api/auth/verify-otp", {
+      method: "POST",
+      body: payload,
+    });
 
-    const logout = async () => {
-        const headers = useRequestHeaders(["cookie"]);
-        if (access_token.value) {
-            headers.Authorization = `Bearer ${access_token.value}`;
-        }
+    return response;
+  };
 
-        await $fetch("/api/auth/logout", {
-            method: "POST",
-            headers,
-        });
+  const resendOtp = async (payload) => {
+    const response = await $fetch("/api/auth/resend-otp", {
+      method: "POST",
+      body: payload,
+    });
 
-        access_token.value = null;
-        refresh_token.value = null;
-        userProfile.value = null;
+    return response;
+  };
 
-        await navigateTo("/auth/login");
-    };
+  const forgotPassword = async (payload) => {
+    const response = await $fetch("/api/auth/forgot-password", {
+      method: "POST",
+      body: payload,
+    });
 
-    const register = async (payload) => {
-        const response = await $fetch("/api/auth/register", {
-            method: "POST",
-            body: payload,
-        });
+    return response;
+  };
 
-        registerEmail.value = payload.email;
+  const resetPassword = async (payload) => {
+    const response = await $fetch("/api/auth/reset-password", {
+      method: "POST",
+      body: payload,
+    });
 
-        return response;
-    };
+    return response;
+  };
 
-    const verifyOtp = async (payload) => {
-        const response = await $fetch("/api/auth/verify-otp", {
-            method: "POST",
-            body: payload,
-        });
+  const updateProfile = async (payload) => {
+    const response = await $fetch("/api/auth/profile", {
+      method: "PUT",
+      body: payload,
+    });
 
-        return response;
-    };
+    userProfile.value = response.data || response;
+    return response;
+  };
 
-    const resendOtp = async (payload) => {
-        const response = await $fetch("/api/auth/resend-otp", {
-            method: "POST",
-            body: payload,
-        });
+  const changePassword = async (payload) => {
+    const response = await $fetch("/api/auth/change-password", {
+      method: "POST",
+      body: payload,
+    });
 
-        return response;
-    };
+    return response;
+  };
 
-    const forgotPassword = async (payload) => {
-        const response = await $fetch("/api/auth/forgot-password", {
-            method: "POST",
-            body: payload,
-        });
+  const updateAvatar = async (formData) => {
+    const response = await $fetch("/api/auth/upload-avatar", {
+      method: "POST",
+      body: formData,
+    });
 
-        return response;
-    };
+    await fetchProfile(true);
+    return response;
+  };
 
-    const resetPassword = async (payload) => {
-        const response = await $fetch("/api/auth/reset-password", {
-            method: "POST",
-            body: payload,
-        });
-
-        return response;
-    };
-
-    const updateProfile = async (payload) => {
-        const response = await $fetch("/api/auth/profile", {
-            method: "PUT",
-            body: payload,
-        });
-
-        userProfile.value = response.data || response;
-        return response;
-    };
-
-    const changePassword = async (payload) => {
-        const response = await $fetch("/api/auth/change-password", {
-            method: "POST",
-            body: payload,
-        });
-
-        return response;
-    };
-
-    const updateAvatar = async (formData) => {
-        const response = await $fetch("/api/auth/upload-avatar", {
-            method: "POST",
-            body: formData,
-        });
-
-        await fetchProfile(true);
-        return response;
-    };
-
-    return {
-        registerEmail,
-        resetToken,
-        otpEmail,
-        otpPurpose,
-        startOtpFlow,
-        access_token,
-        refresh_token,
-        userProfile,
-        isAuthenticated,
-        login,
-        fetchProfile,
-        refreshToken,
-        logout,
-        register,
-        verifyOtp,
-        resendOtp,
-        forgotPassword,
-        resetPassword,
-        updateProfile,
-        changePassword,
-        updateAvatar,
-    };
+  return {
+    registerEmail,
+    resetToken,
+    otpEmail,
+    otpPurpose,
+    startOtpFlow,
+    access_token,
+    refresh_token,
+    userProfile,
+    isAuthenticated,
+    login,
+    fetchProfile,
+    refreshToken,
+    logout,
+    register,
+    verifyOtp,
+    resendOtp,
+    forgotPassword,
+    resetPassword,
+    updateProfile,
+    changePassword,
+    updateAvatar,
+  };
 });

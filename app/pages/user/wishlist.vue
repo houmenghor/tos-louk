@@ -1,29 +1,36 @@
 <template>
   <div class="wishlist-page py-5 bg-body-custom min-vh-100">
     <div class="container">
-      
       <!-- Wishlist Hero Section -->
-      <div class="wishlist-hero p-5 rounded-4 mb-5 text-center position-relative overflow-hidden border shadow-sm">
+      <div
+        class="wishlist-hero p-5 rounded-4 mb-5 text-center position-relative overflow-hidden border shadow-sm"
+      >
         <div class="glow-bubble-red-1"></div>
         <div class="glow-bubble-red-2"></div>
         <div class="position-relative z-1">
-          <span class="badge rounded-pill bg-danger-light text-danger mb-3 px-3 py-2 fw-semibold text-uppercase tracking-wider">
+          <span
+            class="badge rounded-pill bg-danger-light text-danger mb-3 px-3 py-2 fw-semibold text-uppercase tracking-wider"
+          >
             Curated Favorites
           </span>
           <h1 class="display-4 fw-extrabold text-main mb-3">Your Wishlist</h1>
-          <p class="lead subtitle-text mx-auto mb-0" style="max-width: 600px;">
-            Save your favorite design pieces, modern tech gadgets, and active essentials here. Add them directly to your cart at any time.
+          <p class="lead subtitle-text mx-auto mb-0" style="max-width: 600px">
+            Save your favorite design pieces, modern tech gadgets, and active
+            essentials here. Add them directly to your cart at any time.
           </p>
         </div>
       </div>
 
       <!-- Wishlist Items Grid -->
       <div v-if="wishlistStore.items.length > 0">
-        <div class="d-flex align-items-center justify-content-between mb-4 border-bottom border-custom-glass pb-3">
+        <div
+          class="d-flex align-items-center justify-content-between mb-4 border-bottom border-custom-glass pb-3"
+        >
           <div class="d-flex align-items-center gap-2">
             <h4 class="fw-bold mb-0 text-main">Saved Products</h4>
             <span class="badge bg-secondary-light text-secondary-custom">
-              {{ wishlistStore.wishlistCount }} {{ wishlistStore.wishlistCount === 1 ? 'item' : 'items' }}
+              {{ wishlistStore.wishlistCount }}
+              {{ wishlistStore.wishlistCount === 1 ? "item" : "items" }}
             </span>
           </div>
           <BaseButton
@@ -36,12 +43,15 @@
         </div>
 
         <transition-group name="grid" tag="div" class="row g-4">
-          <div 
-            v-for="item in wishlistStore.items" 
-            :key="item.id" 
+          <div
+            v-for="item in wishlistStore.items"
+            :key="item.id"
             class="col-xl-3 col-lg-4 col-md-6 grid-item"
           >
-            <CategoryProductCard :product="item" @add-to-cart="handleAddToCart" />
+            <CategoryProductCard
+              :product="item"
+              @add-to-cart="handleAddToCart"
+            />
           </div>
         </transition-group>
       </div>
@@ -50,11 +60,14 @@
       <div v-else class="text-center py-5 empty-state-wrapper">
         <div class="empty-state-icon-container mb-4 position-relative">
           <div class="glow-halo-red"></div>
-          <i class="bi bi-heartbreak display-1 text-muted position-relative z-1 heartbeat-animation"></i>
+          <i
+            class="bi bi-heartbreak display-1 text-muted position-relative z-1 heartbeat-animation"
+          ></i>
         </div>
         <h3 class="fw-bold text-main mb-2">No Favorites Yet</h3>
-        <p class="subtitle-text mb-4 mx-auto" style="max-width: 320px;">
-          Tap the heart icon on any product to save it to your wishlist and view it here later.
+        <p class="subtitle-text mb-4 mx-auto" style="max-width: 320px">
+          Tap the heart icon on any product to save it to your wishlist and view
+          it here later.
         </p>
         <BaseButton
           variants="primary"
@@ -64,16 +77,15 @@
           Explore Catalog <i class="bi bi-arrow-right"></i>
         </BaseButton>
       </div>
-
     </div>
   </div>
 </template>
 
 <script setup>
-import { useWishlistStore } from '~/stores/wishlistStore';
-import { useCartStore } from '~/stores/cartStore';
-import { useAppToast } from '~/composables/ui/useAppToast';
-import CategoryProductCard from '~/components/common/CategoryProductCard.vue';
+import { useWishlistStore } from "~/stores/wishlistStore";
+import { useCartStore } from "~/stores/cartStore";
+import { useAppToast } from "~/composables/ui/useAppToast";
+import CategoryProductCard from "~/components/common/CategoryProductCard.vue";
 
 const wishlistStore = useWishlistStore();
 const cartStore = useCartStore();
@@ -147,7 +159,11 @@ const handleAddToCart = (product) => {
   width: 250px;
   height: 250px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(239, 68, 68, 0.08) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(239, 68, 68, 0.08) 0%,
+    transparent 70%
+  );
   filter: blur(50px);
   pointer-events: none;
 }
@@ -159,7 +175,11 @@ const handleAddToCart = (product) => {
   width: 300px;
   height: 300px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(239, 68, 68, 0.06) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(239, 68, 68, 0.06) 0%,
+    transparent 70%
+  );
   filter: blur(60px);
   pointer-events: none;
 }
@@ -185,7 +205,9 @@ const handleAddToCart = (product) => {
 
 .grid-leave-active {
   position: absolute;
-  width: calc(25% - 24px); /* Fallback for col-xl-3 width during exit animation */
+  width: calc(
+    25% - 24px
+  ); /* Fallback for col-xl-3 width during exit animation */
 }
 
 @media (max-width: 1199.98px) {
@@ -223,7 +245,11 @@ const handleAddToCart = (product) => {
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(239, 68, 68, 0.08) 0%, rgba(255,255,255,0) 70%);
+  background: radial-gradient(
+    circle,
+    rgba(239, 68, 68, 0.08) 0%,
+    rgba(255, 255, 255, 0) 70%
+  );
   z-index: 0;
   opacity: 0.8;
 }
@@ -235,26 +261,42 @@ const handleAddToCart = (product) => {
 }
 
 .hover-scale {
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .hover-scale:hover {
   transform: scale(1.03);
 }
 
-
-
 /* Animations */
 @keyframes heartbeat {
-  0% { transform: scale(1); }
-  25% { transform: scale(1.05); }
-  50% { transform: scale(1); }
-  75% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.05);
+  }
+  50% {
+    transform: scale(1);
+  }
+  75% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 </style>
