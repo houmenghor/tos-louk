@@ -51,40 +51,134 @@
       </div>
 
       <!-- Catalog Header / Filter bar -->
-      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 filter-bar p-3 rounded-3 border">
-        <div class="d-flex align-items-center gap-3">
-          <h4 class="fw-bold mb-0 text-main capitalize-text">
-            {{ selectedCategory === 'all' ? 'All Products' : selectedCategory }}
-          </h4>
-          <span class="badge bg-secondary-light text-secondary-custom">
-            {{ filteredProducts.length }} Products found
-          </span>
-        </div>
-        
-        <div class="d-flex align-items-center gap-2 flex-wrap flex-grow-1 flex-md-grow-0 justify-content-end">
-          <!-- Search Input -->
-          <div class="search-input-group position-relative flex-grow-1 flex-md-grow-0">
-            <i class="bi bi-search search-icon position-absolute start-0 top-50 translate-middle-y ms-3"></i>
-            <input 
-              v-model="searchQuery" 
-              type="text" 
-              class="form-control border bg-input ps-5" 
-              placeholder="Search products..." 
+      <div class="mb-4 p-4 rounded-4 bg-surface shadow-sm border filter-bar-container">
+        <div class="d-flex flex-column flex-lg-row gap-4 align-items-lg-end">
+          
+          <!-- Search -->
+          <div class="flex-grow-1">
+            <label class="form-label fw-bold mb-2 small" style="font-size: 15px; color: var(--color-text);">Search Products</label>
+            <div class="input-group">
+              <input 
+                type="text" 
+                v-model="searchQuery" 
+                class="form-control top-filter-input" 
+                placeholder="Search for products..."
+              >
+              <button class="btn btn-primary-custom d-flex align-items-center justify-content-center px-4 search-addon-btn" type="button">
+                <i class="bi bi-search text-white"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Price Range -->
+          <div class="filter-dropdown-wrapper" style="min-width: 160px;">
+            <label class="form-label fw-bold mb-2 small" style="font-size: 15px; color: var(--color-text);">Price Range</label>
+            <BaseSelectOption 
+              v-model="priceRangeSelect" 
+              :options="priceOptions"
+              placeholder="All Prices"
+              class="top-filter-select"
+              style="margin-bottom: 0 !important;"
             />
           </div>
+
+          <!-- Sort By -->
+          <div class="filter-dropdown-wrapper" style="min-width: 160px;">
+            <label class="form-label fw-bold mb-2 small" style="font-size: 15px; color: var(--color-text);">Sort By</label>
+            <BaseSelectOption 
+              v-model="sortBy" 
+              :options="sortOptions"
+              placeholder="Featured"
+              class="top-filter-select"
+              style="margin-bottom: 0 !important;"
+            />
+          </div>
+
+          <!-- View -->
+          <div class="d-flex align-items-end gap-3 flex-wrap flex-sm-nowrap">
+            <div>
+              <label class="form-label fw-bold mb-2 small d-block" style="font-size: 15px; color: var(--color-text);">View</label>
+              <div class="d-flex gap-2">
+                <button 
+                  class="btn view-toggle-btn d-flex align-items-center justify-content-center" 
+                  :class="viewMode === 'grid' ? 'btn-primary-custom active-view' : 'btn-outline-border text-muted-custom'"
+                  @click="viewMode = 'grid'"
+                >
+                  <i class="bi bi-grid-fill"></i>
+                </button>
+                <button 
+                  class="btn view-toggle-btn d-flex align-items-center justify-content-center" 
+                  :class="viewMode === 'list' ? 'btn-primary-custom active-view' : 'btn-outline-border text-muted-custom'"
+                  @click="viewMode = 'list'"
+                >
+                  <i class="bi bi-list-ul"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div style="min-width: 130px;">
+              <label class="form-label mb-2 d-block d-none d-lg-block">&nbsp;</label>
+              <BaseSelectOption 
+                v-model="itemsPerPage" 
+                :options="itemsPerPageOptions"
+                placeholder="12 per page"
+                class="top-filter-select"
+                style="margin-bottom: 0 !important;"
+              />
+            </div>
+          </div>
           
-          <!-- Sort dropdown -->
-          <select v-model="sortBy" class="form-select sort-select border bg-input w-auto">
-            <option value="default">Sort: Featured</option>
-            <option value="price-low">Price: Low to High</option>
-            <option value="price-high">Price: High to Low</option>
-          </select>
-          
-          <!-- Reset button -->
-          <button v-if="hasActiveFilters" @click="resetFilters" class="btn btn-outline-danger-custom px-3">
-            Reset
-          </button>
         </div>
+
+        <!-- Active Filters Section -->
+        <template v-if="hasActiveFilters">
+          <hr class="my-4" style="border-color: var(--color-border); opacity: 0.5;">
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div class="d-flex align-items-center flex-wrap gap-2">
+              <span class="fw-bold me-2 text-main">Active Filters:</span>
+              
+              <!-- Search Pill -->
+              <span v-if="searchQuery" class="badge position-relative overflow-hidden d-flex align-items-center gap-2 px-3 py-2 border-0 fw-medium rounded-pill" style="color: var(--color-primary); z-index: 1;">
+                <div class="position-absolute w-100 h-100 top-0 start-0 z-n1" style="background-color: var(--color-primary); opacity: 0.1;"></div>
+                "{{ searchQuery }}"
+                <i class="bi bi-x cursor-pointer fs-6 lh-1" @click="searchQuery = ''"></i>
+              </span>
+              
+              <!-- Category Pill -->
+              <span v-if="selectedCategory !== 'all'" class="badge position-relative overflow-hidden d-flex align-items-center gap-2 px-3 py-2 border-0 fw-medium rounded-pill capitalize-text" style="color: var(--color-primary); z-index: 1;">
+                <div class="position-absolute w-100 h-100 top-0 start-0 z-n1" style="background-color: var(--color-primary); opacity: 0.1;"></div>
+                {{ selectedCategory }}
+                <i class="bi bi-x cursor-pointer fs-6 lh-1" @click="selectedCategory = 'all'"></i>
+              </span>
+
+              <!-- Price Select Pill -->
+              <span v-if="priceRangeSelect !== 'all'" class="badge position-relative overflow-hidden d-flex align-items-center gap-2 px-3 py-2 border-0 fw-medium rounded-pill" style="color: var(--color-primary); z-index: 1;">
+                <div class="position-absolute w-100 h-100 top-0 start-0 z-n1" style="background-color: var(--color-primary); opacity: 0.1;"></div>
+                {{ priceOptions.find(o => o.value === priceRangeSelect)?.label }}
+                <i class="bi bi-x cursor-pointer fs-6 lh-1" @click="priceRangeSelect = 'all'"></i>
+              </span>
+
+              <!-- Brands Pill -->
+              <span v-for="brand in selectedBrands" :key="brand" class="badge position-relative overflow-hidden d-flex align-items-center gap-2 px-3 py-2 border-0 fw-medium rounded-pill capitalize-text" style="color: var(--color-primary); z-index: 1;">
+                <div class="position-absolute w-100 h-100 top-0 start-0 z-n1" style="background-color: var(--color-primary); opacity: 0.1;"></div>
+                {{ brand }}
+                <i class="bi bi-x cursor-pointer fs-6 lh-1" @click="selectedBrands = selectedBrands.filter(b => b !== brand)"></i>
+              </span>
+
+              <!-- Color Pill -->
+              <span v-if="selectedColorApplied" class="badge position-relative overflow-hidden d-flex align-items-center gap-2 px-3 py-2 border-0 fw-medium rounded-pill capitalize-text" style="color: var(--color-primary); z-index: 1;">
+                <div class="position-absolute w-100 h-100 top-0 start-0 z-n1" style="background-color: var(--color-primary); opacity: 0.1;"></div>
+                {{ selectedColorApplied }}
+                <i class="bi bi-x cursor-pointer fs-6 lh-1" @click="clearColorFilter"></i>
+              </span>
+            </div>
+
+            <button @click="resetFilters" class="btn btn-outline-primary-custom px-4 rounded-pill fw-medium clear-all-btn d-flex align-items-center justify-content-center" style="height: 38px;">
+              Clear All
+            </button>
+          </div>
+        </template>
+
       </div>
 
       <!-- Product Browser Section -->
@@ -95,62 +189,102 @@
           <div class="sidebar-filters d-flex flex-column gap-4">
             
             <!-- Categories Accordion Widget -->
-            <div class="filter-widget p-3 border rounded-3 bg-card">
-              <h5 class="fw-bold mb-3 widget-title position-relative ps-3">
-                Categories
-              </h5>
-              <div class="accordion-list d-flex flex-column gap-2">
-                
-                <!-- Clothing Accordion -->
-                <div class="accordion-item border-0">
-                  <div class="d-flex justify-content-between align-items-center py-2 px-1 clickable" @click="toggleAccordion('clothing')">
-                    <span :class="{ 'fw-bold text-primary': selectedCategory === 'clothing' }">Clothing</span>
-                    <i class="bi" :class="activeAccordion.clothing ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+            <div class="product-categories-widget widget-item mb-4">
+              <h3 class="widget-title">Categories</h3>
+              <ul class="category-tree list-unstyled mb-0">
+                <!-- Clothing -->
+                <li class="category-item">
+                  <div class="category-header d-flex justify-content-between align-items-center" @click="toggleAccordion('clothing')">
+                    <a href="javascript:void(0)" class="category-link">Clothing</a>
+                    <span class="category-toggle">
+                      <i class="bi" :class="activeAccordion.clothing ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+                    </span>
                   </div>
-                  <div v-show="activeAccordion.clothing" class="accordion-sub-list ps-3 py-1 d-flex flex-column gap-1">
-                    <a href="#" class="sub-link" @click.prevent="selectedCategory = 'clothing'">Polo Shirts</a>
-                    <a href="#" class="sub-link" @click.prevent="selectedCategory = 'clothing'">T-Shirts</a>
-                    <a href="#" class="sub-link" @click.prevent="selectedCategory = 'clothing'">Blazers</a>
-                    <a href="#" class="sub-link" @click.prevent="selectedCategory = 'clothing'">Pants</a>
-                  </div>
-                </div>
+                  <ul :class="['subcategory-list list-unstyled ps-3', { expanded: activeAccordion.clothing }]">
+                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'clothing'">Men's Wear</a></li>
+                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'clothing'">Women's Wear</a></li>
+                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'clothing'">Kids' Clothing</a></li>
+                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'clothing'">Accessories</a></li>
+                  </ul>
+                </li>
 
-                <!-- Electronics Accordion -->
-                <div class="accordion-item border-0">
-                  <div class="d-flex justify-content-between align-items-center py-2 px-1 clickable" @click="toggleAccordion('electronics')">
-                    <span :class="{ 'fw-bold text-primary': selectedCategory === 'electronics' }">Electronics</span>
-                    <i class="bi" :class="activeAccordion.electronics ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                <!-- Electronics -->
+                <li class="category-item">
+                  <div class="category-header d-flex justify-content-between align-items-center" @click="toggleAccordion('electronics')">
+                    <a href="javascript:void(0)" class="category-link">Electronics</a>
+                    <span class="category-toggle">
+                      <i class="bi" :class="activeAccordion.electronics ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+                    </span>
                   </div>
-                  <div v-show="activeAccordion.electronics" class="accordion-sub-list ps-3 py-1 d-flex flex-column gap-1">
-                    <a href="#" class="sub-link" @click.prevent="selectedCategory = 'electronics'">Audio</a>
-                    <a href="#" class="sub-link" @click.prevent="selectedCategory = 'electronics'">Wearables</a>
-                    <a href="#" class="sub-link" @click.prevent="selectedCategory = 'electronics'">Chargers</a>
-                    <a href="#" class="sub-link" @click.prevent="selectedCategory = 'electronics'">Computers</a>
-                  </div>
-                </div>
+                  <ul :class="['subcategory-list list-unstyled ps-3', { expanded: activeAccordion.electronics }]">
+                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'electronics'">Mobiles</a></li>
+                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'electronics'">Laptops</a></li>
+                  </ul>
+                </li>
 
-                <!-- Home & Kitchen Accordion -->
-                <div class="accordion-item border-0">
-                  <div class="d-flex justify-content-between align-items-center py-2 px-1 clickable" @click="toggleAccordion('homeKitchen')">
-                    <span>Home & Kitchen</span>
-                    <i class="bi" :class="activeAccordion.homeKitchen ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                <!-- Home & Kitchen -->
+                <li class="category-item">
+                  <div class="category-header d-flex justify-content-between align-items-center" @click="toggleAccordion('homeKitchen')">
+                    <a href="javascript:void(0)" class="category-link">Home &amp; Kitchen</a>
+                    <span class="category-toggle">
+                      <i class="bi" :class="activeAccordion.homeKitchen ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+                    </span>
                   </div>
-                  <div v-show="activeAccordion.homeKitchen" class="accordion-sub-list ps-3 py-1 d-flex flex-column gap-1">
-                    <a href="#" class="sub-link">Kitchenware</a>
-                    <a href="#" class="sub-link">Home Decor</a>
-                  </div>
-                </div>
+                  <ul :class="['subcategory-list list-unstyled ps-3', { expanded: activeAccordion.homeKitchen }]">
+                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'homeKitchen'">Kitchenware</a></li>
+                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'homeKitchen'">Home Decor</a></li>
+                  </ul>
+                </li>
 
-                <!-- Accessories -->
-                <div class="d-flex justify-content-between align-items-center py-2 px-1 clickable" @click="selectedCategory = 'accessories'">
-                  <span :class="{ 'fw-bold text-primary': selectedCategory === 'accessories' }">Accessories</span>
-                </div>
-                
-                <!-- Bags & Travel -->
-                <div class="d-flex justify-content-between align-items-center py-2 px-1 clickable" @click="selectedCategory = 'bags-travel'">
-                  <span :class="{ 'fw-bold text-primary': selectedCategory === 'bags-travel' }">Bags & Travel</span>
-                </div>
-              </div>
+                <!-- Beauty & Personal Care -->
+                <li class="category-item">
+                  <div class="category-header d-flex justify-content-between align-items-center" @click="toggleAccordion('beautyPersonal')">
+                    <a href="javascript:void(0)" class="category-link">Beauty &amp; Personal Care</a>
+                    <span class="category-toggle">
+                      <i class="bi" :class="activeAccordion.beautyPersonal ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+                    </span>
+                  </div>
+                  <ul :class="['subcategory-list list-unstyled ps-3', { expanded: activeAccordion.beautyPersonal }]">
+                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'beautyPersonal'">Makeup</a></li>
+                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'beautyPersonal'">Skincare</a></li>
+                  </ul>
+                </li>
+
+                <!-- Sports & Outdoors -->
+                <li class="category-item">
+                  <div class="category-header d-flex justify-content-between align-items-center" @click="toggleAccordion('sportsOutdoors')">
+                    <a href="javascript:void(0)" class="category-link">Sports &amp; Outdoors</a>
+                    <span class="category-toggle">
+                      <i class="bi" :class="activeAccordion.sportsOutdoors ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+                    </span>
+                  </div>
+                  <ul :class="['subcategory-list list-unstyled ps-3', { expanded: activeAccordion.sportsOutdoors }]">
+                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'sportsOutdoors'">Fitness</a></li>
+                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'sportsOutdoors'">Camping</a></li>
+                  </ul>
+                </li>
+
+                <!-- Books -->
+                <li class="category-item">
+                  <div class="category-header d-flex justify-content-between align-items-center" @click="selectedCategory = 'books'">
+                    <a href="javascript:void(0)" class="category-link">Books</a>
+                  </div>
+                </li>
+
+                <!-- Toys & Games -->
+                <li class="category-item">
+                  <div class="category-header d-flex justify-content-between align-items-center" @click="toggleAccordion('toysGames')">
+                    <a href="javascript:void(0)" class="category-link">Toys &amp; Games</a>
+                    <span class="category-toggle">
+                      <i class="bi" :class="activeAccordion.toysGames ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+                    </span>
+                  </div>
+                  <ul :class="['subcategory-list list-unstyled ps-3', { expanded: activeAccordion.toysGames }]">
+                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'toysGames'">Action Figures</a></li>
+                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'toysGames'">Board Games</a></li>
+                  </ul>
+                </li>
+              </ul>
             </div>
 
             <!-- Price Range Widget -->
@@ -277,8 +411,8 @@
         <!-- Product Grid (Right Column on Desktop) -->
         <div class="col-lg-9 col-md-8">
           <transition-group name="grid" tag="div" class="row g-4">
-            <div v-for="product in filteredProducts" :key="product.id" class="col-sm-6 col-lg-4">
-              <CategoryProductCard :product="product" @add-to-cart="handleAddToCart" />
+            <div v-for="product in filteredProducts" :key="product.id" :class="viewMode === 'grid' ? 'col-sm-6 col-lg-4' : 'col-12'">
+              <CategoryProductCard :product="product" :layout="viewMode" @add-to-cart="handleAddToCart" />
             </div>
             
             <!-- Empty state -->
@@ -300,7 +434,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, reactive } from 'vue';
 import CategoryProductCard from '~/components/common/CategoryProductCard.vue';
 import { useCartStore } from '~/stores/cartStore';
 import { useAppToast } from '~/composables/ui/useAppToast';
@@ -311,6 +445,29 @@ const { showSuccess } = useAppToast();
 const selectedCategory = ref('all');
 const searchQuery = ref('');
 const sortBy = ref('default');
+
+const sortOptions = [
+  { value: 'default', label: 'Sort: Featured' },
+  { value: 'price-low', label: 'Price: Low to High' },
+  { value: 'price-high', label: 'Price: High to Low' }
+];
+
+const viewMode = ref('grid');
+const priceRangeSelect = ref('all');
+const itemsPerPage = ref(12);
+
+const priceOptions = [
+  { value: 'all', label: 'All Prices' },
+  { value: 'under-50', label: 'Under $50' },
+  { value: '50-100', label: '$50 to $100' },
+  { value: 'over-100', label: 'Over $100' }
+];
+
+const itemsPerPageOptions = [
+  { value: 12, label: '12 per page' },
+  { value: 24, label: '24 per page' },
+  { value: 36, label: '36 per page' }
+];
 
 // Price States
 const minPrice = ref(0);
@@ -333,14 +490,17 @@ const applyPriceFilter = () => {
 };
 
 // Accordion Toggles
-const activeAccordion = ref({
+const activeAccordion = reactive({
   clothing: false,
   electronics: false,
-  homeKitchen: false
+  homeKitchen: false,
+  beautyPersonal: false,
+  sportsOutdoors: false,
+  toysGames: false
 });
 
 const toggleAccordion = (section) => {
-  activeAccordion.value[section] = !activeAccordion.value[section];
+  activeAccordion[section] = !activeAccordion[section];
 };
 
 // Brand States
@@ -472,6 +632,7 @@ const hasActiveFilters = computed(() => {
          searchQuery.value !== '' || 
          minPrice.value > 0 || 
          maxPrice.value < 300 || 
+         priceRangeSelect.value !== 'all' ||
          selectedBrands.value.length > 0 || 
          selectedColorApplied.value !== null;
 });
@@ -480,6 +641,7 @@ const resetFilters = () => {
   selectedCategory.value = 'all';
   searchQuery.value = '';
   sortBy.value = 'default';
+  priceRangeSelect.value = 'all';
   tempMinPrice.value = 0;
   tempMaxPrice.value = 300;
   applyPriceFilter();
@@ -501,8 +663,17 @@ const filteredProducts = computed(() => {
     result = result.filter(p => p.title.toLowerCase().includes(q));
   }
 
-  // Price filter
+  // Price filter (slider)
   result = result.filter(p => p.price >= minPrice.value && p.price <= maxPrice.value);
+
+  // Top bar price select filter
+  if (priceRangeSelect.value === 'under-50') {
+    result = result.filter(p => p.price < 50);
+  } else if (priceRangeSelect.value === '50-100') {
+    result = result.filter(p => p.price >= 50 && p.price <= 100);
+  } else if (priceRangeSelect.value === 'over-100') {
+    result = result.filter(p => p.price > 100);
+  }
 
   // Brand filter
   if (selectedBrands.value.length > 0) {
@@ -591,6 +762,87 @@ const handleAddToCart = (product) => {
 
 .fw-extrabold {
   font-weight: 800;
+}
+
+/* Top Filter Bar Styles */
+.top-filter-input {
+  border-radius: 8px 0 0 8px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  font-size: 14px;
+  height: 42px;
+  padding-left: 16px;
+  box-shadow: none;
+  color: var(--color-text);
+}
+.top-filter-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+  z-index: 2;
+}
+.top-filter-input::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 0.7;
+}
+
+.search-addon-btn {
+  border-radius: 0 8px 8px 0;
+  height: 42px;
+  min-width: 48px;
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+  z-index: 1;
+}
+.search-addon-btn:hover {
+  filter: brightness(0.9);
+  opacity: 0.95;
+}
+
+.top-filter-select :deep(.custom-select-trigger) {
+  border-radius: 8px;
+  height: 42px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  padding: 8px 16px;
+  font-size: 14px;
+  box-shadow: none;
+}
+.top-filter-select :deep(.custom-select-trigger:focus), 
+.top-filter-select :deep(.custom-select-trigger.active) {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.view-toggle-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+.btn-outline-border {
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+}
+.btn-outline-border:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary) !important;
+}
+.active-view {
+  color: #fff !important;
+}
+
+.btn-outline-primary-custom {
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  background: transparent;
+  transition: all 0.2s ease;
+}
+.btn-outline-primary-custom:hover {
+  background-color: var(--color-primary);
+  color: white;
 }
 
 /* Category Cards */
@@ -799,6 +1051,12 @@ const handleAddToCart = (product) => {
   margin: 0;
 }
 
+.custom-search :deep(.form-control) {
+  padding-left: 2.5rem !important;
+  width: 100% !important;
+  height: 38px !important;
+}
+
 .range-slider::-webkit-slider-thumb {
   height: 16px;
   width: 16px;
@@ -892,5 +1150,130 @@ const handleAddToCart = (product) => {
 .grid-leave-to {
   opacity: 0;
   transform: scale(0.9);
+}
+
+.custom-accordion-item {
+  border-bottom: 1px solid rgba(0,0,0,0.06) !important;
+}
+.custom-accordion-item:last-child {
+  border-bottom: none !important;
+}
+.sub-link {
+  color: #64748b;
+  font-size: 15px;
+  transition: all 0.2s;
+}
+.sub-link:hover {
+  color: var(--color-primary) !important;
+}
+
+.filter-widget {
+  transition: all 0.3s ease;
+}
+
+.widget-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background-color: var(--color-primary);
+  border-radius: 4px;
+}/* Product Categories Widget Matching FashionStore */
+.product-categories-widget {
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.widget-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #1a1a24;
+  position: relative;
+  padding-left: 15px;
+}
+
+.widget-title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 20px;
+  background-color: var(--color-primary, #00b894);
+}
+
+.category-tree .category-item {
+  margin-bottom: 10px;
+}
+
+.category-header {
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.category-link {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a24;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.category-header:hover .category-link,
+.category-header:hover .category-toggle {
+  color: var(--color-primary, #00b894);
+}
+
+.category-toggle {
+  color: #64748b;
+  font-size: 0.85rem;
+  transition: 0.3s;
+}
+
+.subcategory-list {
+  margin-bottom: 0;
+  overflow: hidden;
+}
+
+.subcategory-list li {
+  margin-bottom: 8px;
+}
+.subcategory-list li:last-child {
+  margin-bottom: 0;
+}
+
+.subcategory-link {
+  font-size: 0.95rem;
+  color: #64748b;
+  text-decoration: none;
+  transition: 0.3s;
+  display: block;
+  padding: 4px 0;
+}
+
+.subcategory-link:hover {
+  color: var(--color-primary, #00b894);
+  padding-left: 5px;
+}
+
+/* Accordion Transition */
+.subcategory-list {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, margin-top 0.3s ease-in-out;
+  opacity: 0;
+  margin-top: 0 !important;
+}
+
+.subcategory-list.expanded {
+  max-height: 500px;
+  opacity: 1;
+  margin-top: 0.5rem !important; /* mt-2 equivalent */
 }
 </style>
