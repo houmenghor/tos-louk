@@ -35,20 +35,24 @@
         <p class="small text-muted-custom mb-4 mx-auto" style="max-width: 240px;">
           Log in to your account to add items, save your cart, and checkout securely.
         </p>
-        <NuxtLink
-          to="/auth/login"
-          @click="cartStore.toggleCart(false)"
-          class="btn btn-primary-custom px-4 py-2.5 rounded-pill fw-bold text-sm d-inline-flex align-items-center gap-2 w-100 justify-content-center mb-2"
+        <BaseButton
+          variants="primary"
+          size="lg"
+          status-type="button"
+          class="w-100 mb-2"
+          @click="() => { cartStore.toggleCart(false); router.push('/auth/login') }"
         >
           <i class="bi bi-box-arrow-in-right"></i> Log In to Account
-        </NuxtLink>
-        <NuxtLink
-          to="/auth/register"
-          @click="cartStore.toggleCart(false)"
-          class="btn btn-outline-primary-custom px-4 py-2 rounded-pill fw-semibold text-sm d-inline-flex align-items-center gap-2 w-100 justify-content-center"
+        </BaseButton>
+        <BaseButton
+          variants="secondary"
+          size="lg"
+          status-type="button"
+          class="w-100"
+          @click="() => { cartStore.toggleCart(false); router.push('/auth/register') }"
         >
-          Create an Account
-        </NuxtLink>
+          <i class="bi bi-person-plus"></i> Create an Account
+        </BaseButton>
       </div>
 
       <!-- ====== AUTHENTICATED STATE: User IS logged in ====== -->
@@ -97,13 +101,15 @@
               <div>
                 <div class="d-flex justify-content-between align-items-start gap-2">
                   <h6 class="item-title mb-1 fw-bold text-main text-line-clamp-2">{{ item.title }}</h6>
-                  <button 
-                    @click="cartStore.removeFromCart(item.id)" 
-                    class="btn btn-link text-danger p-0 border-0 fs-5 line-height-1 hover-scale remove-btn" 
+                  <BaseButton
+                    variants="outline-danger"
+                    size="sm"
+                    @click="cartStore.removeFromCart(item.id)"
                     title="Remove item"
+                    class="remove-btn"
                   >
                     <i class="bi bi-trash"></i>
-                  </button>
+                  </BaseButton>
                 </div>
                 <span class="item-category text-xs text-muted-custom text-uppercase fw-semibold tracking-wider d-block mb-2">
                   {{ item.category }}
@@ -145,12 +151,13 @@
           <p class="small text-muted-custom mb-4 mx-auto" style="max-width: 250px;">
             Looks like you haven't added any products to your cart yet.
           </p>
-          <button 
-            @click="cartStore.toggleCart(false)" 
-            class="btn btn-primary-custom px-4 py-2.5 rounded-pill fw-bold text-sm d-inline-flex align-items-center gap-2"
+          <BaseButton
+            variants="primary"
+            size="md"
+            @click="cartStore.toggleCart(false)"
           >
             Start Shopping <i class="bi bi-arrow-right"></i>
-          </button>
+          </BaseButton>
         </div>
 
         <!-- 4. Footer Checkout Section (Only shown when cart is not empty) -->
@@ -171,18 +178,22 @@
               <span class="fw-extrabold text-main fs-4">${{ cartTotal.toFixed(2) }}</span>
             </div>
           </div>
-          <button 
-            @click="handleCheckout" 
-            class="btn btn-primary-custom w-100 py-3 rounded-4 fw-bold checkout-btn d-flex align-items-center justify-content-center gap-2 mb-2"
+          <BaseButton
+            variants="primary"
+            size="lg"
+            class="w-100 mb-2"
+            @click="handleCheckout"
           >
             Secure Checkout <i class="bi bi-shield-lock-fill ms-1"></i>
-          </button>
-          <button 
-            @click="cartStore.toggleCart(false)" 
-            class="btn btn-link w-100 text-center text-decoration-none text-muted-custom hover-primary fw-semibold small py-1.5"
+          </BaseButton>
+          <BaseButton
+            variants="secondary"
+            size="md"
+            class="w-100"
+            @click="cartStore.toggleCart(false)"
           >
             Continue Shopping
-          </button>
+          </BaseButton>
         </div>
       </template>
     </div>
@@ -196,6 +207,7 @@ import { useAuthStore } from '~/stores/authStore'
 
 const cartStore = useCartStore()
 const authStore = useAuthStore()
+const router = useRouter()
 const offcanvasRef = ref(null)
 let offcanvasInstance = null
 
