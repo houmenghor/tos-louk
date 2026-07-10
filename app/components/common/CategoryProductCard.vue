@@ -1,8 +1,12 @@
 <template>
-  <div class="card glass-card h-100 shadow-sm border-0 overflow-hidden">
+  <div 
+    class="card glass-card shadow-sm border-0 overflow-hidden" 
+    :class="layout === 'list' ? 'flex-sm-row flex-column h-auto' : 'h-100'"
+  >
     <!-- Image Area -->
-    <div
-      class="image-container position-relative overflow-hidden bg-light-custom"
+    <div 
+      class="position-relative overflow-hidden bg-light-custom"
+      :class="layout === 'list' ? 'image-container-list flex-shrink-0' : 'image-container'"
     >
       <!-- Image Zoom-in hover -->
       <NuxtImg
@@ -44,14 +48,14 @@
         <button class="action-circle-btn shadow-sm border" title="Quick View">
           <i class="bi bi-eye"></i>
         </button>
-        <button class="action-circle-btn shadow-sm border" title="Add to Bag">
+        <button class="action-circle-btn shadow-sm border" title="Add to Bag" @click.stop="handleAddToCart">
           <i class="bi bi-bag"></i>
         </button>
       </div>
     </div>
 
     <!-- Card details -->
-    <div class="card-body p-3 d-flex flex-column justify-content-between">
+    <div class="card-body d-flex flex-column justify-content-between" :class="layout === 'list' ? 'p-3 p-sm-4' : 'p-3'">
       <div>
         <!-- Collection Text -->
         <span
@@ -67,50 +71,26 @@
         </span>
 
         <!-- Product Title -->
-        <h6 class="product-title mb-1.5 text-main fw-bold">
-          {{ product.title }}
-        </h6>
-
-        <!-- Rating -->
-        <div class="d-flex align-items-center gap-2 rating-container mb-3">
-          <div class="stars d-flex gap-0.5 text-warning small">
-            <i
-              v-for="n in 5"
-              :key="n"
-              :class="[
-                n <= Math.floor(product.rating || 4.5)
-                  ? 'bi bi-star-fill'
-                  : 'bi bi-star',
-              ]"
-            ></i>
-          </div>
-          <span class="reviews-text small text-muted-custom">
-            {{ ((product.id * 13) % 40) + 15 }} reviews
-          </span>
-        </div>
+        <h6 class="product-title text-main fw-bold" :class="layout === 'list' ? 'mb-2 fs-5 list-title' : 'mb-1.5'">{{ product.title }}</h6>
+        
+        <!-- Product Description (List view only) -->
+        <p v-if="layout === 'list'" class="product-description text-muted-custom small mb-3 mt-1 d-none d-sm-block">
+          Discover our latest premium collection featuring high-quality materials and modern design.
+        </p>
       </div>
 
+
       <!-- Price & Cart button row -->
-      <div
-        class="d-flex align-items-center justify-content-between mt-auto pt-2"
-      >
+      <div class="d-flex mt-auto pt-2" :class="layout === 'list' ? 'align-items-center gap-4' : 'align-items-center justify-content-between'">
         <div class="price-container">
-          <span class="current-price fw-bold text-main"
-            >${{ product.price }}.00</span
-          >
-          <span
-            v-if="product.oldPrice"
-            class="old-price small text-decoration-line-through ms-2 text-muted-custom"
-          >
+          <span class="current-price fw-bold text-main" :class="layout === 'list' ? 'fs-4' : ''">${{ product.price }}.00</span>
+          <span v-if="product.oldPrice" class="old-price small text-decoration-line-through ms-2 text-muted-custom">
             ${{ product.oldPrice }}.00
           </span>
         </div>
-
-        <button
-          @click.stop="$emit('add-to-cart', product)"
-          class="btn btn-primary-custom btn-sm px-3 py-2 fw-bold text-xs d-flex align-items-center gap-1.5"
-        >
-          Add to Cart
+        
+        <button @click.stop="handleAddToCart" class="btn btn-primary-custom fw-bold d-flex align-items-center gap-1.5" :class="layout === 'list' ? 'px-4 py-2' : 'btn-sm px-3 py-2 text-xs'">
+          <i class="bi bi-cart-plus d-none d-sm-inline" v-if="layout === 'list'"></i> Add to Cart
         </button>
       </div>
     </div>
@@ -118,21 +98,39 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { useWishlistStore } from "~/stores/wishlistStore";
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { useWishlistStore } from '~/stores/wishlistStore';
+import { useAuthStore } from '~/stores/authStore';
+import { useAppToast } from '~/composables/ui/useAppToast';
 
 const props = defineProps({
   product: { type: Object, required: true },
+  layout: { type: String, default: 'grid' }
 });
-defineEmits(["add-to-cart"]);
+const emit = defineEmits(['add-to-cart']);
 
 const wishlistStore = useWishlistStore();
+const authStore = useAuthStore();
+const router = useRouter();
+const { showWarning } = useAppToast();
 
-const isWishlisted = computed(() =>
-  wishlistStore.isInWishlist(props.product.id),
-);
+const isWishlisted = computed(() => wishlistStore.isInWishlist(props.product.id));
+
 const toggleWishlist = () => {
+  if (!authStore.isAuthenticated) {
+    showWarning('Please login first to use the wishlist');
+    return router.push('/auth/login');
+  }
   wishlistStore.toggleWishlist(props.product);
+};
+
+const handleAddToCart = () => {
+  if (!authStore.isAuthenticated) {
+    showWarning('Please login first to add items to your cart');
+    return router.push('/auth/login');
+  }
+  emit('add-to-cart', props.product);
 };
 </script>
 
@@ -157,6 +155,21 @@ const toggleWishlist = () => {
 .image-container {
   height: 310px;
   border-radius: 12px 12px 0 0;
+}
+
+.image-container-list {
+  width: 220px;
+  height: auto;
+  min-height: 200px;
+  border-radius: 12px 0 0 12px;
+}
+
+@media (max-width: 576px) {
+  .image-container-list {
+    width: 100%;
+    height: 300px;
+    border-radius: 12px 12px 0 0;
+  }
 }
 
 .bg-light-custom {
@@ -258,6 +271,11 @@ const toggleWishlist = () => {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   height: 2.8rem;
+}
+
+.list-title {
+  height: auto;
+  -webkit-line-clamp: 3;
 }
 
 .current-price {
