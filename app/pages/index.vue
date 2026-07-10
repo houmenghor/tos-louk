@@ -330,8 +330,50 @@
                     Welcome to our exclusive inner circle.
                   </p>
                 </div>
+                <div v-else>
+                  <form
+                    @submit.prevent="handleSubscribe"
+                    class="subscribe-form d-flex gap-2 p-2 rounded-3 bg-input-wrapper border"
+                  >
+                    <div class="input-icon-group flex-grow-1 position-relative">
+                      <i
+                        class="bi bi-envelope position-absolute start-0 top-50 translate-middle-y ms-3 envelope-icon"
+                      ></i>
+                      <input
+                        v-model="emailInput"
+                        type="email"
+                        class="form-control border-0 bg-transparent py-2 ps-5 subscribe-input"
+                        placeholder="Enter your email address"
+                        required
+                      />
+                    </div>
+                    <button
+                      class="btn btn-primary-custom px-4 py-2 d-flex align-items-center gap-2 rounded-2 shadow-sm fw-semibold"
+                    >
+                      Subscribe <i class="bi bi-arrow-right"></i>
+                    </button>
+                  </form>
+
+                  <!-- Trust badges -->
+                  <div
+                    class="d-flex align-items-center gap-3 mt-3 px-2 text-muted-custom small"
+                  >
+                    <span class="d-flex align-items-center gap-1">
+                      <i class="bi bi-shield-check text-primary"></i> No Spam
+                    </span>
+                    <span class="d-inline-block text-border-sep">•</span>
+                    <span class="d-flex align-items-center gap-1">
+                      <i class="bi bi-patch-check text-primary"></i> Unsubscribe
+                      anytime
+                    </span>
+                  </div>
+                </div>
+              </transition>
             </div>
-        </section>
+          </div>
+        </div>
+      </div>
+    </section>
 
         <section class="newsletter-subscribe py-6">
             <div class="container">
@@ -389,34 +431,10 @@
                             </transition>
                         </div>
                     </div>
-                    <button
-                      class="btn btn-primary-custom px-4 py-2 d-flex align-items-center gap-2 rounded-2 shadow-sm fw-semibold"
-                    >
-                      Subscribe <i class="bi bi-arrow-right"></i>
-                    </button>
-                  </form>
-
-                  <!-- Trust badges -->
-                  <div
-                    class="d-flex align-items-center gap-3 mt-3 px-2 text-muted-custom small"
-                  >
-                    <span class="d-flex align-items-center gap-1">
-                      <i class="bi bi-shield-check text-primary"></i> No Spam
-                    </span>
-                    <span class="d-inline-block text-border-sep">•</span>
-                    <span class="d-flex align-items-center gap-1">
-                      <i class="bi bi-patch-check text-primary"></i> Unsubscribe
-                      anytime
-                    </span>
-                  </div>
                 </div>
-              </transition>
             </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
+        </section>
+    </div>
 </template>
 
 <script setup>
