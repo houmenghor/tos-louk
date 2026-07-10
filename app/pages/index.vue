@@ -375,65 +375,6 @@
       </div>
     </section>
 
-        <section class="newsletter-subscribe py-6">
-            <div class="container">
-                <div class="newsletter-card p-5 rounded-4 position-relative overflow-hidden">
-                    <!-- Background Glow Effect (adds premium feel) -->
-                    <div class="glow-bubble-1"></div>
-                    <div class="glow-bubble-2"></div>
-                    
-                    <div class="row align-items-center justify-content-between position-relative z-1 gy-4">
-                        <div class="col-lg-6">
-                            <span class="badge rounded-pill bg-primary-light text-primary mb-3 px-3 py-2 fw-semibold text-uppercase letter-spacing-1">
-                                <i class="bi bi-telegram me-2"></i>Telegram Alerts
-                            </span>
-                            <h2 class="fw-extrabold mb-2 newsletter-title">Stay in the Loop</h2>
-                            <p class="newsletter-subtitle mb-0">
-                                Subscribe with your Telegram number to receive instant notifications, early access to weekly deals, and exclusive product drops from our admin.
-                            </p>
-                        </div>
-                        
-                        <div class="col-lg-5">
-                            <transition name="fade" mode="out-in">
-                                <div v-if="isSubscribed" class="text-center p-4 bg-primary-light rounded-3 border border-success-subtle success-card">
-                                    <i class="bi bi-patch-check-fill text-primary fs-1 d-block mb-2"></i>
-                                    <h5 class="fw-bold mb-1 success-title">Subscription Successful!</h5>
-                                    <p class="text-muted-custom small mb-0">Welcome to our exclusive inner circle.</p>
-                                </div>
-                                <div v-else>
-                                    <form @submit.prevent="handleSubscribe" class="subscribe-form d-flex gap-2 p-2 rounded-3 bg-input-wrapper border">
-                                        <div class="input-icon-group flex-grow-1 position-relative">
-                                            <i class="bi bi-telegram position-absolute start-0 top-50 translate-middle-y ms-3 envelope-icon text-primary"></i>
-                                            <input 
-                                                v-model="telegramInput"
-                                                type="tel" 
-                                                class="form-control border-0 bg-transparent py-2 ps-5 subscribe-input" 
-                                                placeholder="Enter your Telegram number"
-                                                required 
-                                            />
-                                        </div>
-                                        <button class="btn btn-primary-custom px-4 py-2 d-flex align-items-center gap-2 rounded-2 shadow-sm fw-semibold">
-                                            Subscribe <i class="bi bi-arrow-right"></i>
-                                        </button>
-                                    </form>
-                                    
-                                    <!-- Trust badges -->
-                                    <div class="d-flex align-items-center gap-3 mt-3 px-2 text-muted-custom small">
-                                        <span class="d-flex align-items-center gap-1">
-                                            <i class="bi bi-shield-check text-primary"></i> No Spam
-                                        </span>
-                                        <span class="d-inline-block text-border-sep">•</span>
-                                        <span class="d-flex align-items-center gap-1">
-                                            <i class="bi bi-patch-check text-primary"></i> Unsubscribe anytime
-                                        </span>
-                                    </div>
-                                </div>
-                            </transition>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
     </div>
 </template>
 
