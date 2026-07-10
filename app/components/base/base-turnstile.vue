@@ -1,8 +1,13 @@
 <template>
   <div class="turnstile-wrapper mb-3">
-    <NuxtTurnstile :key="turnstileTheme" ref="turnstileRef" :model-value="modelValue"
-      @update:modelValue="$emit('update:modelValue', $event)" :options="{ theme: turnstileTheme, size: 'flexible' }"
-      class="turnstile-container" />
+    <NuxtTurnstile
+      :key="turnstileTheme"
+      ref="turnstileRef"
+      :model-value="modelValue"
+      @update:modelValue="$emit('update:modelValue', $event)"
+      :options="{ theme: turnstileTheme, size: 'flexible' }"
+      class="turnstile-container"
+    />
   </div>
 </template>
 
@@ -13,14 +18,16 @@ defineProps({
   modelValue: {
     type: String,
     default: "",
-  }
+  },
 });
 
 defineEmits(["update:modelValue"]);
 
 const turnstileRef = ref(null);
 const colorMode = useColorMode();
-const turnstileTheme = computed(() => colorMode.value === 'dark' ? 'dark' : 'light');
+const turnstileTheme = computed(() =>
+  colorMode.value === "dark" ? "dark" : "light",
+);
 
 const reset = () => {
   if (turnstileRef.value) {

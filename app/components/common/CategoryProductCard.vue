@@ -1,26 +1,42 @@
 <template>
   <div class="card glass-card h-100 shadow-sm border-0 overflow-hidden">
     <!-- Image Area -->
-    <div class="image-container position-relative overflow-hidden bg-light-custom">
+    <div
+      class="image-container position-relative overflow-hidden bg-light-custom"
+    >
       <!-- Image Zoom-in hover -->
-      <NuxtImg :src="product.image" :alt="product.title" class="product-img w-100 h-100 object-fit-cover" />
-      
+      <NuxtImg
+        :src="product.image"
+        :alt="product.title"
+        class="product-img w-100 h-100 object-fit-cover"
+      />
+
       <!-- Badges (Top Left) -->
-      <div class="position-absolute top-0 start-0 m-3 z-2 d-flex flex-column gap-2">
-        <span v-if="product.oldPrice" class="badge bg-danger-light text-danger rounded-pill px-2.5 py-1.5 fw-bold text-xs">
+      <div
+        class="position-absolute top-0 start-0 m-3 z-2 d-flex flex-column gap-2"
+      >
+        <span
+          v-if="product.oldPrice"
+          class="badge bg-danger-light text-danger rounded-pill px-2.5 py-1.5 fw-bold text-xs"
+        >
           -{{ Math.round((1 - product.price / product.oldPrice) * 100) }}%
         </span>
-        <span v-else-if="product.id % 3 === 0" class="badge bg-success-light text-success rounded-pill px-2.5 py-1.5 fw-bold text-xs">
+        <span
+          v-else-if="product.id % 3 === 0"
+          class="badge bg-success-light text-success rounded-pill px-2.5 py-1.5 fw-bold text-xs"
+        >
           Just Curated
         </span>
       </div>
 
       <!-- Action Buttons Column (Slides in on hover from right) -->
-      <div class="action-buttons-column position-absolute top-0 end-0 m-3 z-2 d-flex flex-column gap-2">
-        <button 
-          @click.stop="toggleWishlist" 
-          class="action-circle-btn shadow-sm border" 
-          :class="{ 'wishlisted': isWishlisted }"
+      <div
+        class="action-buttons-column position-absolute top-0 end-0 m-3 z-2 d-flex flex-column gap-2"
+      >
+        <button
+          @click.stop="toggleWishlist"
+          class="action-circle-btn shadow-sm border"
+          :class="{ wishlisted: isWishlisted }"
           :title="isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'"
         >
           <i :class="isWishlisted ? 'bi bi-heart-fill' : 'bi bi-heart'"></i>
@@ -33,39 +49,67 @@
         </button>
       </div>
     </div>
-    
+
     <!-- Card details -->
     <div class="card-body p-3 d-flex flex-column justify-content-between">
       <div>
         <!-- Collection Text -->
-        <span class="collection-text text-uppercase text-xs fw-bold tracking-wider d-block mb-1 text-muted-custom">
-          {{ product.category === 'electronics' ? 'Electronics Hub' : product.category === 'clothing' ? "Men's Collection" : "Fashion Picks" }}
+        <span
+          class="collection-text text-uppercase text-xs fw-bold tracking-wider d-block mb-1 text-muted-custom"
+        >
+          {{
+            product.category === "electronics"
+              ? "Electronics Hub"
+              : product.category === "clothing"
+                ? "Men's Collection"
+                : "Fashion Picks"
+          }}
         </span>
-        
+
         <!-- Product Title -->
-        <h6 class="product-title mb-1.5 text-main fw-bold">{{ product.title }}</h6>
-        
+        <h6 class="product-title mb-1.5 text-main fw-bold">
+          {{ product.title }}
+        </h6>
+
         <!-- Rating -->
         <div class="d-flex align-items-center gap-2 rating-container mb-3">
           <div class="stars d-flex gap-0.5 text-warning small">
-            <i v-for="n in 5" :key="n" :class="[n <= Math.floor(product.rating || 4.5) ? 'bi bi-star-fill' : 'bi bi-star']"></i>
+            <i
+              v-for="n in 5"
+              :key="n"
+              :class="[
+                n <= Math.floor(product.rating || 4.5)
+                  ? 'bi bi-star-fill'
+                  : 'bi bi-star',
+              ]"
+            ></i>
           </div>
           <span class="reviews-text small text-muted-custom">
-            {{ product.id * 13 % 40 + 15 }} reviews
+            {{ ((product.id * 13) % 40) + 15 }} reviews
           </span>
         </div>
       </div>
 
       <!-- Price & Cart button row -->
-      <div class="d-flex align-items-center justify-content-between mt-auto pt-2">
+      <div
+        class="d-flex align-items-center justify-content-between mt-auto pt-2"
+      >
         <div class="price-container">
-          <span class="current-price fw-bold text-main">${{ product.price }}.00</span>
-          <span v-if="product.oldPrice" class="old-price small text-decoration-line-through ms-2 text-muted-custom">
+          <span class="current-price fw-bold text-main"
+            >${{ product.price }}.00</span
+          >
+          <span
+            v-if="product.oldPrice"
+            class="old-price small text-decoration-line-through ms-2 text-muted-custom"
+          >
             ${{ product.oldPrice }}.00
           </span>
         </div>
-        
-        <button @click.stop="$emit('add-to-cart', product)" class="btn btn-primary-custom btn-sm px-3 py-2 fw-bold text-xs d-flex align-items-center gap-1.5">
+
+        <button
+          @click.stop="$emit('add-to-cart', product)"
+          class="btn btn-primary-custom btn-sm px-3 py-2 fw-bold text-xs d-flex align-items-center gap-1.5"
+        >
           Add to Cart
         </button>
       </div>
@@ -74,17 +118,19 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { useWishlistStore } from '~/stores/wishlistStore';
+import { computed } from "vue";
+import { useWishlistStore } from "~/stores/wishlistStore";
 
 const props = defineProps({
-  product: { type: Object, required: true }
+  product: { type: Object, required: true },
 });
-defineEmits(['add-to-cart']);
+defineEmits(["add-to-cart"]);
 
 const wishlistStore = useWishlistStore();
 
-const isWishlisted = computed(() => wishlistStore.isInWishlist(props.product.id));
+const isWishlisted = computed(() =>
+  wishlistStore.isInWishlist(props.product.id),
+);
 const toggleWishlist = () => {
   wishlistStore.toggleWishlist(props.product);
 };
@@ -102,7 +148,9 @@ const toggleWishlist = () => {
 
 .glass-card:hover {
   transform: translateY(-6px);
-  box-shadow: var(--shadow-md), 0 12px 30px rgba(0, 220, 130, 0.08) !important;
+  box-shadow:
+    var(--shadow-md),
+    0 12px 30px rgba(0, 220, 130, 0.08) !important;
   border-color: var(--color-primary) !important;
 }
 

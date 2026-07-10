@@ -1,10 +1,16 @@
 <template>
-  <div class="container min-vh-100 d-flex align-items-center justify-content-center py-5">
+  <div
+    class="container min-vh-100 d-flex align-items-center justify-content-center py-5"
+  >
     <div class="row w-100 align-items-center">
       <!-- Banner Column (Hidden on mobile) -->
       <div class="col-12 col-md-6 d-none d-md-block">
         <div class="image-banner text-center animate-fade-in">
-          <NuxtImg :src="banner" alt="Authentication Banner" class="img-fluid auth-banner-img" />
+          <NuxtImg
+            :src="banner"
+            alt="Authentication Banner"
+            class="img-fluid auth-banner-img"
+          />
         </div>
       </div>
 
@@ -13,24 +19,56 @@
         <div class="glass-card mx-auto">
           <form @submit.prevent="handleRegister" autocomplete="off">
             <h2 class="form-title">Create an Account</h2>
-            <p class="form-subtitle">Join us today! Please enter your details.</p>
+            <p class="form-subtitle">
+              Join us today! Please enter your details.
+            </p>
 
-            <BaseInput label="Full Name" placeholder="Enter your Full Name" id="full_name" v-model="full_name"
-              :error="nameError" class="mb-2" />
+            <BaseInput
+              label="Full Name"
+              placeholder="Enter your Full Name"
+              id="full_name"
+              v-model="full_name"
+              :error="nameError"
+              class="mb-2"
+            />
 
-            <BaseInput label="Email" placeholder="Enter your email" id="email" type="email" v-model="email"
-              :error="emailError" class="mb-2" />
+            <BaseInput
+              label="Email"
+              placeholder="Enter your email"
+              id="email"
+              type="email"
+              v-model="email"
+              :error="emailError"
+              class="mb-2"
+            />
 
-            <BaseInputPassword label="Password" placeholder="Enter your password" id="password" v-model="password"
-              :error="passwordError" class="mb-2" />
+            <BaseInputPassword
+              label="Password"
+              placeholder="Enter your password"
+              id="password"
+              v-model="password"
+              :error="passwordError"
+              class="mb-2"
+            />
 
-            <BaseInputPassword label="Confirm Password" placeholder="Confirm your password" id="password_confirmation"
-              v-model="password_confirmation" :error="confirmPasswordError" class="mb-3" />
+            <BaseInputPassword
+              label="Confirm Password"
+              placeholder="Confirm your password"
+              id="password_confirmation"
+              v-model="password_confirmation"
+              :error="confirmPasswordError"
+              class="mb-3"
+            />
 
             <BaseTurnstile ref="turnstileRef" v-model="turnstileToken" />
 
-            <BaseButton statusType="submit" size="sm" :isLoading="isSubmitting"
-              :isDisable="!turnstileToken || isSubmitting" class="w-100 mb-2 btn-submit-glass">Sign Up
+            <BaseButton
+              statusType="submit"
+              size="sm"
+              :isLoading="isSubmitting"
+              :isDisable="!turnstileToken || isSubmitting"
+              class="w-100 mb-2 btn-submit-glass"
+              >Sign Up
             </BaseButton>
 
             <div v-if="errorMessage" class="text-danger small mb-3 text-center">
@@ -43,23 +81,32 @@
             </div>
 
             <!-- Google OAuth Sign Up Button -->
-            <BaseButton statusType="button" class="w-100 mb-2 btn-google-glass" @click="handleGoogleRegister"
-              :isDisable="!turnstileToken">
+            <BaseButton
+              statusType="button"
+              class="w-100 mb-2 btn-google-glass"
+              @click="handleGoogleRegister"
+              :isDisable="!turnstileToken"
+            >
               <i class="bi bi-google"></i>
               <span>Sign up with Google</span>
             </BaseButton>
 
             <!-- Facebook OAuth Sign Up Button -->
-            <BaseButton statusType="button" class="w-100 mb-4 btn-facebook-glass" @click="handleFacebookRegister"
-              :isDisable="!turnstileToken">
+            <BaseButton
+              statusType="button"
+              class="w-100 mb-4 btn-facebook-glass"
+              @click="handleFacebookRegister"
+              :isDisable="!turnstileToken"
+            >
               <i class="bi bi-facebook"></i>
               <span>Sign up with Facebook</span>
             </BaseButton>
 
-
             <p class="text-center text-secondary-custom mb-0">
               Already have an account?
-              <NuxtLink to="/auth/login" class="glass-link-primary fw-bold ms-1">Login here</NuxtLink>
+              <NuxtLink to="/auth/login" class="glass-link-primary fw-bold ms-1"
+                >Login here</NuxtLink
+              >
             </p>
           </form>
         </div>
@@ -69,18 +116,18 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import banner from '/images/auth/banner.png';
-import { registerSchema } from '~/composables/forms/auth';
-import { useField, useForm } from 'vee-validate';
-import { toTypedSchema } from '@vee-validate/zod';
-import { useAppToast } from '~/composables/ui/useAppToast';
-import BaseTurnstile from '~/components/base/base-turnstile.vue';
-import { getApiError } from '~/utils/apiError';
+import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
+import banner from "/images/auth/banner.png";
+import { registerSchema } from "~/composables/forms/auth";
+import { useField, useForm } from "vee-validate";
+import { toTypedSchema } from "@vee-validate/zod";
+import { useAppToast } from "~/composables/ui/useAppToast";
+import BaseTurnstile from "~/components/base/base-turnstile.vue";
+import { getApiError } from "~/utils/apiError";
 
 definePageMeta({
-  layout: 'auth'
+  layout: "auth",
 });
 
 const settingStore = useSettingStore();
@@ -103,18 +150,18 @@ const dynamicSchema = computed(() => {
 const { handleSubmit, isSubmitting } = useForm({
   validationSchema: dynamicSchema,
   initialValues: {
-    full_name: '',
-    email: '',
-    password: '',
-    password_confirmation: ''
-  }
+    full_name: "",
+    email: "",
+    password: "",
+    password_confirmation: "",
+  },
 });
 
 const { value: full_name, errorMessage: nameError } = useField("full_name");
 const { value: email, errorMessage: emailError } = useField("email");
 const { value: password, errorMessage: passwordError } = useField("password");
-const { value: password_confirmation, errorMessage: confirmPasswordError } = useField("password_confirmation");
-
+const { value: password_confirmation, errorMessage: confirmPasswordError } =
+  useField("password_confirmation");
 
 const handleRegister = handleSubmit(async (value) => {
   if (!turnstileToken.value) {
@@ -126,15 +173,17 @@ const handleRegister = handleSubmit(async (value) => {
   try {
     await authStore.register({
       ...value,
-      "cf-turnstile-response": turnstileToken.value
+      "cf-turnstile-response": turnstileToken.value,
     });
 
     showSuccess("Registration successful! Please check your email.");
-    await authStore.startOtpFlow(value.email, 'email_verify');
-
+    await authStore.startOtpFlow(value.email, "email_verify");
   } catch (error) {
     console.error("Error on registration:", error);
-    errorMessage.value = getApiError(error, "Registration failed. Please try again.");
+    errorMessage.value = getApiError(
+      error,
+      "Registration failed. Please try again.",
+    );
 
     turnstileToken.value = "";
     turnstileRef.value.reset();
@@ -146,14 +195,14 @@ const config = useRuntimeConfig();
 const handleGoogleRegister = () => {
   navigateTo(`${config.public.apiBase}/auth/google/redirect`, {
     external: true,
-    replace: true
+    replace: true,
   });
 };
 
 const handleFacebookRegister = () => {
   navigateTo(`${config.public.apiBase}/auth/facebook/redirect`, {
     external: true,
-    replace: true
+    replace: true,
   });
 };
 </script>
@@ -169,7 +218,9 @@ const handleFacebookRegister = () => {
   border: 1px solid var(--glass-border);
   border-radius: 16px;
   box-shadow: var(--glass-shadow);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .glass-card:hover {
@@ -266,7 +317,7 @@ const handleFacebookRegister = () => {
 
 .divider-container::before,
 .divider-container::after {
-  content: '';
+  content: "";
   flex: 1;
   border-bottom: 1px solid var(--color-border);
   opacity: 0.6;

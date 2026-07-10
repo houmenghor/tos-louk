@@ -1,6 +1,7 @@
 <template>
-  <div class="wishlist-guest-page min-vh-100 d-flex align-items-center justify-content-center">
-
+  <div
+    class="wishlist-guest-page min-vh-100 d-flex align-items-center justify-content-center"
+  >
     <!-- Ambient Background -->
     <div class="ambient-bg" aria-hidden="true">
       <div class="ambient-blob blob-1"></div>
@@ -19,7 +20,6 @@
 
     <!-- Hero Content -->
     <div class="hero-content text-center position-relative z-1 px-3">
-
       <!-- Animated Heart Icon -->
       <div class="hero-icon-wrapper mx-auto mb-4">
         <div class="icon-glow"></div>
@@ -40,12 +40,14 @@
 
       <!-- Subtitle -->
       <p class="hero-subtitle mx-auto mb-5">
-        Save the products you love, build your dream collection, and add
-        them to cart whenever you're ready. It only takes a moment to sign in.
+        Save the products you love, build your dream collection, and add them to
+        cart whenever you're ready. It only takes a moment to sign in.
       </p>
 
       <!-- CTA Buttons using BaseButton -->
-      <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center align-items-center">
+      <div
+        class="d-flex flex-column flex-sm-row gap-3 justify-content-center align-items-center"
+      >
         <BaseButton
           variants="danger"
           size="lg"
@@ -66,13 +68,12 @@
           Create Free Account
         </BaseButton>
       </div>
-
     </div>
   </div>
 </template>
 
 <script setup>
-definePageMeta({ layout: 'default' });
+definePageMeta({ layout: "default" });
 
 const router = useRouter();
 </script>
@@ -82,7 +83,7 @@ const router = useRouter();
 .wishlist-guest-page {
   background-color: var(--color-bg);
   color: var(--color-text);
-  font-family: var(--font-main, 'Inter', sans-serif);
+  font-family: var(--font-main, "Inter", sans-serif);
   position: relative;
   overflow: hidden;
 }
@@ -100,15 +101,23 @@ const router = useRouter();
   filter: blur(80px);
 }
 .blob-1 {
-  width: 500px; height: 500px;
-  top: -150px; left: -150px;
+  width: 500px;
+  height: 500px;
+  top: -150px;
+  left: -150px;
   background: radial-gradient(circle, rgba(239, 68, 68, 0.1), transparent 70%);
   animation: drift 12s ease-in-out infinite alternate;
 }
 .blob-2 {
-  width: 400px; height: 400px;
-  bottom: -100px; right: -100px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.08), transparent 70%);
+  width: 400px;
+  height: 400px;
+  bottom: -100px;
+  right: -100px;
+  background: radial-gradient(
+    circle,
+    rgba(99, 102, 241, 0.08),
+    transparent 70%
+  );
   animation: drift 16s ease-in-out infinite alternate-reverse;
 }
 
@@ -125,12 +134,42 @@ const router = useRouter();
   color: rgba(239, 68, 68, 0.13);
   animation: floatUp linear infinite;
 }
-.heart-1 { font-size: 24px; left: 8%;  animation-duration: 10s; animation-delay: 0s;  }
-.heart-2 { font-size: 14px; left: 18%; animation-duration: 14s; animation-delay: 2s;  }
-.heart-3 { font-size: 18px; left: 40%; animation-duration: 12s; animation-delay: 5s;  }
-.heart-4 { font-size: 10px; left: 60%; animation-duration: 16s; animation-delay: 1s;  }
-.heart-5 { font-size: 22px; left: 78%; animation-duration: 11s; animation-delay: 3s;  }
-.heart-6 { font-size: 12px; left: 90%; animation-duration: 13s; animation-delay: 7s;  }
+.heart-1 {
+  font-size: 24px;
+  left: 8%;
+  animation-duration: 10s;
+  animation-delay: 0s;
+}
+.heart-2 {
+  font-size: 14px;
+  left: 18%;
+  animation-duration: 14s;
+  animation-delay: 2s;
+}
+.heart-3 {
+  font-size: 18px;
+  left: 40%;
+  animation-duration: 12s;
+  animation-delay: 5s;
+}
+.heart-4 {
+  font-size: 10px;
+  left: 60%;
+  animation-duration: 16s;
+  animation-delay: 1s;
+}
+.heart-5 {
+  font-size: 22px;
+  left: 78%;
+  animation-duration: 11s;
+  animation-delay: 3s;
+}
+.heart-6 {
+  font-size: 12px;
+  left: 90%;
+  animation-duration: 13s;
+  animation-delay: 7s;
+}
 
 /* ── Hero Icon ── */
 .hero-icon-wrapper {
@@ -152,7 +191,11 @@ const router = useRouter();
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.15),
+    rgba(239, 68, 68, 0.05)
+  );
   border: 2px solid rgba(239, 68, 68, 0.25);
   display: flex;
   align-items: center;
@@ -200,22 +243,50 @@ const router = useRouter();
 
 /* ── Animations ── */
 @keyframes drift {
-  0%   { transform: translate(0, 0); }
-  100% { transform: translate(30px, 30px); }
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(30px, 30px);
+  }
 }
 @keyframes floatUp {
-  0%   { transform: translateY(110vh) rotate(-10deg); opacity: 0; }
-  10%  { opacity: 1; }
-  90%  { opacity: 0.8; }
-  100% { transform: translateY(-10vh) rotate(10deg); opacity: 0; }
+  0% {
+    transform: translateY(110vh) rotate(-10deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-10vh) rotate(10deg);
+    opacity: 0;
+  }
 }
 @keyframes pulseGlow {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50%       { opacity: 1;   transform: scale(1.1); }
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
 }
 @keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  25%       { transform: scale(1.12); }
-  75%       { transform: scale(1.08); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.12);
+  }
+  75% {
+    transform: scale(1.08);
+  }
 }
 </style>
