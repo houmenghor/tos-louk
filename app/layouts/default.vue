@@ -13,11 +13,11 @@
 
     <!-- Scroll to Top floating navigation button -->
     <transition name="fade">
-      <button 
-        v-show="showScrollTop" 
-        @click="scrollToTop" 
+      <button
+        v-show="showScrollTop"
+        @click="scrollToTop"
         class="scroll-top-btn d-flex align-items-center justify-content-center shadow"
-        :class="{ 'launching': isLaunching }"
+        :class="{ launching: isLaunching }"
         aria-label="Scroll to top"
       >
         <i class="bi bi-arrow-up"></i>
@@ -30,10 +30,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
-import AppHeader from '~/components/layout/app-header.vue';
-import AppFooter from '~/components/layout/app-footer.vue';
-import CartOffcanvas from '~/components/common/CartOffcanvas.vue';
+import { ref, onMounted, onUnmounted } from "vue";
+import AppHeader from "~/components/layout/app-header.vue";
+import AppFooter from "~/components/layout/app-footer.vue";
+import CartOffcanvas from "~/components/common/CartOffcanvas.vue";
 
 const showScrollTop = ref(false);
 const isLaunching = ref(false);
@@ -51,8 +51,8 @@ const checkScroll = () => {
 
 const scrollToTop = () => {
   isLaunching.value = true;
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
   // Reset launch state and hide button after animation finishes
   setTimeout(() => {
     isLaunching.value = false;
@@ -61,11 +61,11 @@ const scrollToTop = () => {
 };
 
 onMounted(() => {
-  window.addEventListener('scroll', checkScroll);
+  window.addEventListener("scroll", checkScroll);
 });
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', checkScroll);
+  window.removeEventListener("scroll", checkScroll);
 });
 </script>
 
@@ -116,13 +116,17 @@ onUnmounted(() => {
 .scroll-top-btn.launching {
   transform: translateY(-100vh) scale(0.9) rotate(360deg);
   opacity: 0;
-  transition: transform 0.8s cubic-bezier(0.68, -0.6, 0.32, 1.6), opacity 0.5s ease;
+  transition:
+    transform 0.8s cubic-bezier(0.68, -0.6, 0.32, 1.6),
+    opacity 0.5s ease;
 }
 
 /* Fade animation */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s, transform 0.3s;
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
 }
 
 .fade-enter-from,

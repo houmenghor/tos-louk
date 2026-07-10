@@ -1,29 +1,31 @@
 <template>
-  <div class="container min-vh-100 d-flex align-items-center justify-content-center py-5">
+  <div
+    class="container min-vh-100 d-flex align-items-center justify-content-center py-5"
+  >
     <div class="glass-card text-center animate-fade-in">
       <!-- Premium Glass Icon Badge & Spinner -->
       <div class="loader-wrapper mb-4 position-relative">
         <div class="custom-spinner"></div>
-        <div class="facebook-icon-holder d-flex align-items-center justify-content-center">
+        <div
+          class="facebook-icon-holder d-flex align-items-center justify-content-center"
+        >
           <i class="bi bi-facebook text-primary-brand fs-4"></i>
         </div>
       </div>
 
       <h3 class="form-title mb-2">Facebook Authentication</h3>
-      <p class="form-subtitle">
-        Completing login, please hold on a moment...
-      </p>
+      <p class="form-subtitle">Completing login, please hold on a moment...</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router';
-import { useAuthStore } from '~/stores/authStore';
-import { useAppToast } from '~/composables/ui/useAppToast';
-import { getApiError } from '~/utils/apiError';
+import { useRoute } from "vue-router";
+import { useAuthStore } from "~/stores/authStore";
+import { useAppToast } from "~/composables/ui/useAppToast";
+import { getApiError } from "~/utils/apiError";
 
-definePageMeta({ layout: 'auth' });
+definePageMeta({ layout: "auth" });
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -35,7 +37,7 @@ onMounted(async () => {
 
   if (errorQuery) {
     showError("Facebook Auth Error", decodeURIComponent(errorQuery));
-    await navigateTo('/auth/login');
+    await navigateTo("/auth/login");
     return;
   }
 
@@ -44,14 +46,14 @@ onMounted(async () => {
     try {
       await authStore.fetchProfile(true);
       showSuccess("Welcome back!", "Facebook login successful.");
-      await navigateTo('/', { replace: true });
+      await navigateTo("/", { replace: true });
     } catch (error) {
       showError("Login failed", getApiError(error, "Could not fetch profile."));
-      await navigateTo('/auth/login');
+      await navigateTo("/auth/login");
     }
   } else {
     showError("Facebook Auth Error", "No token received.");
-    await navigateTo('/auth/login');
+    await navigateTo("/auth/login");
   }
 });
 </script>
@@ -68,7 +70,9 @@ onMounted(async () => {
   border: 1px solid var(--glass-border);
   border-radius: 20px;
   box-shadow: var(--glass-shadow);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .glass-card:hover {

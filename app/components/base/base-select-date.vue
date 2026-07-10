@@ -4,18 +4,21 @@
     <label v-if="label" class="form-label">
       {{ label }} <span v-if="required" class="text-danger">*</span>
     </label>
-    
+
     <!-- Input field trigger -->
     <div class="position-relative trigger-wrapper" @click="toggleCalendar">
-      <input 
-        type="text" 
+      <input
+        type="text"
         readonly
-        :value="displayValue" 
+        :value="displayValue"
         :placeholder="placeholder || 'Select date'"
-        :class="['form-control custom-date-input', { 'is-invalid': error, 'active': isOpen }]" 
+        :class="[
+          'form-control custom-date-input',
+          { 'is-invalid': error, active: isOpen },
+        ]"
         :disabled="disabled"
       />
-      <i class="bi bi-calendar3 calendar-icon" :class="{ 'active': isOpen }"></i>
+      <i class="bi bi-calendar3 calendar-icon" :class="{ active: isOpen }"></i>
     </div>
 
     <!-- Error validation message -->
@@ -23,37 +26,55 @@
 
     <!-- Floating Calendar Dropdown Panel -->
     <transition name="slide-fade">
-      <div v-if="isOpen && !disabled" class="calendar-dropdown rounded-4 border p-3 shadow-lg">
-        
+      <div
+        v-if="isOpen && !disabled"
+        class="calendar-dropdown rounded-4 border p-3 shadow-lg"
+      >
         <!-- Header: Nav controls, Month & Year select inputs -->
-        <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
-          <button 
-            type="button" 
-            class="btn btn-nav d-flex align-items-center justify-content-center rounded-circle" 
+        <div
+          class="d-flex align-items-center justify-content-between gap-2 mb-3"
+        >
+          <button
+            type="button"
+            class="btn btn-nav d-flex align-items-center justify-content-center rounded-circle"
             @click="prevMonth"
           >
             <i class="bi bi-chevron-left"></i>
           </button>
 
-          <div class="d-flex align-items-center gap-1.5 flex-grow-1 justify-content-center">
+          <div
+            class="d-flex align-items-center gap-1.5 flex-grow-1 justify-content-center"
+          >
             <!-- Quick Month Selector -->
-            <select v-model="viewMonth" class="form-select select-header" @change="onMonthYearSelect">
-              <option v-for="(m, index) in monthsList" :key="index" :value="index">
+            <select
+              v-model="viewMonth"
+              class="form-select select-header"
+              @change="onMonthYearSelect"
+            >
+              <option
+                v-for="(m, index) in monthsList"
+                :key="index"
+                :value="index"
+              >
                 {{ m }}
               </option>
             </select>
 
             <!-- Quick Year Selector -->
-            <select v-model="viewYear" class="form-select select-header" @change="onMonthYearSelect">
+            <select
+              v-model="viewYear"
+              class="form-select select-header"
+              @change="onMonthYearSelect"
+            >
               <option v-for="year in yearsList" :key="year" :value="year">
                 {{ year }}
               </option>
             </select>
           </div>
 
-          <button 
-            type="button" 
-            class="btn btn-nav d-flex align-items-center justify-content-center rounded-circle" 
+          <button
+            type="button"
+            class="btn btn-nav d-flex align-items-center justify-content-center rounded-circle"
             @click="nextMonth"
           >
             <i class="bi bi-chevron-right"></i>
@@ -62,73 +83,76 @@
 
         <!-- Days of Week Header Grid -->
         <div class="weekdays-grid text-center mb-1">
-          <span v-for="dayName in weekDaysList" :key="dayName" class="weekday-item fw-semibold">
+          <span
+            v-for="dayName in weekDaysList"
+            :key="dayName"
+            class="weekday-item fw-semibold"
+          >
             {{ dayName }}
           </span>
         </div>
 
         <!-- Days Grid -->
         <div class="days-grid text-center">
-          <button 
-            v-for="(day, index) in gridDays" 
-            :key="index" 
+          <button
+            v-for="(day, index) in gridDays"
+            :key="index"
             type="button"
             class="day-btn btn d-flex align-items-center justify-content-center rounded-circle"
-            :class="{ 
+            :class="{
               'other-month text-muted': !day.isCurrentMonth,
               'selected-day': day.isSelected,
-              'today-day': day.isToday
+              'today-day': day.isToday,
             }"
             @click="selectDate(day)"
           >
             {{ day.day }}
           </button>
         </div>
-
       </div>
     </transition>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 
 const props = defineProps({
   modelValue: {
     type: String,
-    default: ''
+    default: "",
   },
   label: {
     type: String,
-    default: ''
+    default: "",
   },
   error: {
     type: String,
-    default: ''
+    default: "",
   },
   disabled: {
     type: Boolean,
-    default: false
+    default: false,
   },
   required: {
     type: Boolean,
-    default: false
+    default: false,
   },
   placeholder: {
     type: String,
-    default: ''
+    default: "",
   },
   minYear: {
     type: Number,
-    default: 1940
+    default: 1940,
   },
   maxYear: {
     type: Number,
-    default: () => new Date().getFullYear()
-  }
+    default: () => new Date().getFullYear(),
+  },
 });
 
-const emit = defineEmits(['update:modelValue', 'blur']);
+const emit = defineEmits(["update:modelValue", "blur"]);
 
 const { locale } = useI18n();
 
@@ -145,17 +169,43 @@ const selectedMonth = ref(null); // 1-indexed
 const selectedDay = ref(null);
 
 const monthsList = computed(() => {
-  if (locale.value === 'kh') {
-    return ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
+  if (locale.value === "kh") {
+    return [
+      "មករា",
+      "កុម្ភៈ",
+      "មីនា",
+      "មេសា",
+      "ឧសភា",
+      "មិថុនា",
+      "កក្កដា",
+      "សីហា",
+      "កញ្ញា",
+      "តុលា",
+      "វិច្ឆិកា",
+      "ធ្នូ",
+    ];
   }
-  return ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  return [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 });
 
 const weekDaysList = computed(() => {
-  if (locale.value === 'kh') {
-    return ['អា', 'ច', 'អ', 'ព', 'ព្រ', 'សុ', 'ស'];
+  if (locale.value === "kh") {
+    return ["អា", "ច", "អ", "ព", "ព្រ", "សុ", "ស"];
   }
-  return ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+  return ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 });
 
 const yearsList = computed(() => {
@@ -168,13 +218,13 @@ const yearsList = computed(() => {
 
 // Display Format inside text field
 const displayValue = computed(() => {
-  if (!props.modelValue) return '';
+  if (!props.modelValue) return "";
   const date = new Date(props.modelValue);
   if (isNaN(date.getTime())) return props.modelValue;
-  return date.toLocaleDateString(locale.value === 'kh' ? 'km-KH' : 'en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
+  return date.toLocaleDateString(locale.value === "kh" ? "km-KH" : "en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
   });
 });
 
@@ -186,7 +236,7 @@ const parseIncomingDate = (dateStr) => {
     selectedDay.value = null;
     return;
   }
-  const parts = dateStr.split('-');
+  const parts = dateStr.split("-");
   if (parts.length === 3) {
     selectedYear.value = parseInt(parts[0]);
     selectedMonth.value = parseInt(parts[1]);
@@ -198,9 +248,13 @@ const parseIncomingDate = (dateStr) => {
   }
 };
 
-watch(() => props.modelValue, (newVal) => {
-  parseIncomingDate(newVal);
-}, { immediate: true });
+watch(
+  () => props.modelValue,
+  (newVal) => {
+    parseIncomingDate(newVal);
+  },
+  { immediate: true },
+);
 
 // Toggle dropdown calendar visibility
 const toggleCalendar = () => {
@@ -268,7 +322,7 @@ const gridDays = computed(() => {
       year: prevYearVal,
       isCurrentMonth: false,
       isSelected: checkIsSelected(dayVal, prevMonthVal, prevYearVal),
-      isToday: checkIsToday(dayVal, prevMonthVal, prevYearVal, today)
+      isToday: checkIsToday(dayVal, prevMonthVal, prevYearVal, today),
     });
   }
 
@@ -281,7 +335,7 @@ const gridDays = computed(() => {
       year: year,
       isCurrentMonth: true,
       isSelected: checkIsSelected(i, currentMonthVal, year),
-      isToday: checkIsToday(i, currentMonthVal, year, today)
+      isToday: checkIsToday(i, currentMonthVal, year, today),
     });
   }
 
@@ -296,7 +350,7 @@ const gridDays = computed(() => {
       year: nextYearVal,
       isCurrentMonth: false,
       isSelected: checkIsSelected(i, nextMonthVal, nextYearVal),
-      isToday: checkIsToday(i, nextMonthVal, nextYearVal, today)
+      isToday: checkIsToday(i, nextMonthVal, nextYearVal, today),
     });
   }
 
@@ -304,11 +358,19 @@ const gridDays = computed(() => {
 });
 
 const checkIsSelected = (d, m, y) => {
-  return selectedDay.value === d && selectedMonth.value === m && selectedYear.value === y;
+  return (
+    selectedDay.value === d &&
+    selectedMonth.value === m &&
+    selectedYear.value === y
+  );
 };
 
 const checkIsToday = (d, m, y, todayObj) => {
-  return todayObj.getDate() === d && (todayObj.getMonth() + 1) === m && todayObj.getFullYear() === y;
+  return (
+    todayObj.getDate() === d &&
+    todayObj.getMonth() + 1 === m &&
+    todayObj.getFullYear() === y
+  );
 };
 
 // Date selection handler
@@ -318,12 +380,16 @@ const selectDate = (dayItem) => {
   selectedYear.value = dayItem.year;
 
   // Format YYYY-MM-DD
-  const formattedMonth = selectedMonth.value < 10 ? `0${selectedMonth.value}` : `${selectedMonth.value}`;
-  const formattedDay = selectedDay.value < 10 ? `0${selectedDay.value}` : `${selectedDay.value}`;
+  const formattedMonth =
+    selectedMonth.value < 10
+      ? `0${selectedMonth.value}`
+      : `${selectedMonth.value}`;
+  const formattedDay =
+    selectedDay.value < 10 ? `0${selectedDay.value}` : `${selectedDay.value}`;
   const dateStr = `${selectedYear.value}-${formattedMonth}-${formattedDay}`;
 
-  emit('update:modelValue', dateStr);
-  emit('blur'); // trigger vee-validate checks
+  emit("update:modelValue", dateStr);
+  emit("blur"); // trigger vee-validate checks
   isOpen.value = false; // close calendar
 };
 
@@ -332,17 +398,17 @@ const handleOutsideClick = (e) => {
   if (containerRef.value && !containerRef.value.contains(e.target)) {
     if (isOpen.value) {
       isOpen.value = false;
-      emit('blur');
+      emit("blur");
     }
   }
 };
 
 onMounted(() => {
-  document.addEventListener('click', handleOutsideClick);
+  document.addEventListener("click", handleOutsideClick);
 });
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleOutsideClick);
+  document.removeEventListener("click", handleOutsideClick);
 });
 </script>
 
@@ -374,7 +440,8 @@ onUnmounted(() => {
   user-select: none;
 }
 
-.custom-date-input:focus, .custom-date-input.active {
+.custom-date-input:focus,
+.custom-date-input.active {
   outline: none;
   background-color: var(--color-surface);
   color: var(--color-text);

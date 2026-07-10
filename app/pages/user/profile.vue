@@ -1,11 +1,12 @@
 <template>
   <div class="profile-page py-5 min-vh-100 bg-body-custom">
     <div class="container max-w-container">
-      
       <!-- Page Title & Header -->
       <div class="mb-5 text-center text-md-start">
         <h1 class="h3 fw-extrabold text-main mb-1">Account Settings</h1>
-        <p class="text-secondary-custom text-sm mb-0">Manage your profile information, password, and display preferences.</p>
+        <p class="text-secondary-custom text-sm mb-0">
+          Manage your profile information, password, and display preferences.
+        </p>
       </div>
 
       <div class="row g-4">
@@ -13,46 +14,52 @@
         <div class="col-lg-3">
           <div class="d-flex flex-column gap-4">
             <!-- Profile mini widget -->
-            <div class="user-sidebar-card p-3 rounded-4 border d-flex align-items-center gap-3">
+            <div
+              class="user-sidebar-card p-3 rounded-4 border d-flex align-items-center gap-3"
+            >
               <div class="avatar-wrapper-sm position-relative">
-                <img 
-                  :src="profileImageSrc" 
-                  class="rounded-circle object-fit-cover border" 
-                  width="44" 
-                  height="44" 
+                <img
+                  :src="profileImageSrc"
+                  class="rounded-circle object-fit-cover border"
+                  width="44"
+                  height="44"
                   alt="Avatar"
                   referrerpolicy="no-referrer"
                   @error="handleAvatarError"
                 />
               </div>
               <div class="overflow-hidden">
-                <div class="fw-bold text-main text-truncate text-sm">{{ authStore.userProfile?.full_name }}</div>
-                <div class="text-secondary-custom text-xs text-truncate">{{ authStore.userProfile?.email }}</div>
+                <div class="fw-bold text-main text-truncate text-sm">
+                  {{ authStore.userProfile?.full_name }}
+                </div>
+                <div class="text-secondary-custom text-xs text-truncate">
+                  {{ authStore.userProfile?.email }}
+                </div>
               </div>
             </div>
 
             <!-- Vertical Menu Links -->
             <nav class="d-flex flex-column gap-1">
-              <button 
-                v-for="tab in tabs" 
+              <button
+                v-for="tab in tabs"
                 :key="tab.id"
                 @click="activeTab = tab.id"
                 class="settings-nav-link btn d-flex align-items-center gap-3 px-3 py-2.5 rounded-3 text-start transition-all"
-                :class="{ 'active': activeTab === tab.id }"
+                :class="{ active: activeTab === tab.id }"
               >
                 <i :class="[tab.icon, 'fs-5']"></i>
                 <span class="fw-semibold text-sm">{{ $t(tab.labelKey) }}</span>
               </button>
 
-              <hr class="border-custom-glass my-3">
+              <hr class="border-custom-glass my-3" />
 
               <!-- Logout Button in Sidebar -->
-              <button 
-                @click="handleLogout" 
+              <button
+                @click="handleLogout"
                 class="btn btn-logout-sidebar rounded-3 py-2 px-3 fw-semibold text-xs d-flex align-items-center gap-2 transition-all"
               >
                 <i class="bi bi-box-arrow-right"></i>
-                {{ $t('profile.logout') }}
+                {{ $t("profile.logout") }}
               </button>
             </nav>
           </div>
@@ -62,39 +69,60 @@
         <div class="col-lg-9">
           <transition name="fade-slide" mode="out-in">
             <!-- Tab 1: Personal Info -->
-            <div v-if="activeTab === 'personal'" key="personal" class="d-flex flex-column gap-4">
+            <div
+              v-if="activeTab === 'personal'"
+              key="personal"
+              class="d-flex flex-column gap-4"
+            >
               <!-- Avatar Upload Box -->
               <div class="settings-card p-4 rounded-4 border">
                 <div class="row align-items-center g-4">
                   <div class="col-sm-auto">
-                    <div class="avatar-uploader position-relative" :class="{ 'uploading': isUploadingAvatar }">
-                      <img 
-                        :src="profileImageSrc" 
-                        class="rounded-circle object-fit-cover border border-3 border-surface" 
-                        width="84" 
-                        height="84" 
+                    <div
+                      class="avatar-uploader position-relative"
+                      :class="{ uploading: isUploadingAvatar }"
+                    >
+                      <img
+                        :src="profileImageSrc"
+                        class="rounded-circle object-fit-cover border border-3 border-surface"
+                        width="84"
+                        height="84"
                         alt="Avatar"
                         referrerpolicy="no-referrer"
                         @error="handleAvatarError"
                       />
-                      <div class="uploader-overlay d-flex align-items-center justify-content-center rounded-circle" @click="triggerFileInput">
-                        <span v-if="isUploadingAvatar" class="spinner-border spinner-border-sm text-light" role="status"></span>
+                      <div
+                        class="uploader-overlay d-flex align-items-center justify-content-center rounded-circle"
+                        @click="triggerFileInput"
+                      >
+                        <span
+                          v-if="isUploadingAvatar"
+                          class="spinner-border spinner-border-sm text-light"
+                          role="status"
+                        ></span>
                         <i v-else class="bi bi-camera text-light"></i>
                       </div>
-                      <input 
-                        type="file" 
-                        ref="fileInputRef" 
-                        class="d-none" 
-                        accept="image/*" 
-                        @change="handleAvatarUpload" 
+                      <input
+                        type="file"
+                        ref="fileInputRef"
+                        class="d-none"
+                        accept="image/*"
+                        @change="handleAvatarUpload"
                       />
                     </div>
                   </div>
                   <div class="col-sm">
-                    <h5 class="fw-bold text-main mb-1 text-sm">Profile Photo</h5>
-                    <p class="text-secondary-custom text-xs mb-3">JPG, GIF or PNG. Max size of 2MB allowed.</p>
+                    <h5 class="fw-bold text-main mb-1 text-sm">
+                      Profile Photo
+                    </h5>
+                    <p class="text-secondary-custom text-xs mb-3">
+                      JPG, GIF or PNG. Max size of 2MB allowed.
+                    </p>
                     <div class="d-flex gap-2">
-                      <button @click="triggerFileInput" class="btn btn-outline-custom btn-sm rounded-pill px-3 py-1.5 fw-semibold text-xs transition-all">
+                      <button
+                        @click="triggerFileInput"
+                        class="btn btn-outline-custom btn-sm rounded-pill px-3 py-1.5 fw-semibold text-xs transition-all"
+                      >
                         Change Avatar
                       </button>
                     </div>
@@ -105,7 +133,9 @@
               <!-- General Info Form -->
               <div class="settings-card p-4 p-md-5 rounded-4 border">
                 <h5 class="fw-bold text-main mb-1 text-sm">Personal Details</h5>
-                <p class="text-secondary-custom text-xs mb-4">Provide details for updates across community listings.</p>
+                <p class="text-secondary-custom text-xs mb-4">
+                  Provide details for updates across community listings.
+                </p>
 
                 <form @submit.prevent="submitProfile">
                   <div class="row g-3">
@@ -155,12 +185,14 @@
                     </div>
                     <div class="col-12">
                       <div class="mb-3">
-                        <label for="address" class="form-label">{{ $t('profile.address') }}</label>
-                        <textarea 
-                          id="address" 
-                          rows="3" 
+                        <label for="address" class="form-label">{{
+                          $t("profile.address")
+                        }}</label>
+                        <textarea
+                          id="address"
+                          rows="3"
                           v-model="profileForm.address"
-                          class="form-control custom-textarea" 
+                          class="form-control custom-textarea"
                           :placeholder="$t('profile.address')"
                         ></textarea>
                       </div>
@@ -168,14 +200,22 @@
                   </div>
 
                   <div class="d-flex justify-content-end mt-4">
-                    <button 
-                      type="submit" 
+                    <button
+                      type="submit"
                       class="btn btn-primary-custom px-4 py-2 rounded-pill fw-semibold text-xs d-flex align-items-center gap-2"
                       :disabled="isSavingProfile"
                     >
-                      <span v-if="isSavingProfile" class="spinner-border spinner-border-sm" role="status"></span>
+                      <span
+                        v-if="isSavingProfile"
+                        class="spinner-border spinner-border-sm"
+                        role="status"
+                      ></span>
                       <i v-else class="bi bi-check2"></i>
-                      {{ isSavingProfile ? $t('profile.saving') : $t('profile.saveChanges') }}
+                      {{
+                        isSavingProfile
+                          ? $t("profile.saving")
+                          : $t("profile.saveChanges")
+                      }}
                     </button>
                   </div>
                 </form>
@@ -183,10 +223,17 @@
             </div>
 
             <!-- Tab 2: Security & Password -->
-            <div v-else-if="activeTab === 'security'" key="security" class="d-flex flex-column gap-4">
+            <div
+              v-else-if="activeTab === 'security'"
+              key="security"
+              class="d-flex flex-column gap-4"
+            >
               <div class="settings-card p-4 p-md-5 rounded-4 border">
                 <h5 class="fw-bold text-main mb-1 text-sm">Update Password</h5>
-                <p class="text-secondary-custom text-xs mb-4">Ensure your account is using a long, random password to stay secure.</p>
+                <p class="text-secondary-custom text-xs mb-4">
+                  Ensure your account is using a long, random password to stay
+                  secure.
+                </p>
 
                 <form @submit.prevent="submitPassword">
                   <div class="row g-3">
@@ -220,14 +267,22 @@
                   </div>
 
                   <div class="d-flex justify-content-end mt-4">
-                    <button 
-                      type="submit" 
+                    <button
+                      type="submit"
                       class="btn btn-primary-custom px-4 py-2 rounded-pill fw-semibold text-xs d-flex align-items-center gap-2"
                       :disabled="isUpdatingPassword"
                     >
-                      <span v-if="isUpdatingPassword" class="spinner-border spinner-border-sm" role="status"></span>
+                      <span
+                        v-if="isUpdatingPassword"
+                        class="spinner-border spinner-border-sm"
+                        role="status"
+                      ></span>
                       <i v-else class="bi bi-shield-lock"></i>
-                      {{ isUpdatingPassword ? $t('profile.updating') : $t('profile.updatePassword') }}
+                      {{
+                        isUpdatingPassword
+                          ? $t("profile.updating")
+                          : $t("profile.updatePassword")
+                      }}
                     </button>
                   </div>
                 </form>
@@ -235,36 +290,63 @@
             </div>
 
             <!-- Tab 3: Order History -->
-            <div v-else-if="activeTab === 'orders'" key="orders" class="d-flex flex-column gap-4">
+            <div
+              v-else-if="activeTab === 'orders'"
+              key="orders"
+              class="d-flex flex-column gap-4"
+            >
               <div class="settings-card p-4 rounded-4 border">
                 <h5 class="fw-bold text-main mb-1 text-sm">Order History</h5>
-                <p class="text-secondary-custom text-xs mb-4">Check status, track items, or request details for all recent transactions.</p>
+                <p class="text-secondary-custom text-xs mb-4">
+                  Check status, track items, or request details for all recent
+                  transactions.
+                </p>
 
                 <div v-if="orders.length > 0" class="d-flex flex-column gap-3">
-                  <div 
-                    v-for="order in orders" 
-                    :key="order.id" 
+                  <div
+                    v-for="order in orders"
+                    :key="order.id"
                     class="order-row p-3 rounded-4 border d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 transition-all"
                   >
                     <div class="d-flex align-items-center gap-3">
-                      <div class="order-icon-badge d-flex align-items-center justify-content-center rounded-3 bg-body-custom" style="width: 40px; height: 40px;">
+                      <div
+                        class="order-icon-badge d-flex align-items-center justify-content-center rounded-3 bg-body-custom"
+                        style="width: 40px; height: 40px"
+                      >
                         <i class="bi bi-box-seam text-secondary-custom"></i>
                       </div>
                       <div>
-                        <div class="fw-bold text-main text-sm">{{ order.id }}</div>
-                        <div class="text-secondary-custom text-xs">{{ formatDate(order.date) }}</div>
+                        <div class="fw-bold text-main text-sm">
+                          {{ order.id }}
+                        </div>
+                        <div class="text-secondary-custom text-xs">
+                          {{ formatDate(order.date) }}
+                        </div>
                       </div>
                     </div>
-                    <div class="d-flex align-items-center justify-content-between justify-content-md-end gap-4 w-100-mobile">
+                    <div
+                      class="d-flex align-items-center justify-content-between justify-content-md-end gap-4 w-100-mobile"
+                    >
                       <div>
-                        <div class="text-muted text-xxs text-md-end">Amount</div>
-                        <div class="fw-bold text-primary-brand text-sm">{{ order.total }}</div>
+                        <div class="text-muted text-xxs text-md-end">
+                          Amount
+                        </div>
+                        <div class="fw-bold text-primary-brand text-sm">
+                          {{ order.total }}
+                        </div>
                       </div>
                       <div class="d-flex align-items-center gap-2">
-                        <span :class="['badge rounded-pill px-3 py-1 fw-semibold text-uppercase text-xxs', getStatusBadgeClass(order.status)]">
+                        <span
+                          :class="[
+                            'badge rounded-pill px-3 py-1 fw-semibold text-uppercase text-xxs',
+                            getStatusBadgeClass(order.status),
+                          ]"
+                        >
                           {{ order.status }}
                         </span>
-                        <button class="btn btn-arrow-circle d-flex align-items-center justify-content-center rounded-circle transition-all">
+                        <button
+                          class="btn btn-arrow-circle d-flex align-items-center justify-content-center rounded-circle transition-all"
+                        >
                           <i class="bi bi-arrow-right-short"></i>
                         </button>
                       </div>
@@ -274,42 +356,59 @@
                 <div v-else class="text-center py-5">
                   <i class="bi bi-inbox text-muted display-4"></i>
                   <h6 class="fw-bold text-main mt-3">No orders found</h6>
-                  <p class="text-secondary-custom text-xs">Once you checkout your items will display here.</p>
+                  <p class="text-secondary-custom text-xs">
+                    Once you checkout your items will display here.
+                  </p>
                 </div>
               </div>
             </div>
 
             <!-- Tab 4: App Settings -->
-            <div v-else-if="activeTab === 'settings'" key="settings" class="d-flex flex-column gap-4">
+            <div
+              v-else-if="activeTab === 'settings'"
+              key="settings"
+              class="d-flex flex-column gap-4"
+            >
               <!-- Visual Theme Preferences Card -->
               <div class="settings-card p-4 p-md-5 rounded-4 border">
-                <h5 class="fw-bold text-main mb-1 text-sm">Interface Appearance</h5>
-                <p class="text-secondary-custom text-xs mb-4">Choose how you want the Tos Louk dashboard layout to display in your browser.</p>
+                <h5 class="fw-bold text-main mb-1 text-sm">
+                  Interface Appearance
+                </h5>
+                <p class="text-secondary-custom text-xs mb-4">
+                  Choose how you want the Tos Louk dashboard layout to display
+                  in your browser.
+                </p>
 
                 <div class="row g-3">
                   <!-- Light theme option block -->
                   <div class="col-6 col-sm-4">
-                    <div 
+                    <div
                       class="theme-block p-3 rounded-4 border text-center cursor-pointer transition-all"
                       :class="{ 'selected-theme': colorMode.value === 'light' }"
                       @click="setThemeMode('light')"
                     >
-                      <div class="theme-preview-box light-preview rounded-3 mb-2 border">
+                      <div
+                        class="theme-preview-box light-preview rounded-3 mb-2 border"
+                      >
                         <div class="preview-line-1"></div>
                         <div class="preview-line-2"></div>
                       </div>
-                      <div class="fw-semibold text-main text-xs">Light Mode</div>
+                      <div class="fw-semibold text-main text-xs">
+                        Light Mode
+                      </div>
                     </div>
                   </div>
 
                   <!-- Dark theme option block -->
                   <div class="col-6 col-sm-4">
-                    <div 
+                    <div
                       class="theme-block p-3 rounded-4 border text-center cursor-pointer transition-all"
                       :class="{ 'selected-theme': colorMode.value === 'dark' }"
                       @click="setThemeMode('dark')"
                     >
-                      <div class="theme-preview-box dark-preview rounded-3 mb-2 border">
+                      <div
+                        class="theme-preview-box dark-preview rounded-3 mb-2 border"
+                      >
                         <div class="preview-line-1"></div>
                         <div class="preview-line-2"></div>
                       </div>
@@ -321,11 +420,16 @@
 
               <!-- Language Settings Card -->
               <div class="settings-card p-4 rounded-4 border">
-                <h5 class="fw-bold text-main mb-1 text-sm">Language Preferences</h5>
-                <p class="text-secondary-custom text-xs mb-4">Select your default translation language for buttons, labels, and notices.</p>
+                <h5 class="fw-bold text-main mb-1 text-sm">
+                  Language Preferences
+                </h5>
+                <p class="text-secondary-custom text-xs mb-4">
+                  Select your default translation language for buttons, labels,
+                  and notices.
+                </p>
 
                 <div class="max-w-xs">
-                  <select 
+                  <select
                     class="form-select custom-select-box px-3 py-2 fw-semibold text-xs"
                     :value="locale"
                     @change="onLanguageChange($event)"
@@ -339,31 +443,31 @@
           </transition>
         </div>
       </div>
-
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, watch } from 'vue';
-import { useAuthStore } from '~/stores/authStore';
-import { useWishlistStore } from '~/stores/wishlistStore';
-import { useCartStore } from '~/stores/cartStore';
-import { useAppToast } from '~/composables/ui/useAppToast';
-import { useField, useForm } from 'vee-validate';
-import { toTypedSchema } from '@vee-validate/zod';
-import { profileSchema, changePasswordSchema } from '~/composables/forms/auth';
-import { getApiError } from '~/utils/apiError';
-import BaseInput from '~/components/base/base-input.vue';
-import BaseInputPassword from '~/components/base/base-input-password.vue';
-import BaseSelectDate from '~/components/base/base-select-date.vue';
-import BaseSelectOption from '~/components/base/base-select-option.vue';
+import { ref, reactive, computed, onMounted, watch } from "vue";
+import { useAuthStore } from "~/stores/authStore";
+import { useWishlistStore } from "~/stores/wishlistStore";
+import { useCartStore } from "~/stores/cartStore";
+import { useAppToast } from "~/composables/ui/useAppToast";
+import { useField, useForm } from "vee-validate";
+import { toTypedSchema } from "@vee-validate/zod";
+import { profileSchema, changePasswordSchema } from "~/composables/forms/auth";
+import { getApiError } from "~/utils/apiError";
+import BaseInput from "~/components/base/base-input.vue";
+import BaseInputPassword from "~/components/base/base-input-password.vue";
+import BaseSelectDate from "~/components/base/base-select-date.vue";
+import BaseSelectOption from "~/components/base/base-select-option.vue";
 
-const defaultAvatar = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23a1a1aa"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-1-5.48-2.58C7.64 15.84 10 15 12 15s4.36.84 5.48 2.42C16.43 19 14.03 20 12 20z"/></svg>';
+const defaultAvatar =
+  'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23a1a1aa"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-1-5.48-2.58C7.64 15.84 10 15 12 15s4.36.84 5.48 2.42C16.43 19 14.03 20 12 20z"/></svg>';
 
 // Page Metadata
 definePageMeta({
-  layout: 'default'
+  layout: "default",
 });
 
 const authStore = useAuthStore();
@@ -375,18 +479,18 @@ const { locale, setLocale } = useI18n();
 
 // Tab Structure
 const tabs = [
-  { id: 'personal', labelKey: 'profile.personalInfo', icon: 'bi bi-person' },
-  { id: 'security', labelKey: 'profile.security', icon: 'bi bi-shield-lock' },
-  { id: 'orders', labelKey: 'profile.orderHistory', icon: 'bi bi-receipt' },
-  { id: 'settings', labelKey: 'profile.settings', icon: 'bi bi-sliders' }
+  { id: "personal", labelKey: "profile.personalInfo", icon: "bi bi-person" },
+  { id: "security", labelKey: "profile.security", icon: "bi bi-shield-lock" },
+  { id: "orders", labelKey: "profile.orderHistory", icon: "bi bi-receipt" },
+  { id: "settings", labelKey: "profile.settings", icon: "bi bi-sliders" },
 ];
 
-const activeTab = ref('personal');
+const activeTab = ref("personal");
 
 const genderOptions = computed(() => [
-  { value: 'Male', label: locale.value === 'kh' ? 'ប្រុស' : 'Male' },
-  { value: 'Female', label: locale.value === 'kh' ? 'ស្រី' : 'Female' },
-  { value: 'Other', label: locale.value === 'kh' ? 'ផ្សេងៗ' : 'Other' }
+  { value: "Male", label: locale.value === "kh" ? "ប្រុស" : "Male" },
+  { value: "Female", label: locale.value === "kh" ? "ស្រី" : "Female" },
+  { value: "Other", label: locale.value === "kh" ? "ផ្សេងៗ" : "Other" },
 ]);
 
 // Fetch user dynamic data on client mounting
@@ -394,36 +498,39 @@ onMounted(async () => {
   if (process.client) {
     wishlistStore.initWishlist();
     cartStore.initCart();
-    
+
     // Auto-fill profile fields
     if (authStore.userProfile) {
-      profileForm.full_name = authStore.userProfile.full_name || '';
-      profileForm.email = authStore.userProfile.email || '';
-      profileForm.phone = authStore.userProfile.phone || authStore.userProfile.phone_number || '';
-      profileForm.gender = authStore.userProfile.gender || '';
-      profileForm.dob = authStore.userProfile.dob || '';
-      profileForm.address = authStore.userProfile.address || '';
+      profileForm.full_name = authStore.userProfile.full_name || "";
+      profileForm.email = authStore.userProfile.email || "";
+      profileForm.phone =
+        authStore.userProfile.phone || authStore.userProfile.phone_number || "";
+      profileForm.gender = authStore.userProfile.gender || "";
+      profileForm.dob = authStore.userProfile.dob || "";
+      profileForm.address = authStore.userProfile.address || "";
     }
   }
 });
 
 // Member since calculation formatted nicely
 const memberSinceDate = computed(() => {
-  if (!authStore.userProfile?.created_at) return 'July 2026';
+  if (!authStore.userProfile?.created_at) return "July 2026";
   const date = new Date(authStore.userProfile.created_at);
-  return date.toLocaleDateString(locale.value === 'kh' ? 'km-KH' : 'en-US', {
-    year: 'numeric',
-    month: 'long'
+  return date.toLocaleDateString(locale.value === "kh" ? "km-KH" : "en-US", {
+    year: "numeric",
+    month: "long",
   });
 });
 
 // Avatar Source Computed
 const profileImageSrc = computed(() => {
-  const avatar = authStore.userProfile?.userProfile?.profile_image || authStore.userProfile?.profile_image;
+  const avatar =
+    authStore.userProfile?.userProfile?.profile_image ||
+    authStore.userProfile?.profile_image;
   if (!avatar) return defaultAvatar;
-  
-  if (avatar.startsWith('http')) return avatar;
-  return `${useRuntimeConfig().public.apiBase.replace('/api/v1', '')}/storage/${avatar}`;
+
+  if (avatar.startsWith("http")) return avatar;
+  return `${useRuntimeConfig().public.apiBase.replace("/api/v1", "")}/storage/${avatar}`;
 });
 
 const handleAvatarError = (event) => {
@@ -433,28 +540,43 @@ const handleAvatarError = (event) => {
 // Form 1: Personal Information Validation
 const isSavingProfile = ref(false);
 const profileForm = reactive({
-  full_name: '',
-  email: '',
-  phone: '',
-  gender: '',
-  dob: '',
-  address: ''
+  full_name: "",
+  email: "",
+  phone: "",
+  gender: "",
+  dob: "",
+  address: "",
 });
 
 const { handleSubmit: handleProfileSubmit, errors: profileErrors } = useForm({
   validationSchema: toTypedSchema(profileSchema),
-  initialValues: profileForm
+  initialValues: profileForm,
 });
 
 // Bind fields inside Vee-validate schema tracking
-const { value: fullNameVal } = useField('full_name');
-const { value: phoneVal } = useField('phone');
-const { value: dobVal } = useField('dob');
+const { value: fullNameVal } = useField("full_name");
+const { value: phoneVal } = useField("phone");
+const { value: dobVal } = useField("dob");
 
 // Keep VeeValidate fields synced with the reactive form
-watch(() => profileForm.full_name, (newVal) => { fullNameVal.value = newVal; });
-watch(() => profileForm.phone, (newVal) => { phoneVal.value = newVal; });
-watch(() => profileForm.dob, (newVal) => { dobVal.value = newVal; });
+watch(
+  () => profileForm.full_name,
+  (newVal) => {
+    fullNameVal.value = newVal;
+  },
+);
+watch(
+  () => profileForm.phone,
+  (newVal) => {
+    phoneVal.value = newVal;
+  },
+);
+watch(
+  () => profileForm.dob,
+  (newVal) => {
+    dobVal.value = newVal;
+  },
+);
 
 const submitProfile = handleProfileSubmit(async () => {
   isSavingProfile.value = true;
@@ -464,12 +586,23 @@ const submitProfile = handleProfileSubmit(async () => {
       phone: profileForm.phone || null,
       gender: profileForm.gender || null,
       dob: profileForm.dob || null,
-      address: profileForm.address || null
+      address: profileForm.address || null,
     };
     await authStore.updateProfile(payload);
-    showSuccess(locale.value === 'kh' ? 'រក្សាទុកព័ត៌មានផ្ទាល់ខ្លួនដោយជោគជ័យ!' : 'Profile details updated successfully!');
+    showSuccess(
+      locale.value === "kh"
+        ? "រក្សាទុកព័ត៌មានផ្ទាល់ខ្លួនដោយជោគជ័យ!"
+        : "Profile details updated successfully!",
+    );
   } catch (error) {
-    showError(getApiError(error, locale.value === 'kh' ? 'ការរក្សាទុកបរាជ័យ!' : 'Failed to update profile details.'));
+    showError(
+      getApiError(
+        error,
+        locale.value === "kh"
+          ? "ការរក្សាទុកបរាជ័យ!"
+          : "Failed to update profile details.",
+      ),
+    );
   } finally {
     isSavingProfile.value = false;
   }
@@ -478,23 +611,42 @@ const submitProfile = handleProfileSubmit(async () => {
 // Form 2: Password Update Validation
 const isUpdatingPassword = ref(false);
 const passwordForm = reactive({
-  current_password: '',
-  new_password: '',
-  confirm_password: ''
+  current_password: "",
+  new_password: "",
+  confirm_password: "",
 });
 
-const { handleSubmit: handlePasswordSubmit, errors: passwordErrors, resetForm: resetPassForm } = useForm({
+const {
+  handleSubmit: handlePasswordSubmit,
+  errors: passwordErrors,
+  resetForm: resetPassForm,
+} = useForm({
   validationSchema: toTypedSchema(changePasswordSchema(false)),
-  initialValues: passwordForm
+  initialValues: passwordForm,
 });
 
-const { value: currentPassVal } = useField('current_password');
-const { value: newPassVal } = useField('new_password');
-const { value: confirmPassVal } = useField('confirm_password');
+const { value: currentPassVal } = useField("current_password");
+const { value: newPassVal } = useField("new_password");
+const { value: confirmPassVal } = useField("confirm_password");
 
-watch(() => passwordForm.current_password, (val) => { currentPassVal.value = val; });
-watch(() => passwordForm.new_password, (val) => { newPassVal.value = val; });
-watch(() => passwordForm.confirm_password, (val) => { confirmPassVal.value = val; });
+watch(
+  () => passwordForm.current_password,
+  (val) => {
+    currentPassVal.value = val;
+  },
+);
+watch(
+  () => passwordForm.new_password,
+  (val) => {
+    newPassVal.value = val;
+  },
+);
+watch(
+  () => passwordForm.confirm_password,
+  (val) => {
+    confirmPassVal.value = val;
+  },
+);
 
 const submitPassword = handlePasswordSubmit(async () => {
   isUpdatingPassword.value = true;
@@ -502,17 +654,28 @@ const submitPassword = handlePasswordSubmit(async () => {
     const payload = {
       current_password: passwordForm.current_password,
       new_password: passwordForm.new_password,
-      new_password_confirmation: passwordForm.confirm_password
+      new_password_confirmation: passwordForm.confirm_password,
     };
     await authStore.changePassword(payload);
-    showSuccess(locale.value === 'kh' ? 'ផ្លាស់ប្តូរលេខសម្ងាត់ជោគជ័យ!' : 'Password updated successfully!');
-    
-    passwordForm.current_password = '';
-    passwordForm.new_password = '';
-    passwordForm.confirm_password = '';
+    showSuccess(
+      locale.value === "kh"
+        ? "ផ្លាស់ប្តូរលេខសម្ងាត់ជោគជ័យ!"
+        : "Password updated successfully!",
+    );
+
+    passwordForm.current_password = "";
+    passwordForm.new_password = "";
+    passwordForm.confirm_password = "";
     resetPassForm();
   } catch (error) {
-    showError(getApiError(error, locale.value === 'kh' ? 'ការផ្លាស់ប្តូរលេខសម្ងាត់បរាជ័យ!' : 'Failed to update password. Please check your inputs.'));
+    showError(
+      getApiError(
+        error,
+        locale.value === "kh"
+          ? "ការផ្លាស់ប្តូរលេខសម្ងាត់បរាជ័យ!"
+          : "Failed to update password. Please check your inputs.",
+      ),
+    );
   } finally {
     isUpdatingPassword.value = false;
   }
@@ -533,19 +696,34 @@ const handleAvatarUpload = async (event) => {
   if (!file) return;
 
   if (file.size > 2 * 1024 * 1024) {
-    showError(locale.value === 'kh' ? 'ទំហំរូបភាពមិនអាចលើសពី 2MB ឡើយ' : 'Image size cannot exceed 2MB.');
+    showError(
+      locale.value === "kh"
+        ? "ទំហំរូបភាពមិនអាចលើសពី 2MB ឡើយ"
+        : "Image size cannot exceed 2MB.",
+    );
     return;
   }
 
   isUploadingAvatar.value = true;
   const formData = new FormData();
-  formData.append('profile_image', file);
+  formData.append("profile_image", file);
 
   try {
     await authStore.updateAvatar(formData);
-    showSuccess(locale.value === 'kh' ? 'រូបភាពទម្រង់ត្រូវបានផ្លាស់ប្តូរ!' : 'Avatar image uploaded successfully!');
+    showSuccess(
+      locale.value === "kh"
+        ? "រូបភាពទម្រង់ត្រូវបានផ្លាស់ប្តូរ!"
+        : "Avatar image uploaded successfully!",
+    );
   } catch (error) {
-    showError(getApiError(error, locale.value === 'kh' ? 'ការអាប់ឡូតបរាជ័យ!' : 'Failed to upload profile image.'));
+    showError(
+      getApiError(
+        error,
+        locale.value === "kh"
+          ? "ការអាប់ឡូតបរាជ័យ!"
+          : "Failed to upload profile image.",
+      ),
+    );
   } finally {
     isUploadingAvatar.value = false;
   }
@@ -557,7 +735,7 @@ const setThemeMode = (mode) => {
 };
 
 const toggleTheme = () => {
-  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark';
+  colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
 };
 
 // Language Switching
@@ -569,34 +747,52 @@ const onLanguageChange = (event) => {
 const handleLogout = async () => {
   try {
     await authStore.logout();
-    showSuccess(locale.value === 'kh' ? 'អ្នកបានចាកចេញដោយជោគជ័យ!' : 'Logged out successfully!');
+    showSuccess(
+      locale.value === "kh"
+        ? "អ្នកបានចាកចេញដោយជោគជ័យ!"
+        : "Logged out successfully!",
+    );
   } catch (e) {
-    showError('Logout failed.');
+    showError("Logout failed.");
   }
 };
 
 // Orders Mock Data
 const orders = ref([
-  { id: 'ORD-98231', date: '2026-07-01', total: '$189.00', status: 'Delivered' },
-  { id: 'ORD-84510', date: '2026-06-25', total: '$45.00', status: 'Shipped' },
-  { id: 'ORD-73129', date: '2026-06-18', total: '$120.00', status: 'Cancelled' }
+  {
+    id: "ORD-98231",
+    date: "2026-07-01",
+    total: "$189.00",
+    status: "Delivered",
+  },
+  { id: "ORD-84510", date: "2026-06-25", total: "$45.00", status: "Shipped" },
+  {
+    id: "ORD-73129",
+    date: "2026-06-18",
+    total: "$120.00",
+    status: "Cancelled",
+  },
 ]);
 
 const formatDate = (dateStr) => {
   const date = new Date(dateStr);
-  return date.toLocaleDateString(locale.value === 'kh' ? 'km-KH' : 'en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
+  return date.toLocaleDateString(locale.value === "kh" ? "km-KH" : "en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
   });
 };
 
 const getStatusBadgeClass = (status) => {
   switch (status) {
-    case 'Delivered': return 'bg-success-light text-success';
-    case 'Shipped': return 'bg-warning-light text-warning';
-    case 'Cancelled': return 'bg-danger-light text-danger';
-    default: return 'bg-secondary-light text-secondary-custom';
+    case "Delivered":
+      return "bg-success-light text-success";
+    case "Shipped":
+      return "bg-warning-light text-warning";
+    case "Cancelled":
+      return "bg-danger-light text-danger";
+    default:
+      return "bg-secondary-light text-secondary-custom";
   }
 };
 </script>
@@ -687,7 +883,9 @@ const getStatusBadgeClass = (status) => {
   background-color: var(--color-surface);
   color: var(--color-text);
   border: 1px solid var(--color-border);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .custom-select-box:focus {
@@ -705,7 +903,9 @@ const getStatusBadgeClass = (status) => {
   background-color: var(--color-surface);
   color: var(--color-text);
   border: 1px solid var(--color-border);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .custom-textarea:focus {
@@ -884,7 +1084,9 @@ const getStatusBadgeClass = (status) => {
 /* Transitions */
 .fade-slide-enter-active,
 .fade-slide-leave-active {
-  transition: opacity 0.2s, transform 0.2s;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
 }
 
 .fade-slide-enter-from {

@@ -1,16 +1,16 @@
 <template>
   <div class="mb-3">
     <label v-if="label" :for="id" class="form-label">{{ label }} *</label>
-    <input 
-      autocomplete="off" 
-      :id="id" 
-      :type="type" 
-      :value="modelValue" 
+    <input
+      autocomplete="off"
+      :id="id"
+      :type="type"
+      :value="modelValue"
       :placeholder="placeholder"
-      :class="['form-control', { 'is-invalid': error }]" 
+      :class="['form-control', { 'is-invalid': error }]"
       :disabled="disabled"
-      @input="$emit('update:modelValue', $event.target.value)" 
-      @blur="$emit('blur')" 
+      @input="$emit('update:modelValue', $event.target.value)"
+      @blur="$emit('blur')"
     />
     <div v-if="error" class="invalid-feedback">{{ error }}</div>
   </div>
@@ -24,7 +24,7 @@ defineProps({
   id: String,
   type: { type: String, default: "text" },
   error: String,
-  disabled: { type: Boolean, default: false }
+  disabled: { type: Boolean, default: false },
 });
 
 defineEmits(["update:modelValue", "blur"]);
@@ -46,7 +46,9 @@ defineEmits(["update:modelValue", "blur"]);
   background-color: var(--color-surface);
   color: var(--color-text);
   border: 1px solid var(--color-border);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .form-control::placeholder {
@@ -87,7 +89,7 @@ defineEmits(["update:modelValue", "blur"]);
 
 /* Autofill Fixes matching system dark/light variables */
 input:-webkit-autofill,
-input:-webkit-autofill:hover, 
+input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 1000px var(--color-surface) inset !important;

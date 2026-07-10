@@ -9,24 +9,38 @@
       :class="layout === 'list' ? 'image-container-list flex-shrink-0' : 'image-container'"
     >
       <!-- Image Zoom-in hover -->
-      <NuxtImg :src="product.image" :alt="product.title" class="product-img w-100 h-100 object-fit-cover" />
-      
+      <NuxtImg
+        :src="product.image"
+        :alt="product.title"
+        class="product-img w-100 h-100 object-fit-cover"
+      />
+
       <!-- Badges (Top Left) -->
-      <div class="position-absolute top-0 start-0 m-3 z-2 d-flex flex-column gap-2">
-        <span v-if="product.oldPrice" class="badge bg-danger-light text-danger rounded-pill px-2.5 py-1.5 fw-bold text-xs">
+      <div
+        class="position-absolute top-0 start-0 m-3 z-2 d-flex flex-column gap-2"
+      >
+        <span
+          v-if="product.oldPrice"
+          class="badge bg-danger-light text-danger rounded-pill px-2.5 py-1.5 fw-bold text-xs"
+        >
           -{{ Math.round((1 - product.price / product.oldPrice) * 100) }}%
         </span>
-        <span v-else-if="product.id % 3 === 0" class="badge bg-success-light text-success rounded-pill px-2.5 py-1.5 fw-bold text-xs">
+        <span
+          v-else-if="product.id % 3 === 0"
+          class="badge bg-success-light text-success rounded-pill px-2.5 py-1.5 fw-bold text-xs"
+        >
           Just Curated
         </span>
       </div>
 
       <!-- Action Buttons Column (Slides in on hover from right) -->
-      <div class="action-buttons-column position-absolute top-0 end-0 m-3 z-2 d-flex flex-column gap-2">
-        <button 
-          @click.stop="toggleWishlist" 
-          class="action-circle-btn shadow-sm border" 
-          :class="{ 'wishlisted': isWishlisted }"
+      <div
+        class="action-buttons-column position-absolute top-0 end-0 m-3 z-2 d-flex flex-column gap-2"
+      >
+        <button
+          @click.stop="toggleWishlist"
+          class="action-circle-btn shadow-sm border"
+          :class="{ wishlisted: isWishlisted }"
           :title="isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'"
         >
           <i :class="isWishlisted ? 'bi bi-heart-fill' : 'bi bi-heart'"></i>
@@ -39,15 +53,23 @@
         </button>
       </div>
     </div>
-    
+
     <!-- Card details -->
     <div class="card-body d-flex flex-column justify-content-between" :class="layout === 'list' ? 'p-3 p-sm-4' : 'p-3'">
       <div>
         <!-- Collection Text -->
-        <span class="collection-text text-uppercase text-xs fw-bold tracking-wider d-block mb-1 text-muted-custom">
-          {{ product.category === 'electronics' ? 'Electronics Hub' : product.category === 'clothing' ? "Men's Collection" : "Fashion Picks" }}
+        <span
+          class="collection-text text-uppercase text-xs fw-bold tracking-wider d-block mb-1 text-muted-custom"
+        >
+          {{
+            product.category === "electronics"
+              ? "Electronics Hub"
+              : product.category === "clothing"
+                ? "Men's Collection"
+                : "Fashion Picks"
+          }}
         </span>
-        
+
         <!-- Product Title -->
         <h6 class="product-title text-main fw-bold" :class="layout === 'list' ? 'mb-2 fs-5 list-title' : 'mb-1.5'">{{ product.title }}</h6>
         
@@ -124,7 +146,9 @@ const handleAddToCart = () => {
 
 .glass-card:hover {
   transform: translateY(-6px);
-  box-shadow: var(--shadow-md), 0 12px 30px rgba(0, 220, 130, 0.08) !important;
+  box-shadow:
+    var(--shadow-md),
+    0 12px 30px rgba(0, 220, 130, 0.08) !important;
   border-color: var(--color-primary) !important;
 }
 

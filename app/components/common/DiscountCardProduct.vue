@@ -1,6 +1,9 @@
 <template>
-  <div class="discount-card h-100 position-relative overflow-hidden" @mouseenter="hovered = true" @mouseleave="hovered = false">
-
+  <div
+    class="discount-card h-100 position-relative overflow-hidden"
+    @mouseenter="hovered = true"
+    @mouseleave="hovered = false"
+  >
     <!-- Discount Badge -->
     <div v-if="product.badge" class="deal-badge position-absolute z-2">
       <span class="deal-badge-pill">
@@ -11,11 +14,20 @@
     <!-- Wishlist Button -->
     <button
       class="wishlist-btn position-absolute z-2"
-      :class="{ 'wishlisted': wishlistStore.isInWishlist(product.id) }"
+      :class="{ wishlisted: wishlistStore.isInWishlist(product.id) }"
       @click.stop="handleToggleWishlist"
-      :title="wishlistStore.isInWishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist'"
+      :title="
+        wishlistStore.isInWishlist(product.id)
+          ? 'Remove from Wishlist'
+          : 'Add to Wishlist'
+      "
     >
-      <i class="bi" :class="wishlistStore.isInWishlist(product.id) ? 'bi-heart-fill' : 'bi-heart'"></i>
+      <i
+        class="bi"
+        :class="
+          wishlistStore.isInWishlist(product.id) ? 'bi-heart-fill' : 'bi-heart'
+        "
+      ></i>
     </button>
 
     <!-- Product Image -->
@@ -36,9 +48,10 @@
 
     <!-- Card Content -->
     <div class="card-content">
-
       <!-- Category tag -->
-      <span v-if="product.category" class="category-tag">{{ product.category }}</span>
+      <span v-if="product.category" class="category-tag">{{
+        product.category
+      }}</span>
 
       <!-- Title -->
       <h6 class="product-title">{{ product.title }}</h6>
@@ -46,7 +59,9 @@
       <!-- Price Row -->
       <div class="price-row">
         <span class="price-now">${{ product.price }}</span>
-        <del v-if="product.oldPrice" class="price-was">${{ product.oldPrice }}</del>
+        <del v-if="product.oldPrice" class="price-was"
+          >${{ product.oldPrice }}</del
+        >
         <span v-if="savings" class="save-chip">-${{ savings }}</span>
       </div>
 
@@ -75,23 +90,22 @@
           <i class="bi bi-cart-plus-fill me-1"></i> Add to Cart
         </BaseButton>
       </div>
-
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { useAuthStore } from '~/stores/authStore';
-import { useCartStore } from '~/stores/cartStore';
-import { useWishlistStore } from '~/stores/wishlistStore';
-import { useAppToast } from '~/composables/ui/useAppToast';
+import { ref, computed } from "vue";
+import { useAuthStore } from "~/stores/authStore";
+import { useCartStore } from "~/stores/cartStore";
+import { useWishlistStore } from "~/stores/wishlistStore";
+import { useAppToast } from "~/composables/ui/useAppToast";
 
 const props = defineProps({
-  product: { type: Object, required: true }
+  product: { type: Object, required: true },
 });
 
-const emit = defineEmits(['add-to-cart']);
+const emit = defineEmits(["add-to-cart"]);
 
 const authStore = useAuthStore();
 const cartStore = useCartStore();
@@ -104,11 +118,11 @@ const hovered = ref(false);
 const verifyLogin = (actionName) => {
   if (!authStore.access_token) {
     showError(
-      locale.value === 'kh'
+      locale.value === "kh"
         ? `សូមចូលគណនីជាមុនសិនដើម្បី ${actionName}!`
-        : `Please login first to ${actionName}!`
+        : `Please login first to ${actionName}!`,
     );
-    navigateTo('/auth/login');
+    navigateTo("/auth/login");
     return false;
   }
   return true;
@@ -116,23 +130,33 @@ const verifyLogin = (actionName) => {
 
 // ── Actions ──
 const handleAddToCart = () => {
-  if (verifyLogin(locale.value === 'kh' ? 'បន្ថែមទៅកន្ត្រក' : 'add to cart')) {
+  if (verifyLogin(locale.value === "kh" ? "បន្ថែមទៅកន្ត្រក" : "add to cart")) {
     cartStore.addToCart(props.product);
-    emit('add-to-cart', props.product);
+    emit("add-to-cart", props.product);
     showSuccess(
-      locale.value === 'kh' ? 'បានបន្ថែមទៅក្នុងកន្ត្រកជោគជ័យ!' : 'Added to cart successfully!'
+      locale.value === "kh"
+        ? "បានបន្ថែមទៅក្នុងកន្ត្រកជោគជ័យ!"
+        : "Added to cart successfully!",
     );
   }
 };
 
 const handleToggleWishlist = () => {
-  if (verifyLogin(locale.value === 'kh' ? 'បន្ថែមទៅបញ្ជីប្រាថ្នា' : 'add to wishlist')) {
+  if (
+    verifyLogin(
+      locale.value === "kh" ? "បន្ថែមទៅបញ្ជីប្រាថ្នា" : "add to wishlist",
+    )
+  ) {
     wishlistStore.toggleWishlist(props.product);
     const isNowAdded = wishlistStore.isInWishlist(props.product.id);
     showSuccess(
       isNowAdded
-        ? (locale.value === 'kh' ? 'បានបន្ថែមទៅក្នុងបញ្ជីប្រាថ្នា!' : 'Added to wishlist!')
-        : (locale.value === 'kh' ? 'បានដកចេញពីបញ្ជីប្រាថ្នា!' : 'Removed from wishlist!')
+        ? locale.value === "kh"
+          ? "បានបន្ថែមទៅក្នុងបញ្ជីប្រាថ្នា!"
+          : "Added to wishlist!"
+        : locale.value === "kh"
+          ? "បានដកចេញពីបញ្ជីប្រាថ្នា!"
+          : "Removed from wishlist!",
     );
   }
 };
@@ -147,14 +171,14 @@ const savings = computed(() => {
 });
 
 const progress = computed(() =>
-  Math.min(95, Math.max(30, ((props.product.id || 0) * 13) % 100))
+  Math.min(95, Math.max(30, ((props.product.id || 0) * 13) % 100)),
 );
 
 const itemsLeft = computed(() =>
-  Math.max(2, ((props.product.id || 0) * 7) % 12)
+  Math.max(2, ((props.product.id || 0) * 7) % 12),
 );
 
-const handleBuyNow = () => emit('add-to-cart', props.product);
+const handleBuyNow = () => emit("add-to-cart", props.product);
 </script>
 
 <style scoped>
@@ -163,15 +187,19 @@ const handleBuyNow = () => emit('add-to-cart', props.product);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 20px;
-  transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+  transition:
+    box-shadow 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.3s ease;
   color: var(--color-text);
 }
 
 .discount-card:hover {
   transform: translateY(-6px);
   border-color: rgba(0, 220, 130, 0.4);
-  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.12),
-              0 0 0 1px rgba(0, 220, 130, 0.1);
+  box-shadow:
+    0 20px 40px -12px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(0, 220, 130, 0.1);
 }
 
 /* ── Deal Badge ── */
@@ -382,5 +410,4 @@ const handleBuyNow = () => emit('add-to-cart', props.product);
   align-items: center;
   margin-top: 2px;
 }
-
 </style>

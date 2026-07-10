@@ -5,20 +5,31 @@
         <!-- Brand Info Column -->
         <div class="col-lg-4 col-md-6">
           <div class="d-flex align-items-center gap-2 mb-3">
-            <span class="brand-logo d-flex align-items-center justify-content-center text-white fw-bold">
+            <span
+              class="brand-logo d-flex align-items-center justify-content-center text-white fw-bold"
+            >
               TL
             </span>
             <span class="fs-4 fw-bold text-gradient brand-title">Tos Louk</span>
           </div>
           <p class="footer-desc mb-4">
-            Discover what defines modern living. Shop our premium collections of clothing, accessories, and state-of-the-art electronics.
+            Discover what defines modern living. Shop our premium collections of
+            clothing, accessories, and state-of-the-art electronics.
           </p>
           <!-- Social Icons -->
           <div class="d-flex gap-3 social-group">
-            <a href="#" class="social-btn" title="Facebook"><i class="bi bi-facebook"></i></a>
-            <a href="#" class="social-btn" title="Telegram"><i class="bi bi-telegram"></i></a>
-            <a href="#" class="social-btn" title="Instagram"><i class="bi bi-instagram"></i></a>
-            <a href="#" class="social-btn" title="YouTube"><i class="bi bi-youtube"></i></a>
+            <a href="#" class="social-btn" title="Facebook"
+              ><i class="bi bi-facebook"></i
+            ></a>
+            <a href="#" class="social-btn" title="Telegram"
+              ><i class="bi bi-telegram"></i
+            ></a>
+            <a href="#" class="social-btn" title="Instagram"
+              ><i class="bi bi-instagram"></i
+            ></a>
+            <a href="#" class="social-btn" title="YouTube"
+              ><i class="bi bi-youtube"></i
+            ></a>
           </div>
         </div>
 
@@ -54,28 +65,36 @@
             </li>
             <li class="d-flex gap-3 align-items-center">
               <i class="bi bi-telephone-fill text-primary-icon"></i>
-              <a href="tel:+85512345678" class="contact-link">+855 (0) 12 345 678</a>
+              <a href="tel:+85512345678" class="contact-link"
+                >+855 (0) 12 345 678</a
+              >
             </li>
             <li class="d-flex gap-3 align-items-center">
               <i class="bi bi-envelope-fill text-primary-icon"></i>
-              <a href="mailto:info@toslouk.com" class="contact-link">info@toslouk.com</a>
+              <a href="mailto:info@toslouk.com" class="contact-link"
+                >info@toslouk.com</a
+              >
             </li>
           </ul>
         </div>
       </div>
 
       <!-- Footer Bottom -->
-      <hr class="footer-divider my-3">
+      <hr class="footer-divider my-3" />
 
       <div class="row align-items-center justify-content-between gy-3">
         <div class="col-md-6 text-center text-md-start">
           <p class="copyright-text mb-0">
-            &copy; {{ currentYear }} <strong class="brand-title-small">Tos Louk</strong>. All rights reserved.
+            &copy; {{ currentYear }}
+            <strong class="brand-title-small">Tos Louk</strong>. All rights
+            reserved.
           </p>
         </div>
         <div class="col-md-6 text-center text-md-end">
           <!-- Mock Payment Badges -->
-          <div class="d-flex align-items-center justify-content-center justify-content-md-end gap-3 payment-badges">
+          <div
+            class="d-flex align-items-center justify-content-center justify-content-md-end gap-3 payment-badges"
+          >
             <span class="payment-badge" title="ABA Pay">ABA</span>
             <span class="payment-badge" title="Visa">Visa</span>
             <span class="payment-badge" title="Mastercard">Master</span>
@@ -88,7 +107,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed } from "vue";
 
 const currentYear = computed(() => new Date().getFullYear());
 </script>
