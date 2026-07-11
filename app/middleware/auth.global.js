@@ -21,6 +21,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     "/discount",
     "/wishlist",
     "/order",
+    "/product/[id]",
   ];
 
   // CASE A: User IS logged in, but tries to access guest-only auth pages (like login/register)
@@ -34,7 +35,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   // CASE B: User IS NOT logged in, and tries to access a protected page (like /profile or /user)
-  const isPublicPage = publicRoutes.includes(to.path);
+  const isPublicPage = publicRoutes.includes(to.path) || to.path.startsWith('/product/');
   const isAuthPage = authOnlyRoutes.includes(to.path);
   const isProtectedRoute = !isPublicPage && !isAuthPage;
 
