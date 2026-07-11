@@ -1,5 +1,5 @@
 <template>
-  <div class="product-card">
+  <NuxtLink :to="`/product/${product.id}`" class="product-card text-decoration-none">
     <div class="image-wrapper">
       <NuxtImg :src="product.image" :alt="product.title" />
       <span v-if="product.badge" class="badge">{{ product.badge }}</span>
@@ -53,7 +53,7 @@
         Add to Cart <i class="bi bi-bag-plus"></i>
       </button>
     </div>
-  </div>
+  </NuxtLink>
 </template>
 
 <script setup>
