@@ -476,7 +476,7 @@
         <!-- Product Grid (Right Column on Desktop) -->
         <div class="col-lg-9 col-md-8">
           <transition-group name="grid" tag="div" class="row g-4">
-            <div v-for="product in filteredProducts" :key="product.id" :class="viewMode === 'grid' ? 'col-sm-6 col-lg-4' : 'col-12'">
+            <div v-for="product in paginatedProducts" :key="product.id" :class="viewMode === 'grid' ? 'col-sm-6 col-lg-4' : 'col-12'">
               <CategoryProductCard :product="product" :layout="viewMode" @add-to-cart="handleAddToCart" />
             </div>
 
@@ -498,6 +498,16 @@
               </button>
             </div>
           </transition-group>
+
+          <!-- Pagination -->
+          <div class="mt-4 pt-2" v-if="totalPages > 1">
+            <BasePagination 
+              :current-page="currentPage" 
+              :total-pages="totalPages"
+              :total-results="filteredProducts.length"
+              @update:currentPage="handlePageChange"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -505,8 +515,9 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive } from 'vue';
+import { ref, computed, reactive, watch } from 'vue';
 import CategoryProductCard from '~/components/common/CategoryProductCard.vue';
+import BasePagination from '~/components/base/base-pagination.vue';
 import { useCartStore } from '~/stores/cartStore';
 import { useAppToast } from '~/composables/ui/useAppToast';
 
@@ -803,6 +814,17 @@ const mockProducts = [
     rating: 4.8,
     image: "https://placehold.co/300x300/png?text=Travel+Backpack",
   },
+  ...Array.from({ length: 25 }, (_, i) => ({
+    id: 12 + i,
+    title: `Premium Item ${i + 12}`,
+    category: i % 2 === 0 ? "clothing" : "accessories",
+    brand: i % 3 === 0 ? "nike" : i % 2 === 0 ? "adidas" : "puma",
+    color: i % 2 === 0 ? "Black" : "White",
+    price: Math.floor(Math.random() * 80) + 20,
+    oldPrice: Math.floor(Math.random() * 150) + 100,
+    rating: (Math.random() * 1 + 4).toFixed(1),
+    image: `https://placehold.co/300x300/png?text=Item+${i + 12}`,
+  }))
 ];
 
 const selectCategory = (slug) => {
@@ -882,6 +904,27 @@ const filteredProducts = computed(() => {
 
   return result;
 });
+
+const currentPage = ref(1);
+
+const totalPages = computed(() => {
+  return Math.ceil(filteredProducts.value.length / itemsPerPage.value) || 1;
+});
+
+const paginatedProducts = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return filteredProducts.value.slice(start, end);
+});
+
+watch(filteredProducts, () => {
+  currentPage.value = 1;
+});
+
+const handlePageChange = (page) => {
+  currentPage.value = page;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
 const handleAddToCart = (product) => {
   cartStore.addToCart(product);
@@ -1353,13 +1396,13 @@ const handleAddToCart = (product) => {
 }
 
 .custom-accordion-item {
-  border-bottom: 1px solid rgba(0,0,0,0.06) !important;
+  border-bottom: 1px solid var(--color-border) !important;
 }
 .custom-accordion-item:last-child {
   border-bottom: none !important;
 }
 .sub-link {
-  color: #64748b;
+  color: var(--color-text-secondary);
   font-size: 15px;
   transition: all 0.2s;
 }
@@ -1371,19 +1414,10 @@ const handleAddToCart = (product) => {
   transition: all 0.3s ease;
 }
 
-.widget-title::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 3px;
-  background-color: var(--color-primary);
-  border-radius: 4px;
-}/* Product Categories Widget Matching FashionStore */
+/* Product Categories Widget Matching FashionStore */
 .product-categories-widget {
-  background-color: #fff;
-  border: 1px solid #dee2e6;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 1.5rem;
 }
@@ -1392,7 +1426,7 @@ const handleAddToCart = (product) => {
   font-size: 1.25rem;
   font-weight: 700;
   margin-bottom: 1.5rem;
-  color: #1a1a24;
+  color: var(--color-text);
   position: relative;
   padding-left: 15px;
 }
@@ -1406,6 +1440,7 @@ const handleAddToCart = (product) => {
   width: 3px;
   height: 20px;
   background-color: var(--color-primary, #00b894);
+  border-radius: 4px;
 }
 
 .category-tree .category-item {
@@ -1420,7 +1455,7 @@ const handleAddToCart = (product) => {
 .category-link {
   font-size: 1rem;
   font-weight: 600;
-  color: #1a1a24;
+  color: var(--color-text);
   text-decoration: none;
   transition: 0.3s;
 }
@@ -1431,7 +1466,7 @@ const handleAddToCart = (product) => {
 }
 
 .category-toggle {
-  color: #64748b;
+  color: var(--color-text-secondary);
   font-size: 0.85rem;
   transition: 0.3s;
 }
@@ -1450,7 +1485,7 @@ const handleAddToCart = (product) => {
 
 .subcategory-link {
   font-size: 0.95rem;
-  color: #64748b;
+  color: var(--color-text-secondary);
   text-decoration: none;
   transition: 0.3s;
   display: block;
