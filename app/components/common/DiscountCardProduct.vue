@@ -30,6 +30,15 @@
       ></i>
     </button>
 
+    <!-- Quick View Button -->
+    <NuxtLink
+      :to="`/product/${product.id}`"
+      class="quick-view-btn position-absolute z-2"
+      title="View Details"
+    >
+      <i class="bi bi-eye"></i>
+    </NuxtLink>
+
     <!-- Product Image -->
     <div class="image-area">
       <NuxtImg
@@ -246,6 +255,30 @@ const handleBuyNow = () => emit("add-to-cart", props.product);
   background: rgba(239, 68, 68, 0.08);
   border-color: rgba(239, 68, 68, 0.3);
   color: #ef4444;
+}
+
+/* ── Quick View Button ── */
+.quick-view-btn {
+  top: 56px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(8px);
+  text-decoration: none;
+}
+.quick-view-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  transform: scale(1.1);
 }
 
 /* ── Image Area ── */

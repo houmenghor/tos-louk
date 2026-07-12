@@ -1,6 +1,7 @@
 <template>
-  <div 
-    class="card glass-card shadow-sm border-0 overflow-hidden" 
+  <NuxtLink 
+    :to="`/product/${product.id}`"
+    class="card glass-card shadow-sm border-0 overflow-hidden text-decoration-none"  
     :class="layout === 'list' ? 'flex-sm-row flex-column h-auto' : 'h-100'"
   >
     <!-- Image Area -->
@@ -94,7 +95,7 @@
         </button>
       </div>
     </div>
-  </div>
+  </NuxtLink>
 </template>
 
 <script setup>
