@@ -5,12 +5,21 @@
         <!-- Brand Info Column -->
         <div class="col-lg-4 col-md-6">
           <div class="d-flex align-items-center gap-2 mb-3">
-            <span
-              class="brand-logo d-flex align-items-center justify-content-center text-white fw-bold"
-            >
-              TL
-            </span>
-            <span class="fs-4 fw-bold text-gradient brand-title">Tos Louk</span>
+            <NuxtImg
+              v-if="storeLogo"
+              :src="storeLogo"
+              :alt="storeName"
+              class="brand-logo-img object-fit-contain"
+              style="max-height: 40px; max-width: 140px;"
+            />
+            <template v-else>
+              <span
+                class="brand-logo d-flex align-items-center justify-content-center text-white fw-bold"
+              >
+                {{ storeInitials }}
+              </span>
+              <span class="fs-4 fw-bold text-gradient brand-title">{{ storeName }}</span>
+            </template>
           </div>
           <p class="footer-desc mb-4">
             Discover what defines modern living. Shop our premium collections of
@@ -61,18 +70,18 @@
           <ul class="list-unstyled footer-contact d-flex flex-column gap-3">
             <li class="d-flex gap-3 align-items-start">
               <i class="bi bi-geo-alt-fill text-primary-icon mt-1"></i>
-              <span>123 Russian Boulevard, Phnom Penh, Cambodia</span>
+              <span>{{ storeLocation }}</span>
             </li>
             <li class="d-flex gap-3 align-items-center">
               <i class="bi bi-telephone-fill text-primary-icon"></i>
-              <a href="tel:+85512345678" class="contact-link"
-                >+855 (0) 12 345 678</a
+              <a :href="`tel:${supportPhone}`" class="contact-link"
+                >{{ supportPhone }}</a
               >
             </li>
             <li class="d-flex gap-3 align-items-center">
               <i class="bi bi-envelope-fill text-primary-icon"></i>
-              <a href="mailto:info@toslouk.com" class="contact-link"
-                >info@toslouk.com</a
+              <a :href="`mailto:${supportEmail}`" class="contact-link"
+                >{{ supportEmail }}</a
               >
             </li>
           </ul>
@@ -86,7 +95,7 @@
         <div class="col-md-6 text-center text-md-start">
           <p class="copyright-text mb-0">
             &copy; {{ currentYear }}
-            <strong class="brand-title-small">Tos Louk</strong>. All rights
+            <strong class="brand-title-small">{{ storeName }}</strong>. All rights
             reserved.
           </p>
         </div>
@@ -108,8 +117,30 @@
 
 <script setup>
 import { computed } from "vue";
+import { useSettingStore } from "~/stores/settingStore";
 
+const settingStore = useSettingStore();
 const currentYear = computed(() => new Date().getFullYear());
+
+const storeLocation = computed(() =>
+  settingStore.settings?.general?.store_location || "123 Russian Boulevard, Phnom Penh, Cambodia"
+);
+const supportPhone = computed(() =>
+  settingStore.settings?.general?.support_phone || "+855 (0) 12 345 678"
+);
+const supportEmail = computed(() =>
+  settingStore.settings?.general?.support_email || "support@toslouksystem.com"
+);
+const storeName = computed(() =>
+  settingStore.settings?.general?.store_name || "Tos Louk"
+);
+const storeLogo = computed(() =>
+  settingStore.settings?.general?.store_logo || null
+);
+const storeInitials = computed(() => {
+  const name = storeName.value || "TL";
+  return name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+});
 </script>
 
 <style scoped>

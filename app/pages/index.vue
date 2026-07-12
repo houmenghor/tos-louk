@@ -48,58 +48,63 @@
           <div class="col-lg-7">
             <div class="row g-3">
               <div class="col-md-5">
-                <div
-                  class="card glass-card h-100 border-0 shadow-sm p-3 position-relative"
+                <NuxtLink
+                  :to="`/product/${heroBestSeller.uuid}`"
+                  class="card glass-card h-100 border-0 shadow-sm p-3 position-relative text-decoration-none text-main"
                 >
                   <span
                     class="badge custom-badge position-absolute top-0 start-0 m-3"
                     >Best Seller</span
                   >
                   <NuxtImg
-                    src="https://placehold.co/200x200/png"
+                    :src="heroBestSeller.image"
                     class="card-img-top w-75 mx-auto mt-4 mb-2 object-fit-contain"
-                    alt="Backpack"
+                    style="height: 140px;"
+                    :alt="heroBestSeller.title"
                     draggable="false"
                   />
                   <div class="card-body px-1 pb-0 mt-auto">
                     <h6 class="card-title text-truncate mb-1">
-                      Precision Audio Hub
+                      {{ heroBestSeller.title }}
                     </h6>
                     <p class="price-text fw-bold mb-0">
-                      $219
-                      <del class="subtitle-text fw-normal small ms-1">$299</del>
+                      ${{ heroBestSeller.price }}
+                      <del v-if="heroBestSeller.oldPrice" class="subtitle-text fw-normal small ms-1">${{ heroBestSeller.oldPrice }}</del>
                     </p>
                   </div>
-                </div>
+                </NuxtLink>
               </div>
 
               <div class="col-md-7">
-                <div
-                  class="card glass-card h-100 border-0 shadow-sm p-3 position-relative"
+                <NuxtLink
+                  :to="`/product/${heroTrending.uuid}`"
+                  class="card glass-card h-100 border-0 shadow-sm p-3 position-relative text-decoration-none text-main"
                 >
                   <span
                     class="badge custom-badge position-absolute top-0 start-0 m-3"
                     >Trending Now</span
                   >
                   <NuxtImg
-                    src="https://placehold.co/300x150/png"
+                    :src="heroTrending.image"
                     class="card-img-top w-75 mx-auto mt-4 mb-2 object-fit-contain"
-                    alt="Sunglasses"
+                    style="height: 140px;"
+                    :alt="heroTrending.title"
                     draggable="false"
                   />
                   <div class="card-body px-1 pb-0 mt-auto">
-                    <h6 class="card-title mb-1">Smart Wearable Pro</h6>
+                    <h6 class="card-title text-truncate mb-1">{{ heroTrending.title }}</h6>
                     <p class="price-text fw-bold mb-0">
-                      $159
-                      <del class="subtitle-text fw-normal small ms-1">$229</del>
+                      ${{ heroTrending.price }}
+                      <del v-if="heroTrending.oldPrice" class="subtitle-text fw-normal small ms-1">${{ heroTrending.oldPrice }}</del>
                     </p>
                   </div>
-                </div>
+                </NuxtLink>
               </div>
 
               <div class="col-12">
-                <div
-                  class="card glass-card border-0 shadow-sm p-3 position-relative"
+                <NuxtLink
+                  :to="`/product/${heroJustLaunched.uuid}`"
+                  class="card glass-card border-0 shadow-sm p-3 position-relative text-decoration-none text-main"
                 >
                   <span
                     class="badge custom-badge position-absolute top-0 start-0 m-3 z-1"
@@ -108,31 +113,31 @@
                   <div class="row g-0 align-items-center mt-4">
                     <div class="col-sm-4 text-center">
                       <NuxtImg
-                        src="https://placehold.co/150x200/png"
+                        :src="heroJustLaunched.image"
                         class="img-fluid rounded-start w-75 object-fit-contain"
-                        alt="Polo Shirt"
+                        style="max-height: 140px;"
+                        :alt="heroJustLaunched.title"
                         draggable="false"
                       />
                     </div>
                     <div class="col-sm-8">
                       <div class="card-body py-0 pe-1">
                         <h6 class="card-title mb-2">
-                          Essential Daily Companion
+                          {{ heroJustLaunched.title }}
                         </h6>
-                        <p class="subtitle-text small mb-3">
-                          Proin eget tortor risus. Vivamus magna justo, lacinia
-                          eget consectetur sed, convallis at tellus curabitur.
+                        <p class="subtitle-text small mb-3 text-truncate-2">
+                          {{ heroJustLaunched.desc }}
                         </p>
                         <p class="price-text fw-bold mb-0">
-                          $99
-                          <del class="subtitle-text fw-normal small ms-1"
-                            >$149</del
+                          ${{ heroJustLaunched.price }}
+                          <del v-if="heroJustLaunched.oldPrice" class="subtitle-text fw-normal small ms-1"
+                            >${{ heroJustLaunched.oldPrice }}</del
                           >
                         </p>
                       </div>
                     </div>
                   </div>
-                </div>
+                </NuxtLink>
               </div>
             </div>
           </div>
@@ -217,7 +222,7 @@
           <button
             v-for="tab in tabs"
             :key="tab.id"
-            @click="activeTab = tab.id"
+            @click="handleSelectTab(tab.id)"
             class="tab-pill"
             :class="{ active: activeTab === tab.id }"
           >
@@ -226,8 +231,16 @@
         </div>
 
         <transition name="fade" mode="out-in">
-          <div :key="activeTab" class="row g-4 justify-content-center">
+          <div :key="activeTab" class="row g-4">
             <div
+              v-if="currentCategoryData.length === 0 && !loadingCategoryTab"
+              class="col-12 text-center py-5"
+            >
+              <i class="bi bi-box fs-1 text-muted mb-3 d-block"></i>
+              <p class="text-muted fw-medium">No products found in this category yet.</p>
+            </div>
+            <div
+              v-else
               v-for="item in currentCategoryData"
               :key="item.id"
               class="col-12 col-md-4 col-lg-3"
@@ -258,7 +271,7 @@
 
         <div class="row g-4">
           <div
-            v-for="item in bestSellersData"
+            v-for="item in bestSellersList"
             :key="item.id"
             class="col-lg-3 col-md-4"
           >
@@ -270,7 +283,11 @@
 
     <section id="discount" class="discount-product py-6">
       <div class="container">
-        <DiscountBanner />
+        <DiscountBanner
+          :target-date="activeDiscountEndDate"
+          :max-percent="activeMaxPercent"
+          :title="activeCampaignTitle"
+        />
 
         <div class="row g-4">
           <div
@@ -385,18 +402,88 @@ import CategoryProductCard from "~/components/common/CategoryProductCard.vue";
 import DiscountBanner from "~/components/common/DiscountBanner.vue";
 import DiscountCardProduct from "~/components/common/DiscountCardProduct.vue";
 
-// 20 Mock Items
-const productsList = Array.from({ length: 20 }, (_, i) => {
-  const isSale = i % 4 === 0;
-  const isHot = i % 5 === 0 && !isSale;
+const productStore = useProductStore();
+const categoryStore = useCategoryStore();
+const {products} = storeToRefs(productStore);
+
+onMounted(async () => {
+  await productStore.getAllProducts({
+    per_page: 30,
+    column: 'created_at',
+    sort: 'desc',
+    status: 1
+  });
+
+  await nextTick();
+  calculateDots();
+});
+
+const productsList = computed(() => {
+  return products.value.map((item) => ({
+    id: item.id,
+    uuid: item.uuid,
+    title: item.title,
+    desc: item.description || "Premium quality product.",
+    price: item.sell_price,
+    oldPrice: item.unit_price > item.sell_price ? item.unit_price : null,
+    badge: item.discount ? `${item.discount.value}% OFF` : "",
+    image: item.thumbnail || "https://placehold.co/200x200/png?text=No+Image"
+  }));
+});
+
+const bestSellersList = computed(() => {
+  // Strictly filter by collection === 'best_seller'
+  const filtered = products.value.filter(
+    (item) => item.collection === "best_seller"
+  );
+  // Fallback to slice if no products have 'best_seller' collection assigned yet in DB
+  const itemsToShow = filtered.length > 0 ? filtered : products.value;
+
+  return itemsToShow.slice(0, 8).map((item) => ({
+    id: item.id,
+    uuid: item.uuid,
+    title: item.title,
+    category: item.category?.name || "PREMIUM COLLECTION",
+    price: item.sell_price,
+    badge: item.discount ? `${item.discount.value}% OFF` : "Best Seller",
+    image: item.thumbnail || "https://placehold.co/200x200/png?text=Item"
+  }));
+}); 
+
+const heroBestSeller = computed(() => {
+  const item = products.value.find(p => p.collection === 'best_seller') || products.value[0] || {};
   return {
-    id: i + 1,
-    title: `Premium Item ${i + 1}`,
-    desc: "Curabitur aliquet quam id dui posuere blandit.",
-    price: Math.floor(Math.random() * 50) + 20,
-    oldPrice: isSale ? Math.floor(Math.random() * 30) + 80 : null,
-    badge: isSale ? "Sale" : isHot ? "Hot" : "",
-    image: `https://placehold.co/200x200/png?text=Item+${i + 1}`,
+    id: item.id || 1,
+    uuid: item.uuid || '',
+    title: item.title || 'Precision Audio Hub',
+    price: item.sell_price || 219,
+    oldPrice: item.unit_price > item.sell_price ? item.unit_price : 299,
+    image: item.thumbnail || 'https://placehold.co/200x200/png?text=Best+Seller'
+  };
+});
+
+const heroTrending = computed(() => {
+  const item = products.value.find(p => p.collection === 'popular') || products.value[1] || products.value[0] || {};
+  return {
+    id: item.id || 2,
+    uuid: item.uuid || '',
+    title: item.title || 'Smart Wearable Pro',
+    price: item.sell_price || 159,
+    oldPrice: item.unit_price > item.sell_price ? item.unit_price : 229,
+    image: item.thumbnail || 'https://placehold.co/300x150/png?text=Trending'
+  };
+});
+
+const heroJustLaunched = computed(() => {
+  const item = products.value.find(p => p.collection === 'new_arrival') || products.value[2] || products.value[0] || {};
+  return {
+    id: item.id || 3,
+    uuid: item.uuid || '',
+    title: item.title || 'Essential Daily Companion',
+    desc: item.description || 'Proin eget tortor risus. Vivamus magna justo, lacinia eget consectetur sed.',
+    price: item.sell_price || 99,
+    oldPrice: item.unit_price > item.sell_price ? item.unit_price : 149,
+    image: item.thumbnail || 'https://placehold.co/150x200/png?text=New+Arrival'
   };
 });
 
@@ -488,220 +575,120 @@ onUnmounted(() => {
   window.removeEventListener("resize", calculateDots);
 });
 
-const tabs = [
-  { id: "all", label: "All" },
-  { id: "men", label: "Clothing" },
-  { id: "accessories", label: "Accessories" },
-  { id: "electronics", label: "Electronics" },
-];
+const { data: fetchedParentCategories } = await useAsyncData("home-category-tabs", () =>
+  categoryStore.getCategories({ per_page: 50, parent_id: "null" })
+);
 
-const activeTab = ref("electronics");
+const tabs = computed(() => {
+  const list = [{ id: "all", label: "All" }];
+  if (fetchedParentCategories.value?.data && Array.isArray(fetchedParentCategories.value.data)) {
+    fetchedParentCategories.value.data.forEach((cat) => {
+      list.push({ id: cat.id, label: cat.name });
+    });
+  }
+  return list;
+});
 
-// Data
-const categoryData = {
-  all: [
-    {
-      id: 1,
-      title: "Premium Headphones",
-      price: 249.99,
-      image: "https://placehold.co/300x300",
-    },
-    {
-      id: 2,
-      title: "Casual Cotton T-Shirt",
-      price: 29.99,
-      image: "https://placehold.co/300x300",
-    },
-    {
-      id: 3,
-      title: "Leather Watch Strap",
-      price: 59.99,
-      image: "https://placehold.co/300x300",
-    },
-    {
-      id: 4,
-      title: "Smart Fitness Band",
-      price: 89.99,
-      image: "https://placehold.co/300x300",
-    },
-  ],
-  men: [
-    {
-      id: 5,
-      title: "Slim Fit Denim",
-      price: 79.99,
-      image: "https://placehold.co/300x300",
-    },
-    {
-      id: 6,
-      title: "Classic Polo Shirt",
-      price: 45.0,
-      image: "https://placehold.co/300x300",
-    },
-    {
-      id: 7,
-      title: "Wool Blend Blazer",
-      price: 129.99,
-      image: "https://placehold.co/300x300",
-    },
-    {
-      id: 8,
-      title: "Casual Chinos",
-      price: 65.0,
-      image: "https://placehold.co/300x300",
-    },
-  ],
-  accessories: [
-    {
-      id: 9,
-      title: "Minimalist Wallet",
-      price: 35.0,
-      image: "https://placehold.co/300x300",
-    },
-    {
-      id: 10,
-      title: "Polarized Sunglasses",
-      price: 120.0,
-      image: "https://placehold.co/300x300",
-    },
-    {
-      id: 11,
-      title: "Leather Belt",
-      price: 45.0,
-      image: "https://placehold.co/300x300",
-    },
-    {
-      id: 12,
-      title: "Travel Backpack",
-      price: 95.0,
-      image: "https://placehold.co/300x300",
-    },
-  ],
-  electronics: [
-    {
-      id: 1,
-      title: "Consectetur adipiscing elit",
-      price: 249.99,
-      image: "https://placehold.co/300x300",
-    },
-    {
-      id: 2,
-      title: "Magna aliqua ut enim",
-      price: 199.99,
-      image: "https://placehold.co/300x300",
-    },
-    {
-      id: 3,
-      title: "Ex ea commodo consequat",
-      price: 159.99,
-      image: "https://placehold.co/300x300",
-    },
-    {
-      id: 13,
-      title: "Wireless Charging Pad",
-      price: 49.99,
-      image: "https://placehold.co/300x300",
-    },
-  ],
+const activeTab = ref("all");
+const categoryFilteredProducts = ref([]);
+const loadingCategoryTab = ref(false);
+
+const handleSelectTab = async (tabId) => {
+  activeTab.value = tabId;
+  loadingCategoryTab.value = true;
+  categoryFilteredProducts.value = [];
+  try {
+    const params = { per_page: 12, status: 1, column: 'created_at', sort: 'desc' };
+    if (tabId !== "all") {
+      params.category_id = tabId;
+    }
+    const res = await productStore.getFilteredProducts(params);
+    if (res?.data) {
+      categoryFilteredProducts.value = res.data;
+    }
+  } catch (err) {
+    console.error("Failed to filter products by category:", err);
+  } finally {
+    loadingCategoryTab.value = false;
+  }
 };
 
 const currentCategoryData = computed(() => {
-  if (activeTab.value === "all") {
-    // This spreads all arrays into one single list
-    return [
-      ...categoryData.men,
-      ...categoryData.accessories,
-      ...categoryData.electronics,
-    ];
-  }
-  return categoryData[activeTab.value] || [];
+  const rawItems = categoryFilteredProducts.value.length > 0
+    ? categoryFilteredProducts.value
+    : (activeTab.value === "all" ? products.value.slice(0, 12) : []);
+
+  return rawItems.map((item) => ({
+    id: item.id,
+    uuid: item.uuid,
+    title: item.title,
+    category: item.category?.name || "SPECIAL DEAL",
+    price: item.sell_price,
+    oldPrice: item.unit_price > item.sell_price ? item.unit_price : null,
+    image: (item.images && item.images.length > 0)
+      ? item.images[0].image_url
+      : (item.thumbnail || 'https://placehold.co/600x600/png?text=No+Image'),
+    badge: item.discount ? `-${item.discount.value}%` : (item.collection === 'best_seller' ? 'Best Seller' : ''),
+    stock: item.stock
+  }));
 });
 
-// Add this data definition
-const bestSellersData = [
-  {
-    id: 1,
-    title: "Donec sollicitudin molestie malesuada viverra",
-    category: "PREMIUM COLLECTION",
-    price: 149.0,
-    rating: 4.2,
-    reviews: 24,
-    badge: "Limited Edition",
-    image: "https://placehold.co/200x200/png?text=Item+1",
-  },
-  {
-    id: 2,
-    title: "Pellentesque in ipsum lacinia orci rutrum",
-    category: "BEST SELLER",
-    price: 165.0,
-    oldPrice: 220.0,
-    rating: 4.7,
-    reviews: 58,
-    badge: "25% Off",
-    image: "https://placehold.co/200x200/png?text=Item+2",
-  },
-  {
-    id: 3,
-    title: "Quisque velit nisi pretium ut lacinia",
-    category: "NEW ARRIVAL",
-    price: 89.0,
-    rating: 3.8,
-    reviews: 12,
-    colors: ["red", "blue", "green"],
-    image: "https://placehold.co/200x200/png?text=Item+3",
-  },
-  {
-    id: 4,
-    title: "Sed porttitor lectus nibh vivamus magna",
-    category: "EDITOR'S PICK",
-    price: 199.0,
-    rating: 4.9,
-    reviews: 71,
-    badge: "Trending",
-    colors: ["#475569", "#7c3aed", "#f97316"],
-    image: "https://placehold.co/200x200/png?text=Item+4",
-  },
-];
 
 const handleAddToCart = (product) => {
   console.log("Added to cart:", product.title);
 };
 
-// Add this data array
-const discountProducts = [
-  {
-    id: 101,
-    title: "Premium Wireless Headphones",
-    price: 98,
-    oldPrice: 179,
-    badge: "-45%",
-    image: "https://placehold.co/200x200",
-  },
-  {
-    id: 102,
-    title: "Smart Fitness Tracker Pro",
-    price: 60,
-    oldPrice: 120,
-    badge: "-50%",
-    image: "https://placehold.co/200x200",
-  },
-  {
-    id: 103,
-    title: "Lightweight Travel Backpack",
-    price: 136,
-    oldPrice: 210,
-    badge: "-35%",
-    image: "https://placehold.co/200x200",
-  },
-  {
-    id: 104,
-    title: "Artisan Porcelain Collection",
-    price: 43,
-    oldPrice: 95,
-    badge: "-55%",
-    image: "https://placehold.co/200x200",
-  },
-];
+const discountProducts = computed(() => {
+  // Filter products where there's a discount or oldPrice > price
+  const filtered = products.value.filter(
+    (item) => item.discount || item.unit_price > item.sell_price
+  );
+  const itemsToShow = filtered.length > 0 ? filtered : products.value.slice(0, 4);
+
+  return itemsToShow.slice(0, 4).map((item) => ({
+    id: item.id,
+    uuid: item.uuid,
+    title: item.title,
+    category: item.category?.name || "SPECIAL DEAL",
+    price: item.sell_price,
+    oldPrice: item.unit_price > item.sell_price ? item.unit_price : null,
+    badge: item.discount ? `-${item.discount.value}%` : "Sale",
+    endsAt: item.discount?.ends_at || null,
+    discountObj: item.discount || null,
+    stock: item.stock !== undefined ? item.stock : null,
+    stockWarning: item.stock_warning !== undefined ? item.stock_warning : 10,
+    image: item.thumbnail || "https://placehold.co/200x200/png?text=Discount+Item"
+  }));
+});
+
+const activeDiscountEndDate = computed(() => {
+  const dates = discountProducts.value
+    .map((i) => i.endsAt)
+    .filter((d) => d && new Date(d).getTime() > Date.now())
+    .sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+
+  return dates.length > 0 ? dates[0] : "2026-12-31T23:59:59";
+});
+
+const activeMaxPercent = computed(() => {
+  let max = 0;
+  discountProducts.value.forEach((item) => {
+    if (item.discountObj && item.discountObj.type === "percent") {
+      const val = Number(item.discountObj.value);
+      if (val > max) max = val;
+    }
+  });
+  return max > 0 ? max : 50;
+});
+
+const activeCampaignTitle = computed(() => {
+  const itemWithName = discountProducts.value.find(
+    (item) => item.discountObj && item.discountObj.name
+  );
+  return itemWithName
+    ? `${itemWithName.discountObj.name} — Just for You`
+    : "Exclusive Offers Just for You";
+});
 
 // Telegram Subscription State & Handlers
 const telegramInput = ref('');

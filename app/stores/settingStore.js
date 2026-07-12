@@ -3,7 +3,8 @@ export const useSettingStore = defineStore("setting", () => {
 
   const getSettings = async () => {
     const response = await $fetch("/api/settings");
-    settings.value = response.data;
+    settings.value = response?.data;
+    return settings.value;
   };
 
   return {

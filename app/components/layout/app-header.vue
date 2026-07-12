@@ -5,8 +5,10 @@
       <div
         class="container-xl d-flex justify-content-between align-items-center"
       >
-        <div class="fw-medium tracking-wide text-white small">
-          {{ t("navbar.deliveryNotice") }} 🎉
+        <div class="fw-medium tracking-wide text-white small d-flex align-items-center gap-2">
+          <i class="bi bi-truck text-warning fs-6"></i>
+          <span v-if="locale === 'kh'">ដឹកជញ្ជូនឥតគិតថ្លៃសម្រាប់ការទិញលើសពី {{ freeShippingThreshold }}</span>
+          <span v-else>FREE DELIVERY OVER {{ freeShippingThreshold }}</span>
         </div>
 
         <div class="d-flex align-items-center gap-3 small">
@@ -66,9 +68,15 @@
           to="/"
           class="d-flex align-items-center gap-2 text-decoration-none group-logo"
         >
-          <span class="brand-text text-main">
-            Tos<span class="text-primary-brand font-black">Louk</span
-            ><span class="brand-dot">.</span>
+          <NuxtImg
+            v-if="storeLogo"
+            :src="storeLogo"
+            :alt="storeName"
+            class="header-logo-img object-fit-contain"
+            style="max-height: 38px; max-width: 150px;"
+          />
+          <span v-else class="brand-text text-main fw-bold fs-4">
+            {{ storeName }}<span class="brand-dot text-primary-brand">.</span>
           </span>
         </NuxtLink>
 
@@ -267,10 +275,18 @@
       aria-labelledby="mobileNavbarLabel"
     >
       <div class="offcanvas-header border-bottom border-custom-glass">
-        <h5 class="offcanvas-title brand-text text-main" id="mobileNavbarLabel">
-          Tos<span class="text-primary-brand font-black">Louk</span
-          ><span class="brand-dot">.</span>
-        </h5>
+        <div class="offcanvas-title d-flex align-items-center gap-2" id="mobileNavbarLabel">
+          <NuxtImg
+            v-if="storeLogo"
+            :src="storeLogo"
+            :alt="storeName"
+            class="header-logo-img object-fit-contain"
+            style="max-height: 32px; max-width: 130px;"
+          />
+          <h5 v-else class="brand-text text-main mb-0 fw-bold">
+            {{ storeName }}<span class="brand-dot text-primary-brand">.</span>
+          </h5>
+        </div>
         <button
           type="button"
           class="btn-close btn-close-custom"
@@ -324,11 +340,25 @@ import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 import { useAuthStore } from "~/stores/authStore";
 import { useCartStore } from "~/stores/cartStore";
 import { useWishlistStore } from "~/stores/wishlistStore";
+import { useSettingStore } from "~/stores/settingStore";
 
 const { t, locale, setLocale } = useI18n();
 const auth = useAuthStore();
 const cartStore = useCartStore();
 const wishlistStore = useWishlistStore();
+const settingStore = useSettingStore();
+await useAsyncData("global-settings", () => settingStore.getSettings());
+
+const freeShippingThreshold = computed(() => {
+  const threshold = settingStore.settings?.shipping?.free_shipping_threshold;
+  return threshold ? `$${threshold}` : "$30";
+});
+const storeName = computed(() =>
+  settingStore.settings?.general?.store_name || "Tos Louk"
+);
+const storeLogo = computed(() =>
+  settingStore.settings?.general?.store_logo || null
+);
 const colorMode = useColorMode();
 const router = useRouter();
 const isDark = computed(() => colorMode.value === "dark");
