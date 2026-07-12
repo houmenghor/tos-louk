@@ -32,7 +32,7 @@
 
     <!-- Quick View Button -->
     <NuxtLink
-      :to="`/product/${product.id}`"
+      :to="`/product/${product.uuid}`"
       class="quick-view-btn position-absolute z-2"
       title="View Details"
     >
@@ -77,13 +77,18 @@
       <!-- Stock urgency bar -->
       <div class="stock-section">
         <div class="stock-labels">
-          <span class="stock-left">
+          <span v-if="itemsLeft <= (product.stockWarning || 10)" class="stock-left">
             <i class="bi bi-fire text-danger me-1"></i>
             Only <strong>{{ itemsLeft }}</strong> left
           </span>
-          <span class="stock-percent">{{ progress }}% sold</span>
+          <span v-else class="stock-left text-success">
+            <i class="bi bi-check-circle-fill me-1"></i>
+            <strong>{{ itemsLeft }}</strong> in stock
+          </span>
+          <span v-if="itemsLeft <= (product.stockWarning || 10)" class="stock-percent">{{ progress }}% sold</span>
+          <span v-else class="stock-percent text-muted">Ready to ship</span>
         </div>
-        <div class="stock-track">
+        <div class="stock-track" v-if="itemsLeft <= (product.stockWarning || 10)">
           <div class="stock-fill" :style="{ width: progress + '%' }"></div>
         </div>
       </div>
@@ -179,13 +184,25 @@ const savings = computed(() => {
   return null;
 });
 
-const progress = computed(() =>
-  Math.min(95, Math.max(30, ((props.product.id || 0) * 13) % 100)),
-);
+const progress = computed(() => {
+  if (props.product.stock !== undefined && props.product.stock !== null) {
+    const stock = Number(props.product.stock);
+    const warning = Number(props.product.stockWarning || 10);
+    if (stock <= 0) return 100;
+    if (stock <= warning) {
+      return Math.min(95, Math.max(50, Math.round((1 - (stock / (warning * 1.5))) * 100)));
+    }
+    return 15;
+  }
+  return Math.min(95, Math.max(30, ((props.product.id || 0) * 13) % 100));
+});
 
-const itemsLeft = computed(() =>
-  Math.max(2, ((props.product.id || 0) * 7) % 12),
-);
+const itemsLeft = computed(() => {
+  if (props.product.stock !== undefined && props.product.stock !== null) {
+    return Number(props.product.stock);
+  }
+  return Math.max(2, ((props.product.id || 0) * 7) % 12);
+});
 
 const handleBuyNow = () => emit("add-to-cart", props.product);
 </script>

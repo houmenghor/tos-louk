@@ -16,7 +16,6 @@ export default defineEventHandler(async (event) => {
       path: "/",
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
-      httpOnly: true,
     });
   }
 
@@ -26,7 +25,6 @@ export default defineEventHandler(async (event) => {
       path: "/",
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
-      httpOnly: true,
     });
   }
 

@@ -1,5 +1,5 @@
 <template>
-  <NuxtLink :to="`/product/${product.id}`" class="product-card text-decoration-none">
+  <NuxtLink :to="`/product/${product.uuid}`" class="product-card text-decoration-none">
     <div class="image-wrapper">
       <NuxtImg :src="product.image" :alt="product.title" />
       <span v-if="product.badge" class="badge">{{ product.badge }}</span>
@@ -29,10 +29,6 @@
     <div class="info-wrapper">
       <div class="meta-row">
         <span class="category">{{ product.category }}</span>
-        <span class="rating">
-          <i class="bi bi-star-fill" style="color: var(--color-warning)"></i>
-          {{ product.rating }}
-        </span>
       </div>
 
       <h3 class="title">{{ product.title }}</h3>

@@ -493,24 +493,36 @@ const genderOptions = computed(() => [
   { value: "Other", label: locale.value === "kh" ? "ផ្សេងៗ" : "Other" },
 ]);
 
+const populateProfileFields = () => {
+  if (authStore.userProfile) {
+    profileForm.full_name = authStore.userProfile.full_name || "";
+    profileForm.email = authStore.userProfile.email || "";
+    profileForm.phone =
+      authStore.userProfile.phone || authStore.userProfile.phone_number || "";
+    profileForm.gender = authStore.userProfile.gender || "";
+    profileForm.dob = authStore.userProfile.dob || "";
+    profileForm.address = authStore.userProfile.address || "";
+  }
+};
+
 // Fetch user dynamic data on client mounting
 onMounted(async () => {
   if (process.client) {
     wishlistStore.initWishlist();
     cartStore.initCart();
-
-    // Auto-fill profile fields
-    if (authStore.userProfile) {
-      profileForm.full_name = authStore.userProfile.full_name || "";
-      profileForm.email = authStore.userProfile.email || "";
-      profileForm.phone =
-        authStore.userProfile.phone || authStore.userProfile.phone_number || "";
-      profileForm.gender = authStore.userProfile.gender || "";
-      profileForm.dob = authStore.userProfile.dob || "";
-      profileForm.address = authStore.userProfile.address || "";
-    }
+    await authStore.fetchProfile();
+    populateProfileFields();
   }
 });
+
+watch(
+  () => authStore.userProfile,
+  () => {
+    populateProfileFields();
+  },
+  { immediate: true },
+);
+
 
 // Member since calculation formatted nicely
 const memberSinceDate = computed(() => {

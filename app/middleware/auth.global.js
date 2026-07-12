@@ -64,7 +64,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
         if (e.response?.status === 401 && auth.refresh_token) {
           try {
             await auth.refreshToken();
-            await auth.fetchProfile();
+            await auth.fetchProfile(true);
             return;
           } catch (refreshError) {
             console.error("Failed to refresh token:", refreshError);

@@ -6,6 +6,14 @@ const props = defineProps({
     type: [String, Date, Number],
     default: "2026-12-31T23:59:59",
   },
+  maxPercent: {
+    type: [Number, String],
+    default: 50,
+  },
+  title: {
+    type: String,
+    default: "Exclusive Offers Just for You",
+  },
 });
 
 // Initialized with original placeholder values to avoid Nuxt SSR hydration mismatches
@@ -61,12 +69,11 @@ onUnmounted(() => {
     <div class="row align-items-center">
       <div class="col-lg-6">
         <span class="badge bg-warning text-dark mb-2">
-          <i class="bi bi-lightning-fill"></i> Flash Sale — Up to 60% Off
+          <i class="bi bi-lightning-fill"></i> Flash Sale — Up to {{ maxPercent }}% Off
         </span>
-        <h3 class="fw-bold text-white">Exclusive Offers Just for You</h3>
-        <p class="text-white-50 small">
-          Pellentesque habitant morbi tristique senectus et netus et malesuada
-          fames ac turpis egestas. Don't miss these limited-time savings.
+        <h3 class="fw-bold text-white">{{ title }}</h3>
+        <p class="text-white-50 small mb-0">
+          Discover our limited-time special promotions across top categories. Grab your favorite deals before the countdown runs out!
         </p>
       </div>
       <div class="col-lg-6">

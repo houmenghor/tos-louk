@@ -1,6 +1,6 @@
 <template>
   <NuxtLink 
-    :to="`/product/${product.id}`"
+    :to="`/product/${product.uuid}`"
     class="card glass-card shadow-sm border-0 overflow-hidden text-decoration-none"  
     :class="layout === 'list' ? 'flex-sm-row flex-column h-auto' : 'h-100'"
   >
