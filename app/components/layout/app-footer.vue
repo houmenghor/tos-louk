@@ -50,8 +50,8 @@
           <ul class="list-unstyled footer-links d-flex flex-column gap-2">
             <li><a href="#">Help Center</a></li>
             <li><a href="#">Shipping Info</a></li>
-            <li><a href="#">Returns & Policy</a></li>
-            <li><a href="#">Order Tracking</a></li>
+            <li><a href="/privacy-policy">Privacy Policy</a></li>
+            <li><a href="/terms">Terms of Service</a></li>
           </ul>
         </div>
 
