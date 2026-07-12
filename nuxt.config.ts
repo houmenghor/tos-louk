@@ -32,6 +32,16 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: "Tos Louk",
+      meta: [
+        {
+          name: "google-site-verification",
+          content: "h2ieDS0d2baDGZsxzTWp65yyDUpudTRTfb7B_fHWkJ0",
+        },
+        {
+          name: "facebook-domain-verification",
+          content: "n75xtsojt79wbf1rp4snnujv1i8vv3",
+        },
+      ],
       link: [
         {
           rel: "icon",

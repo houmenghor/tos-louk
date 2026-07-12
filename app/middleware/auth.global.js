@@ -21,6 +21,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
     "/discount",
     "/wishlist",
     "/order",
+    "/privacy-policy",
+    "/terms"
   ];
 
   // CASE A: User IS logged in, but tries to access guest-only auth pages (like login/register)
