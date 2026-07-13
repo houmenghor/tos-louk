@@ -73,17 +73,31 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
-import DiscountBanner from "~/components/common/DiscountBanner.vue";
-import DiscountCardProduct from "~/components/common/DiscountCardProduct.vue";
+import { ref, computed, onMounted, watch } from "vue";
+import { storeToRefs } from "pinia";
+import DiscountBanner from "~/components/common/discount-banner.vue";
+import DiscountCardProduct from "~/components/common/discount-card-product.vue";
 import BasePagination from "~/components/base/base-pagination.vue";
 import { useCartStore } from "~/stores/cartStore";
+import { useProductStore } from "~/stores/productStore";
 
 definePageMeta({
   layout: "default",
 });
 
 const cartStore = useCartStore();
+const productStore = useProductStore();
+const { products } = storeToRefs(productStore);
+
+await useAsyncData("discount-products", async () => {
+  if (products.value.length === 0) {
+    await productStore.getAllProducts({
+      per_page: 50,
+      status: 1
+    });
+  }
+  return true;
+});
 
 const handleAddToCart = (product) => {
   // Logic is handled internally by DiscountCardProduct, but we can emit to parent if needed
@@ -98,38 +112,41 @@ const filters = [
   { id: "under50", label: "Under $50", icon: "bi-tag-fill" },
 ];
 
-// Mock Data Generator
-const generateMockDeals = () => {
-  const categories = ["clothing", "electronics", "accessories"];
-  return Array.from({ length: 24 }, (_, i) => {
-    const isFlash = i % 3 === 0;
-    const isClearance = i % 5 === 0 && !isFlash;
-    const basePrice = Math.floor(Math.random() * 100) + 15;
-    
-    // Create steep discounts
-    const oldPrice = isFlash 
-      ? Math.floor(basePrice * 2.5) 
-      : Math.floor(basePrice * 1.5);
 
-    return {
-      id: 1000 + i,
-      title: `Premium Deal Item ${i + 1}`,
-      category: categories[i % categories.length],
-      price: basePrice,
-      oldPrice: oldPrice,
-      image: `https://picsum.photos/seed/${i + 100}/400/400`,
-      badge: isFlash ? "Flash Deal" : (isClearance ? "Clearance" : "Save Big"),
-      isFlash,
-      isClearance
-    };
-  });
-};
 
-const allProducts = ref(generateMockDeals());
+const allDeals = computed(() => {
+  return products.value
+    .filter((item) => {
+      const { oldPrice } = getProductPricing(item);
+      return item.discount || oldPrice !== null;
+    })
+    .map((item) => {
+      const { price, oldPrice, badge } = getProductPricing(item);
+      const isFlash = Boolean(item.discount && item.discount.value >= 30);
+      const isClearance = Boolean(!isFlash && (oldPrice !== null || (item.discount && item.discount.value >= 15)));
+
+      return {
+        id: item.id,
+        uuid: item.uuid,
+        title: item.title,
+        category: item.category?.name || "SPECIAL DEAL",
+        price,
+        oldPrice,
+        thumbnail: item.thumbnail || item.images?.[0]?.image_url || "https://placehold.co/400x400/png?text=Deal",
+        image: item.thumbnail || item.images?.[0]?.image_url || "https://placehold.co/400x400/png?text=Deal",
+        images: item.images || [],
+        badge: badge || (isFlash ? "Flash Deal" : "Clearance"),
+        stock: item.stock,
+        stockWarning: item.stock_warning || 10,
+        isFlash,
+        isClearance
+      };
+    });
+});
 
 // Computed filtered products
 const filteredProducts = computed(() => {
-  let items = allProducts.value;
+  let items = allDeals.value;
   
   if (activeFilter.value === "flash") {
     items = items.filter(p => p.isFlash);
@@ -165,6 +182,13 @@ const handlePageChange = (page) => {
   // Smooth scroll to top of deals grid
   window.scrollTo({ top: 300, behavior: 'smooth' });
 };
+
+const { t } = useI18n();
+
+useSeoMeta({
+  title: () => t('navbar.discount'),
+  ogTitle: () => t('navbar.discount')
+});
 </script>
 
 <style scoped>

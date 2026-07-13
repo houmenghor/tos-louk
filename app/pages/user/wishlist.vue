@@ -85,7 +85,7 @@
 import { useWishlistStore } from "~/stores/wishlistStore";
 import { useCartStore } from "~/stores/cartStore";
 import { useAppToast } from "~/composables/ui/useAppToast";
-import CategoryProductCard from "~/components/common/CategoryProductCard.vue";
+import CategoryProductCard from "~/components/common/category-product-card.vue";
 
 const wishlistStore = useWishlistStore();
 const cartStore = useCartStore();

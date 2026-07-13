@@ -47,5 +47,13 @@
     "female": "ស្រី",
     "other": "ផ្សេងៗ",
     "orderHistory": "ប្រវត្តិនៃការបញ្ជាទិញ"
+  },
+  "seo": {
+    "siteName": "តោះលក់",
+    "defaultProductDesc": "ទិញទំនិញល្អៗនៅតោះលក់"
+  },
+  "product": {
+    "copySuccess": "បានចម្លងតំណភ្ជាប់!",
+    "copyError": "បរាជ័យក្នុងការចម្លងតំណភ្ជាប់"
   }
 }

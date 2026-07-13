@@ -1,38 +1,36 @@
 <template>
   <div
     class="discount-card h-100 position-relative overflow-hidden"
+    :class="layout === 'list' ? 'd-flex flex-sm-row flex-column h-auto' : ''"
     @mouseenter="hovered = true"
     @mouseleave="hovered = false"
   >
-    <!-- Discount Badge -->
-    <div v-if="product.badge" class="deal-badge position-absolute z-2">
-      <span class="deal-badge-pill">
-        <i class="bi bi-lightning-fill me-1"></i>{{ product.badge }}
+    <!-- Deal/Discount Badge -->
+    <div v-if="(product.badge && product.badge !== 'Best Seller') || (product.oldPrice && product.price < product.oldPrice)" class="deal-badge position-absolute z-2">
+      <span class="deal-badge-pill" v-if="product.badge && product.badge !== 'Best Seller'">
+        {{ product.badge }}
+      </span>
+      <span class="deal-badge-pill" v-else-if="product.oldPrice && product.price < product.oldPrice">
+        -{{ Math.round((1 - product.price / product.oldPrice) * 100) }}%
       </span>
     </div>
 
     <!-- Wishlist Button -->
     <button
       class="wishlist-btn position-absolute z-2"
-      :class="{ wishlisted: wishlistStore.isInWishlist(product.id) }"
-      @click.stop="handleToggleWishlist"
-      :title="
-        wishlistStore.isInWishlist(product.id)
-          ? 'Remove from Wishlist'
-          : 'Add to Wishlist'
-      "
+      :class="{ wishlisted: isWishlisted }"
+      @click.stop="toggleWishlist"
+      :title="isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'"
     >
       <i
         class="bi"
-        :class="
-          wishlistStore.isInWishlist(product.id) ? 'bi-heart-fill' : 'bi-heart'
-        "
+        :class="isWishlisted ? 'bi-heart-fill' : 'bi-heart'"
       ></i>
     </button>
 
     <!-- Quick View Button -->
     <NuxtLink
-      :to="`/product/${product.uuid}`"
+      :to="generateProductUrl(product)"
       class="quick-view-btn position-absolute z-2"
       title="View Details"
     >
@@ -40,20 +38,24 @@
     </NuxtLink>
 
     <!-- Product Image -->
-    <div class="image-area">
+    <NuxtLink
+      :to="generateProductUrl(product)"
+      class="image-area text-decoration-none d-block"
+      :class="layout === 'list' ? 'image-container-list flex-shrink-0' : ''"
+    >
       <NuxtImg
-        :src="product.image"
+        :src="product.thumbnail || product.images?.[0]?.image_url || product.image || 'https://placehold.co/400x400/png?text=Product'"
         :alt="product.title"
         class="product-img"
         :class="{ 'img-zoomed': hovered }"
       />
-      <!-- Hover overlay CTA -->
-      <div class="img-overlay" :class="{ 'overlay-visible': hovered }">
-        <button class="overlay-cart-btn" @click="handleAddToCart">
-          <i class="bi bi-cart-plus-fill me-2"></i>Quick Add
+      <!-- Hover overlay CTA (Grid mode only) -->
+      <div v-if="layout !== 'list'" class="img-overlay" :class="{ 'overlay-visible': hovered && !isSoldOut }">
+        <button class="overlay-cart-btn" @click.prevent.stop="handleAddToCart" :disabled="isSoldOut">
+          Quick Add
         </button>
       </div>
-    </div>
+    </NuxtLink>
 
     <!-- Card Content -->
     <div class="card-content">
@@ -62,73 +64,88 @@
         product.category
       }}</span>
 
-      <!-- Title -->
-      <h6 class="product-title">{{ product.title }}</h6>
-
-      <!-- Price Row -->
-      <div class="price-row">
-        <span class="price-now">${{ product.price }}</span>
-        <del v-if="product.oldPrice" class="price-was"
-          >${{ product.oldPrice }}</del
-        >
-        <span v-if="savings" class="save-chip">-${{ savings }}</span>
+      <!-- Title & Description Group -->
+      <div class="title-desc-group">
+        <NuxtLink :to="generateProductUrl(product)" class="text-decoration-none">
+          <h6 class="product-title" :class="layout === 'list' ? 'list-title fs-6' : ''">{{ product.title }}</h6>
+        </NuxtLink>
+        <p class="product-desc" :class="layout === 'list' ? 'list-desc' : ''">
+          {{ product.description || product.desc || 'Discover our latest premium collection featuring high-quality materials and modern design.' }}
+        </p>
       </div>
 
-      <!-- Stock urgency bar -->
-      <div class="stock-section">
-        <div class="stock-labels">
-          <span v-if="itemsLeft <= (product.stockWarning || 10)" class="stock-left">
-            <i class="bi bi-fire text-danger me-1"></i>
-            Only <strong>{{ itemsLeft }}</strong> left
-          </span>
-          <span v-else class="stock-left text-success">
-            <i class="bi bi-check-circle-fill me-1"></i>
-            <strong>{{ itemsLeft }}</strong> in stock
-          </span>
-          <span v-if="itemsLeft <= (product.stockWarning || 10)" class="stock-percent">{{ progress }}% sold</span>
-          <span v-else class="stock-percent text-muted">Ready to ship</span>
+      <!-- Footer Section (Price & Actions aligned to bottom) -->
+      <div class="card-footer-section mt-auto">
+        <!-- Price Row -->
+        <div class="price-row">
+          <span class="price-now">${{ product.price }}</span>
+          <del v-if="product.oldPrice" class="price-was"
+            >${{ product.oldPrice }}</del
+          >
+          <span v-if="savings && layout !== 'list'" class="save-chip">-${{ savings }}</span>
         </div>
-        <div class="stock-track" v-if="itemsLeft <= (product.stockWarning || 10)">
-          <div class="stock-fill" :style="{ width: progress + '%' }"></div>
-        </div>
-      </div>
 
-      <!-- Actions -->
-      <div class="action-row">
-        <BaseButton
-          variants="primary"
-          size="md"
-          class="flex-grow-1"
-          @click="handleAddToCart"
-        >
-          <i class="bi bi-cart-plus-fill me-1"></i> Add to Cart
-        </BaseButton>
+        <!-- Actions -->
+        <div class="action-row pt-2" :class="layout === 'list' ? 'd-flex align-items-center gap-3' : ''">
+          <BaseButton
+            variants="primary"
+            size="md"
+            class="flex-grow-1"
+            :disabled="isSoldOut"
+            @click="handleAddToCart"
+          >
+            {{ isSoldOut ? 'Sold Out' : 'Add to Cart' }}
+          </BaseButton>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import { useAuthStore } from "~/stores/authStore";
-import { useCartStore } from "~/stores/cartStore";
-import { useWishlistStore } from "~/stores/wishlistStore";
-import { useAppToast } from "~/composables/ui/useAppToast";
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { useWishlistStore } from '~/stores/wishlistStore';
+import { useAuthStore } from '~/stores/authStore';
+import { useAppToast } from '~/composables/ui/useAppToast';
+import { useCartStore } from '~/stores/cartStore';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps({
   product: { type: Object, required: true },
+  layout: { type: String, default: 'grid' }
 });
+const emit = defineEmits(['add-to-cart']);
 
-const emit = defineEmits(["add-to-cart"]);
-
+const hovered = ref(false);
+const wishlistStore = useWishlistStore();
 const authStore = useAuthStore();
 const cartStore = useCartStore();
-const wishlistStore = useWishlistStore();
-const { showSuccess, showError } = useAppToast();
+const router = useRouter();
+const { showWarning, showSuccess, showError } = useAppToast();
 const { locale } = useI18n();
-const hovered = ref(false);
 
-// ── Auth Guard ──
+const isWishlisted = computed(() => wishlistStore.isInWishlist(props.product.id));
+
+const itemsLeft = computed(() => {
+  if (props.product.stock !== undefined && props.product.stock !== null) {
+    return Number(props.product.stock);
+  }
+  return 20; // Default fallback
+});
+
+const isSoldOut = computed(() => {
+  return itemsLeft.value <= 0;
+});
+
+const savings = computed(() => {
+  if (props.product.oldPrice && props.product.price) {
+    const s = (props.product.oldPrice - props.product.price).toFixed(0);
+    return s > 0 ? s : null;
+  }
+  return null;
+});
+
 const verifyLogin = (actionName) => {
   if (!authStore.access_token) {
     showError(
@@ -142,11 +159,21 @@ const verifyLogin = (actionName) => {
   return true;
 };
 
-// ── Actions ──
+const toggleWishlist = () => {
+  if (
+    verifyLogin(
+      locale.value === "kh" ? "បន្ថែមទៅបញ្ជីប្រាថ្នា" : "add to wishlist",
+    )
+  ) {
+    wishlistStore.toggleWishlist(props.product);
+  }
+};
+
 const handleAddToCart = () => {
+  if (isSoldOut.value) return;
   if (verifyLogin(locale.value === "kh" ? "បន្ថែមទៅកន្ត្រក" : "add to cart")) {
+    emit('add-to-cart', props.product);
     cartStore.addToCart(props.product);
-    emit("add-to-cart", props.product);
     showSuccess(
       locale.value === "kh"
         ? "បានបន្ថែមទៅក្នុងកន្ត្រកជោគជ័យ!"
@@ -154,57 +181,6 @@ const handleAddToCart = () => {
     );
   }
 };
-
-const handleToggleWishlist = () => {
-  if (
-    verifyLogin(
-      locale.value === "kh" ? "បន្ថែមទៅបញ្ជីប្រាថ្នា" : "add to wishlist",
-    )
-  ) {
-    wishlistStore.toggleWishlist(props.product);
-    const isNowAdded = wishlistStore.isInWishlist(props.product.id);
-    showSuccess(
-      isNowAdded
-        ? locale.value === "kh"
-          ? "បានបន្ថែមទៅក្នុងបញ្ជីប្រាថ្នា!"
-          : "Added to wishlist!"
-        : locale.value === "kh"
-          ? "បានដកចេញពីបញ្ជីប្រាថ្នា!"
-          : "Removed from wishlist!",
-    );
-  }
-};
-
-// ── Computed ──
-const savings = computed(() => {
-  if (props.product.oldPrice && props.product.price) {
-    const s = (props.product.oldPrice - props.product.price).toFixed(0);
-    return s > 0 ? s : null;
-  }
-  return null;
-});
-
-const progress = computed(() => {
-  if (props.product.stock !== undefined && props.product.stock !== null) {
-    const stock = Number(props.product.stock);
-    const warning = Number(props.product.stockWarning || 10);
-    if (stock <= 0) return 100;
-    if (stock <= warning) {
-      return Math.min(95, Math.max(50, Math.round((1 - (stock / (warning * 1.5))) * 100)));
-    }
-    return 15;
-  }
-  return Math.min(95, Math.max(30, ((props.product.id || 0) * 13) % 100));
-});
-
-const itemsLeft = computed(() => {
-  if (props.product.stock !== undefined && props.product.stock !== null) {
-    return Number(props.product.stock);
-  }
-  return Math.max(2, ((props.product.id || 0) * 7) % 12);
-});
-
-const handleBuyNow = () => emit("add-to-cart", props.product);
 </script>
 
 <style scoped>
@@ -218,6 +194,8 @@ const handleBuyNow = () => emit("add-to-cart", props.product);
     border-color 0.3s ease,
     transform 0.3s ease;
   color: var(--color-text);
+  display: flex;
+  flex-direction: column;
 }
 
 .discount-card:hover {
@@ -241,9 +219,9 @@ const handleBuyNow = () => emit("add-to-cart", props.product);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  background: linear-gradient(135deg, #ef4444, #f97316);
+  background: var(--color-primary);
   color: #fff;
-  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.35);
+  box-shadow: 0 4px 10px rgba(0, 220, 130, 0.35);
 }
 
 /* ── Wishlist Button ── */
@@ -301,15 +279,33 @@ const handleBuyNow = () => emit("add-to-cart", props.product);
 /* ── Image Area ── */
 .image-area {
   position: relative;
-  height: 220px;
+  height: 180px;
   overflow: hidden;
   background: var(--color-bg-secondary);
   border-radius: 20px 20px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+.image-container-list {
+  width: 220px;
+  height: auto;
+  min-height: 200px;
+  border-radius: 20px 0 0 20px;
+}
+@media (max-width: 576px) {
+  .image-container-list {
+    width: 100%;
+    height: 200px;
+    border-radius: 20px 20px 0 0;
+  }
+}
+
 .product-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  padding: 1rem;
   transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 .img-zoomed {
@@ -359,6 +355,7 @@ const handleBuyNow = () => emit("add-to-cart", props.product);
   padding: 18px 18px 16px;
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
   gap: 10px;
 }
 
@@ -374,6 +371,22 @@ const handleBuyNow = () => emit("add-to-cart", props.product);
   border: 1px solid rgba(0, 220, 130, 0.2);
   padding: 3px 9px;
   border-radius: 999px;
+  align-self: flex-start;
+}
+
+/* Title */
+/* Title & Description Group */
+.title-desc-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Card Footer Section (anchored to bottom) */
+.card-footer-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 /* Title */
@@ -383,10 +396,36 @@ const handleBuyNow = () => emit("add-to-cart", props.product);
   color: var(--color-text);
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   line-height: 1.4;
   margin: 0;
+  transition: color 0.2s ease;
+}
+.product-title:hover {
+  color: var(--color-primary);
+}
+.list-title {
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+/* Description */
+.product-desc {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.35;
+  margin: 0;
+}
+.list-desc {
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
 }
 
 /* Price */
@@ -399,7 +438,7 @@ const handleBuyNow = () => emit("add-to-cart", props.product);
 .price-now {
   font-size: 1.2rem;
   font-weight: 800;
-  color: #ef4444;
+  color: var(--color-primary);
 }
 .price-was {
   font-size: 0.85rem;
@@ -417,40 +456,8 @@ const handleBuyNow = () => emit("add-to-cart", props.product);
   border-radius: 999px;
 }
 
-/* Stock urgency */
-.stock-section {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-.stock-labels {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 11.5px;
-}
-.stock-left {
+.text-muted-custom {
   color: var(--color-text-secondary);
-  font-weight: 500;
-}
-.stock-left strong {
-  color: #ef4444;
-}
-.stock-percent {
-  color: var(--color-text-secondary);
-  font-size: 11px;
-}
-.stock-track {
-  height: 5px;
-  border-radius: 999px;
-  background: var(--color-border);
-  overflow: hidden;
-}
-.stock-fill {
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #ef4444, #f97316);
-  transition: width 0.6s ease;
 }
 
 /* Actions */
@@ -458,6 +465,6 @@ const handleBuyNow = () => emit("add-to-cart", props.product);
   display: flex;
   gap: 8px;
   align-items: center;
-  margin-top: 2px;
+  margin-top: auto;
 }
 </style>

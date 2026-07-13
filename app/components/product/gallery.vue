@@ -5,33 +5,17 @@
         {{ product.badge }}
       </span>
 
-      <button
-        class="btn btn-light rounded-circle shadow-sm position-absolute top-0 end-0 m-3 z-2 wishlist-btn-float"
-        :class="{ 'text-danger': wishlistStore.isInWishlist(product?.id) }"
-        @click.stop="$emit('toggle-wishlist')"
-      >
-        <i class="bi" :class="wishlistStore.isInWishlist(product?.id) ? 'bi-heart-fill' : 'bi-heart'"></i>
-      </button>
-
-      <NuxtImg
-        :src="activeImage || product?.images?.[0] || 'https://placehold.co/600x600/png?text=Product'"
-        :alt="product?.title || 'Product Image'"
-        class="img-fluid w-100 main-img object-fit-contain p-4 transition-all"
-        style="aspect-ratio: 1/1;"
-        draggable="false"
-      />
+      <NuxtImg :src="activeImage || product?.images?.[0] || 'https://placehold.co/600x600/png?text=Product'"
+        :alt="product?.title || 'Product Image'" class="img-fluid w-100 main-img object-fit-contain p-4 transition-all"
+        style="aspect-ratio: 1/1;" draggable="false" />
     </div>
 
     <!-- Thumbnails -->
     <div class="d-flex gap-3 overflow-x-auto thumbnail-scroll pb-2">
-      <div
-        v-for="(img, idx) in product?.images"
-        :key="idx"
+      <div v-for="(img, idx) in product?.images" :key="idx"
         class="thumbnail-wrapper rounded-3 overflow-hidden cursor-pointer bg-light-transparent flex-shrink-0"
-        :class="{ 'border-primary': activeImage === img }"
-        @click="$emit('update:activeImage', img)"
-        style="width: 80px; height: 80px;"
-      >
+        :class="{ 'border-primary': activeImage === img }" @click="$emit('update:activeImage', img)"
+        style="width: 80px; height: 80px;">
         <NuxtImg :src="img" class="img-fluid w-100 h-100 object-fit-cover p-2" />
       </div>
     </div>

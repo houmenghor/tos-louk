@@ -5,23 +5,28 @@
     <div class="bg-blob blob-2"></div>
 
     <!-- Top Padding for Fixed Header -->
-    <div class="pt-5 mt-4"></div>
+    <div class="pt-4"></div>
 
-    <div class="container position-relative z-1 mb-5">
-      <!-- Breadcrumbs -->
-      <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item">
-            <NuxtLink to="/" class="text-decoration-none text-muted-custom hover-primary">Home</NuxtLink>
-          </li>
-          <li class="breadcrumb-item">
-            <NuxtLink to="/categories" class="text-decoration-none text-muted-custom hover-primary">Products</NuxtLink>
-          </li>
-          <li class="breadcrumb-item active text-main fw-semibold" aria-current="page">
-            {{ product.title }}
-          </li>
-        </ol>
-      </nav>
+    <div class="container position-relative z-1 mb-5 mt-2">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <h2 class="h3 fw-bold text-main mb-0">Product Details</h2>
+        <!-- Breadcrumbs -->
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+              <NuxtLink to="/" class="text-decoration-none text-muted-custom hover-primary">Home</NuxtLink>
+            </li>
+            <li class="breadcrumb-item">
+              <NuxtLink to="/categories" class="text-decoration-none text-muted-custom hover-primary">
+                <span class="capitalize-text">{{ product?.category || 'Products' }}</span>
+              </NuxtLink>
+            </li>
+            <li class="breadcrumb-item active text-main fw-semibold" aria-current="page">
+              {{ product.title }}
+            </li>
+          </ol>
+        </nav>
+      </div>
 
       <!-- Main Product Section Skeleton Loader -->
       <SkeletonProductDetail v-if="isLoading" />
@@ -31,22 +36,13 @@
         <div class="row g-5">
           <!-- Left Column: Image Gallery -->
           <div class="col-lg-6">
-            <ProductGallery
-              :product="product"
-              v-model:activeImage="activeImage"
-              @toggle-wishlist="toggleWishlist"
-            />
+            <ProductGallery :product="product" v-model:activeImage="activeImage" @toggle-wishlist="toggleWishlist" />
           </div>
 
           <!-- Right Column: Product Details -->
           <div class="col-lg-6 d-flex flex-column">
-            <ProductInfo
-              :product="product"
-              v-model:selectedColor="selectedColor"
-              v-model:selectedSize="selectedSize"
-              v-model:quantity="quantity"
-              @add-to-cart="handleAddToCart"
-            />
+            <ProductInfo :product="product" v-model:selectedColor="selectedColor" v-model:selectedSize="selectedSize"
+              v-model:quantity="quantity" @add-to-cart="handleAddToCart" @toggle-wishlist="toggleWishlist" />
           </div>
         </div>
       </div>
@@ -73,7 +69,7 @@ const wishlistStore = useWishlistStore();
 const productStore = useProductStore();
 const authStore = useAuthStore();
 const { showSuccess, showError } = useAppToast();
-const { locale } = useI18n();
+const { t, locale } = useI18n();
 
 const { currentProduct } = storeToRefs(productStore);
 
@@ -81,39 +77,17 @@ const activeImage = ref('');
 const selectedColor = ref('#0f172a');
 const selectedSize = ref('M');
 const quantity = ref(1);
-const isLoading = ref(true);
-
-onMounted(async () => {
+const { pending } = await useAsyncData(`product-${route.params.uuid}`, async () => {
   if (route.params.uuid) {
-    isLoading.value = true;
-    try {
-      const res = await productStore.getProductByUuid(route.params.uuid);
-      if (res?.data) {
-        const p = res.data;
-        activeImage.value = (p.images && p.images.length > 0) ? p.images[0].image_url : (p.thumbnail || 'https://placehold.co/600x600/png?text=Product');
-      }
-    } finally {
-      isLoading.value = false;
-    }
-  } else {
-    isLoading.value = false;
+    // Extract only the UUID (last 36 characters) from the slug-uuid combo
+    const param = route.params.uuid;
+    const actualUuid = param.length >= 36 ? param.slice(-36) : param;
+    await productStore.getProductByUuid(actualUuid);
   }
+  return true;
 });
 
-watch(() => route.params.uuid, async (newUuid) => {
-  if (newUuid) {
-    isLoading.value = true;
-    try {
-      const res = await productStore.getProductByUuid(newUuid);
-      if (res?.data) {
-        const p = res.data;
-        activeImage.value = (p.images && p.images.length > 0) ? p.images[0].image_url : (p.thumbnail || 'https://placehold.co/600x600/png?text=Product');
-      }
-    } finally {
-      isLoading.value = false;
-    }
-  }
-});
+const isLoading = computed(() => pending.value);
 
 watch(() => currentProduct.value, (newP) => {
   if (newP && !activeImage.value) {
@@ -161,20 +135,67 @@ const product = computed(() => {
     });
   }
 
+  const basePrice = Number(p.sell_price !== undefined ? p.sell_price : (p.unit_price || 0));
+  const unitPrice = Number(p.unit_price || 0);
+
+  let finalPrice = basePrice;
+  let oldPrice = unitPrice > basePrice ? unitPrice : null;
+  let badge = '';
+
+  if (p.discount && p.discount.value) {
+    const discountValue = Number(p.discount.value);
+    const discountType = p.discount.type; // 'percent' or 'fixed'
+
+    oldPrice = oldPrice || basePrice;
+
+    if (discountType === 'percent') {
+      finalPrice = Math.max(0, basePrice - (basePrice * (discountValue / 100)));
+      badge = `-${discountValue}%`;
+    } else {
+      finalPrice = Math.max(0, basePrice - discountValue);
+      badge = `-$${discountValue}`;
+    }
+  } else if (oldPrice) {
+    badge = 'Sale';
+  }
+
+  finalPrice = Number(finalPrice.toFixed(2));
+  if (oldPrice !== null) {
+    oldPrice = Number(oldPrice.toFixed(2));
+    if (oldPrice <= finalPrice) {
+      oldPrice = null;
+    }
+  }
+
   return {
     id: p.id,
     uuid: p.uuid,
     title: p.title || "Untitled Product",
     description: p.description || "No detailed description available.",
-    price: p.sell_price || 0,
-    oldPrice: p.unit_price > p.sell_price ? p.unit_price : null,
-    badge: p.discount ? `-${p.discount.value}%` : (p.collection === 'best_seller' ? 'Best Seller' : ''),
+    price: finalPrice,
+    oldPrice,
+    badge,
+    brand: p.brand || null,
+    sku: p.sku || null,
+    weight: p.weight || null,
+    stock: p.stock !== undefined && p.stock !== null ? Number(p.stock) : 20,
+    stockWarning: p.stockWarning !== undefined ? p.stockWarning : (p.stock_warning !== undefined ? p.stock_warning : 10),
     category: p.category?.name || "PREMIUM",
     images: (p.images && p.images.length > 0) ? p.images.map(img => img.image_url) : [p.thumbnail || 'https://placehold.co/600x600/png?text=No+Image'],
     colors: extractedColors,
     sizes: extractedSizes,
     variants: p.variants || []
   };
+});
+
+useSeoMeta({
+  title: () => product.value.title,
+  ogTitle: () => product.value.title,
+  description: () => product.value.description,
+  ogDescription: () => product.value.description,
+  ogImage: () => activeImage.value,
+  ogUrl: () => useRequestURL().href,
+  ogType: 'product'
 });
 
 const verifyLogin = (actionName) => {

@@ -27,7 +27,7 @@ export const useProductStore = defineStore('product', () => {
         if (response?.data !== undefined) {
             products.value = response.data;
         }
-        
+
         const pageData = response?.paginate;
         if (pageData) {
             pagination.value = pageData;
