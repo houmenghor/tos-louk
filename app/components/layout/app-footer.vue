@@ -68,18 +68,24 @@
         <div class="col-lg-4 col-md-6">
           <h6 class="footer-heading text-uppercase fw-bold mb-3">Contact Us</h6>
           <ul class="list-unstyled footer-contact d-flex flex-column gap-3">
-            <li class="d-flex gap-3 align-items-start">
-              <i class="bi bi-geo-alt-fill text-primary-icon mt-1"></i>
-              <span>{{ storeLocation }}</span>
+            <li class="d-flex gap-3 align-items-center">
+              <div class="contact-icon-circle d-flex align-items-center justify-content-center flex-shrink-0">
+                <i class="bi bi-geo-alt-fill"></i>
+              </div>
+              <span class="contact-text">{{ storeLocation }}</span>
             </li>
             <li class="d-flex gap-3 align-items-center">
-              <i class="bi bi-telephone-fill text-primary-icon"></i>
+              <div class="contact-icon-circle d-flex align-items-center justify-content-center flex-shrink-0">
+                <i class="bi bi-telephone-fill"></i>
+              </div>
               <a :href="`tel:${supportPhone}`" class="contact-link"
                 >{{ supportPhone }}</a
               >
             </li>
             <li class="d-flex gap-3 align-items-center">
-              <i class="bi bi-envelope-fill text-primary-icon"></i>
+              <div class="contact-icon-circle d-flex align-items-center justify-content-center flex-shrink-0">
+                <i class="bi bi-envelope-fill"></i>
+              </div>
               <a :href="`mailto:${supportEmail}`" class="contact-link"
                 >{{ supportEmail }}</a
               >
@@ -234,9 +240,25 @@ const storeInitials = computed(() => {
   color: var(--color-primary);
 }
 
-.text-primary-icon {
+.contact-icon-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 220, 130, 0.1);
   color: var(--color-primary);
-  font-size: 1.1rem;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.footer-contact li:hover .contact-icon-circle {
+  background: var(--color-primary);
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+.contact-text,
+.contact-link {
+  line-height: 1.45;
 }
 
 .footer-divider {

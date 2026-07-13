@@ -33,7 +33,7 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import AppHeader from "~/components/layout/app-header.vue";
 import AppFooter from "~/components/layout/app-footer.vue";
-import CartOffcanvas from "~/components/common/CartOffcanvas.vue";
+import CartOffcanvas from "~/components/common/cart-offcanvas.vue";
 
 const showScrollTop = ref(false);
 const isLaunching = ref(false);

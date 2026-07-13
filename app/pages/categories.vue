@@ -515,14 +515,28 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive, watch } from 'vue';
-import CategoryProductCard from '~/components/common/CategoryProductCard.vue';
+import { ref, computed, reactive, watch, onMounted } from 'vue';
+import { storeToRefs } from 'pinia';
+import CategoryProductCard from '~/components/common/category-product-card.vue';
 import BasePagination from '~/components/base/base-pagination.vue';
 import { useCartStore } from '~/stores/cartStore';
+import { useProductStore } from '~/stores/productStore';
 import { useAppToast } from '~/composables/ui/useAppToast';
 
 const cartStore = useCartStore();
+const productStore = useProductStore();
+const { products } = storeToRefs(productStore);
 const { showSuccess } = useAppToast();
+
+await useAsyncData("categories-products", async () => {
+  if (products.value.length === 0) {
+    await productStore.getAllProducts({
+      per_page: 50,
+      status: 1
+    });
+  }
+  return true;
+});
 
 const selectedCategory = ref("all");
 const searchQuery = ref("");
@@ -856,7 +870,36 @@ const resetFilters = () => {
 };
 
 const filteredProducts = computed(() => {
-  let result = [...mockProducts];
+  const sourceProducts = products.value.length > 0
+    ? products.value.map((item) => {
+        const basePrice = Number(item.sell_price !== undefined ? item.sell_price : (item.unit_price || 0));
+        const unitPrice = Number(item.unit_price || 0);
+        let finalPrice = basePrice;
+        let oldPrice = unitPrice > basePrice ? unitPrice : null;
+        if (item.discount && item.discount.value) {
+          const val = Number(item.discount.value);
+          if (item.discount.type === 'percent') finalPrice = Math.max(0, basePrice - (basePrice * (val / 100)));
+          else finalPrice = Math.max(0, basePrice - val);
+        }
+        const imgUrl = item.thumbnail || item.images?.[0]?.image_url || 'https://placehold.co/300x300/png?text=Product';
+        return {
+          id: item.id,
+          uuid: item.uuid,
+          title: item.title,
+          category: item.category?.slug || item.category?.name?.toLowerCase() || 'electronics',
+          brand: item.brand?.toLowerCase() || 'nike',
+          color: 'Black',
+          price: Number(finalPrice.toFixed(2)),
+          oldPrice: oldPrice ? Number(oldPrice.toFixed(2)) : null,
+          rating: 4.8,
+          thumbnail: imgUrl,
+          image: imgUrl,
+          images: item.images || []
+        };
+      })
+    : mockProducts;
+
+  let result = [...sourceProducts];
 
   // Category filter
   if (selectedCategory.value !== "all") {
@@ -930,6 +973,13 @@ const handleAddToCart = (product) => {
   cartStore.addToCart(product);
   showSuccess(`${product.title} added to cart!`);
 };
+
+const { t } = useI18n();
+
+useSeoMeta({
+  title: () => t('navbar.categories'),
+  ogTitle: () => t('navbar.categories')
+});
 </script>
 
 <style scoped>

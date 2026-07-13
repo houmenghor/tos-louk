@@ -47,5 +47,13 @@
     "female": "Female",
     "other": "Other",
     "orderHistory": "Order History"
+  },
+  "seo": {
+    "siteName": "Tos Louk",
+    "defaultProductDesc": "Shop premium products at Tos Louk"
+  },
+  "product": {
+    "copySuccess": "Link copied to clipboard!",
+    "copyError": "Failed to copy link"
   }
 }
