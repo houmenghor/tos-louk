@@ -187,6 +187,7 @@ const product = computed(() => {
     variants: p.variants || []
   };
 });
+const requestUrl = useRequestURL();
 
 useSeoMeta({
   title: () => product.value.title,
@@ -194,7 +195,7 @@ useSeoMeta({
   description: () => product.value.description,
   ogDescription: () => product.value.description,
   ogImage: () => activeImage.value,
-  ogUrl: () => useRequestURL().href,
+  ogUrl: () => requestUrl.href,
   ogType: 'product'
 });
 
