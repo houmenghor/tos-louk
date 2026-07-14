@@ -2,6 +2,9 @@
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: false },
+  routeRules: {
+    "/product/**": { isr: 3600 }, // Cache on CDN for 1 hour
+  },
 
   modules: [
     "nuxt-auth-utils",

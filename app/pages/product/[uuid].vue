@@ -196,7 +196,11 @@ useSeoMeta({
   ogDescription: () => product.value.description,
   ogImage: () => activeImage.value,
   ogUrl: () => requestUrl.href,
-  ogType: 'product'
+  ogType: 'product',
+  twitterCard: 'summary_large_image',
+  twitterTitle: () => product.value.title,
+  twitterDescription: () => product.value.description,
+  twitterImage: () => activeImage.value
 });
 
 const verifyLogin = (actionName) => {
