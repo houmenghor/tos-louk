@@ -197,7 +197,7 @@ useSeoMeta({
   ogImage: () => activeImage.value,
   ogUrl: () => requestUrl.href,
   ogType: 'product',
-  twitterCard: 'summary_large_image',
+  twitterCard: 'summary',
   twitterTitle: () => product.value.title,
   twitterDescription: () => product.value.description,
   twitterImage: () => activeImage.value

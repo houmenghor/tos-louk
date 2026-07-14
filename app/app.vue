@@ -15,7 +15,7 @@ useSeoMeta({
   ogImage: () => `${requestUrl.origin}/tos-louk.webp`,
   ogUrl: () => requestUrl.href,
   ogType: 'website',
-  twitterCard: 'summary_large_image',
+  twitterCard: 'summary',
   twitterImage: () => `${requestUrl.origin}/tos-louk.webp`
 });
 </script>
