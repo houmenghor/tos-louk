@@ -5,20 +5,40 @@
         <!-- Brand Info Column -->
         <div class="col-lg-4 col-md-6">
           <div class="d-flex align-items-center gap-2 mb-3">
-            <span class="brand-logo d-flex align-items-center justify-content-center text-white fw-bold">
-              TL
-            </span>
-            <span class="fs-4 fw-bold text-gradient brand-title">Tos Louk</span>
+            <NuxtImg
+              v-if="storeLogo"
+              :src="storeLogo"
+              :alt="storeName"
+              class="brand-logo-img object-fit-contain"
+              style="max-height: 40px; max-width: 140px;"
+            />
+            <template v-else>
+              <span
+                class="brand-logo d-flex align-items-center justify-content-center text-white fw-bold"
+              >
+                {{ storeInitials }}
+              </span>
+              <span class="fs-4 fw-bold text-gradient brand-title">{{ storeName }}</span>
+            </template>
           </div>
           <p class="footer-desc mb-4">
-            Discover what defines modern living. Shop our premium collections of clothing, accessories, and state-of-the-art electronics.
+            Discover what defines modern living. Shop our premium collections of
+            clothing, accessories, and state-of-the-art electronics.
           </p>
           <!-- Social Icons -->
           <div class="d-flex gap-3 social-group">
-            <a href="#" class="social-btn" title="Facebook"><i class="bi bi-facebook"></i></a>
-            <a href="#" class="social-btn" title="Telegram"><i class="bi bi-telegram"></i></a>
-            <a href="#" class="social-btn" title="Instagram"><i class="bi bi-instagram"></i></a>
-            <a href="#" class="social-btn" title="YouTube"><i class="bi bi-youtube"></i></a>
+            <a href="#" class="social-btn" title="Facebook"
+              ><i class="bi bi-facebook"></i
+            ></a>
+            <a href="#" class="social-btn" title="Telegram"
+              ><i class="bi bi-telegram"></i
+            ></a>
+            <a href="#" class="social-btn" title="Instagram"
+              ><i class="bi bi-instagram"></i
+            ></a>
+            <a href="#" class="social-btn" title="YouTube"
+              ><i class="bi bi-youtube"></i
+            ></a>
           </div>
         </div>
 
@@ -39,8 +59,8 @@
           <ul class="list-unstyled footer-links d-flex flex-column gap-2">
             <li><a href="#">Help Center</a></li>
             <li><a href="#">Shipping Info</a></li>
-            <li><a href="#">Returns & Policy</a></li>
-            <li><a href="#">Order Tracking</a></li>
+            <li><a href="/privacy-policy">Privacy Policy</a></li>
+            <li><a href="/terms">Terms of Service</a></li>
           </ul>
         </div>
 
@@ -48,34 +68,48 @@
         <div class="col-lg-4 col-md-6">
           <h6 class="footer-heading text-uppercase fw-bold mb-3">Contact Us</h6>
           <ul class="list-unstyled footer-contact d-flex flex-column gap-3">
-            <li class="d-flex gap-3 align-items-start">
-              <i class="bi bi-geo-alt-fill text-primary-icon mt-1"></i>
-              <span>123 Russian Boulevard, Phnom Penh, Cambodia</span>
+            <li class="d-flex gap-3 align-items-center">
+              <div class="contact-icon-circle d-flex align-items-center justify-content-center flex-shrink-0">
+                <i class="bi bi-geo-alt-fill"></i>
+              </div>
+              <span class="contact-text">{{ storeLocation }}</span>
             </li>
             <li class="d-flex gap-3 align-items-center">
-              <i class="bi bi-telephone-fill text-primary-icon"></i>
-              <a href="tel:+85512345678" class="contact-link">+855 (0) 12 345 678</a>
+              <div class="contact-icon-circle d-flex align-items-center justify-content-center flex-shrink-0">
+                <i class="bi bi-telephone-fill"></i>
+              </div>
+              <a :href="`tel:${supportPhone}`" class="contact-link"
+                >{{ supportPhone }}</a
+              >
             </li>
             <li class="d-flex gap-3 align-items-center">
-              <i class="bi bi-envelope-fill text-primary-icon"></i>
-              <a href="mailto:info@toslouk.com" class="contact-link">info@toslouk.com</a>
+              <div class="contact-icon-circle d-flex align-items-center justify-content-center flex-shrink-0">
+                <i class="bi bi-envelope-fill"></i>
+              </div>
+              <a :href="`mailto:${supportEmail}`" class="contact-link"
+                >{{ supportEmail }}</a
+              >
             </li>
           </ul>
         </div>
       </div>
 
       <!-- Footer Bottom -->
-      <hr class="footer-divider my-3">
+      <hr class="footer-divider my-3" />
 
       <div class="row align-items-center justify-content-between gy-3">
         <div class="col-md-6 text-center text-md-start">
           <p class="copyright-text mb-0">
-            &copy; {{ currentYear }} <strong class="brand-title-small">Tos Louk</strong>. All rights reserved.
+            &copy; {{ currentYear }}
+            <strong class="brand-title-small">{{ storeName }}</strong>. All rights
+            reserved.
           </p>
         </div>
         <div class="col-md-6 text-center text-md-end">
           <!-- Mock Payment Badges -->
-          <div class="d-flex align-items-center justify-content-center justify-content-md-end gap-3 payment-badges">
+          <div
+            class="d-flex align-items-center justify-content-center justify-content-md-end gap-3 payment-badges"
+          >
             <span class="payment-badge" title="ABA Pay">ABA</span>
             <span class="payment-badge" title="Visa">Visa</span>
             <span class="payment-badge" title="Mastercard">Master</span>
@@ -88,9 +122,31 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed } from "vue";
+import { useSettingStore } from "~/stores/settingStore";
 
+const settingStore = useSettingStore();
 const currentYear = computed(() => new Date().getFullYear());
+
+const storeLocation = computed(() =>
+  settingStore.settings?.general?.store_location || "123 Russian Boulevard, Phnom Penh, Cambodia"
+);
+const supportPhone = computed(() =>
+  settingStore.settings?.general?.support_phone || "+855 (0) 12 345 678"
+);
+const supportEmail = computed(() =>
+  settingStore.settings?.general?.support_email || "support@toslouksystem.com"
+);
+const storeName = computed(() =>
+  settingStore.settings?.general?.store_name || "Tos Louk"
+);
+const storeLogo = computed(() =>
+  settingStore.settings?.general?.store_logo || null
+);
+const storeInitials = computed(() => {
+  const name = storeName.value || "TL";
+  return name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+});
 </script>
 
 <style scoped>
@@ -123,7 +179,7 @@ const currentYear = computed(() => new Date().getFullYear());
 
 .text-gradient {
   background: linear-gradient(135deg, var(--color-primary) 0%, #00c16f 100%);
-  -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -184,9 +240,25 @@ const currentYear = computed(() => new Date().getFullYear());
   color: var(--color-primary);
 }
 
-.text-primary-icon {
+.contact-icon-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 220, 130, 0.1);
   color: var(--color-primary);
-  font-size: 1.1rem;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.footer-contact li:hover .contact-icon-circle {
+  background: var(--color-primary);
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+.contact-text,
+.contact-link {
+  line-height: 1.45;
 }
 
 .footer-divider {

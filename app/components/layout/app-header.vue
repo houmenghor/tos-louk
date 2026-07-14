@@ -1,32 +1,53 @@
 <template>
   <div class="w-full font-sans user-select-none glass-wrapper">
-
     <!-- Top Bar Segment -->
     <div class="glass-top-bar py-2 px-3 sm:px-4">
-      <div class="container-xl d-flex justify-content-between align-items-center">
-        <div class="fw-medium tracking-wide text-white small">
-          {{ t('navbar.deliveryNotice') }} 🎉
+      <div
+        class="container-xl d-flex justify-content-between align-items-center"
+      >
+        <div class="fw-medium tracking-wide text-white small d-flex align-items-center gap-2">
+          <i class="bi bi-truck text-warning fs-6"></i>
+          <span v-if="locale === 'kh'">ដឹកជញ្ជូនឥតគិតថ្លៃសម្រាប់ការទិញលើសពី {{ freeShippingThreshold }}</span>
+          <span v-else>FREE DELIVERY OVER {{ freeShippingThreshold }}</span>
         </div>
 
         <div class="d-flex align-items-center gap-3 small">
-          <button @click="toggleTheme"
+          <button
+            @click="toggleTheme"
             class="btn btn-link btn-sm p-0 border-0 text-white opacity-70 hover-white d-flex align-items-center"
-            aria-label="Toggle Theme">
-            <i :class="isDark ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-stars-fill'"></i>
+            aria-label="Toggle Theme"
+          >
+            <i
+              :class="
+                isDark ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-stars-fill'
+              "
+            ></i>
           </button>
 
           <span class="text-white-muted">|</span>
 
           <div class="d-flex align-items-center gap-1">
-            <button @click="setLocale('kh')"
-              :class="[locale === 'kh' ? 'text-accent fw-bold' : 'text-light opacity-75 hover-white']"
-              class="btn btn-link btn-sm p-0 text-decoration-none border-0">
+            <button
+              @click="setLocale('kh')"
+              :class="[
+                locale === 'kh'
+                  ? 'text-accent fw-bold'
+                  : 'text-light opacity-75 hover-white',
+              ]"
+              class="btn btn-link btn-sm p-0 text-decoration-none border-0"
+            >
               Khmer
             </button>
             <span class="text-white-muted px-1">/</span>
-            <button @click="setLocale('en')"
-              :class="[locale === 'en' ? 'text-accent fw-bold' : 'text-light opacity-75 hover-white']"
-              class="btn btn-link btn-sm p-0 text-decoration-none border-0">
+            <button
+              @click="setLocale('en')"
+              :class="[
+                locale === 'en'
+                  ? 'text-accent fw-bold'
+                  : 'text-light opacity-75 hover-white',
+              ]"
+              class="btn btn-link btn-sm p-0 text-decoration-none border-0"
+            >
               English
             </button>
           </div>
@@ -35,147 +56,374 @@
     </div>
 
     <!-- Main Navigation Header Area -->
-    <header class="glass-header sticky-top py-2" :class="{ 'scrolled-header': isScrolled }">
-      <div class="container-xl d-flex align-items-center justify-content-between">
-
+    <header
+      class="glass-header sticky-top"
+      :class="{ 'scrolled-header': isScrolled }"
+    >
+      <div
+        class="container-xl h-100 d-flex align-items-center justify-content-between"
+      >
         <!-- Logo Container -->
-        <NuxtLink to="/" class="d-flex align-items-center gap-2 text-decoration-none group-logo">
-          <span class="brand-text text-main">
-            Tos<span class="text-primary-brand font-black">Louk</span><span class="brand-dot">.</span>
+        <NuxtLink
+          to="/"
+          class="d-flex align-items-center gap-2 text-decoration-none group-logo"
+        >
+          <NuxtImg
+            v-if="storeLogo"
+            :src="storeLogo"
+            :alt="storeName"
+            class="header-logo-img object-fit-contain"
+            style="max-height: 38px; max-width: 150px;"
+          />
+          <span v-else class="brand-text text-main fw-bold fs-4">
+            {{ storeName }}<span class="brand-dot text-primary-brand">.</span>
           </span>
         </NuxtLink>
 
         <!-- Desktop Navigation Only (Hidden on mobile) -->
-        <nav class="d-none d-lg-flex align-items-center gap-4 small fw-semibold">
-          <NuxtLink to="/" class="nav-custom-link text-decoration-none">{{ t('navbar.home') }}</NuxtLink>
-          <NuxtLink to="/categories" class="nav-custom-link text-decoration-none">{{ t('navbar.categories') }}</NuxtLink>
-          <NuxtLink to="/discount" class="nav-custom-link text-decoration-none">{{ t('navbar.discount') }}</NuxtLink>
-          <NuxtLink to="/about" class="nav-custom-link text-decoration-none">{{ t('navbar.about') }}</NuxtLink>
-          <NuxtLink to="/contact" class="nav-custom-link text-decoration-none">{{ t('navbar.contact') }}</NuxtLink>
+        <nav
+          class="d-none d-lg-flex align-items-center gap-4 small fw-semibold"
+        >
+          <NuxtLink to="/" class="nav-custom-link text-decoration-none">{{
+            t("navbar.home")
+          }}</NuxtLink>
+          <NuxtLink
+            to="/categories"
+            class="nav-custom-link text-decoration-none"
+            >{{ t("navbar.categories") }}
+          </NuxtLink>
+          <NuxtLink
+            to="/discount"
+            class="nav-custom-link text-decoration-none"
+            >{{ t("navbar.discount") }}</NuxtLink
+          >
+          <NuxtLink to="/about" class="nav-custom-link text-decoration-none">{{
+            t("navbar.about")
+          }}</NuxtLink>
+          <NuxtLink
+            to="/contact"
+            class="nav-custom-link text-decoration-none"
+            >{{ t("navbar.contact") }}</NuxtLink
+          >
         </nav>
 
         <!-- Actions Interface Menu -->
         <div class="d-flex align-items-center gap-2 gap-sm-3">
-
-          <button class="btn btn-link glass-icon-btn p-1" aria-label="Wishlist">
+          <NuxtLink
+            :to="auth.access_token ? '/user/wishlist' : '/wishlist'"
+            class="btn btn-link glass-icon-btn p-1 position-relative"
+            aria-label="Wishlist"
+          >
             <i class="bi bi-heart fw-bold"></i>
-          </button>
+            <span
+              v-if="wishlistStore.wishlistCount > 0"
+              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-white cart-badge shadow-sm"
+            >
+              {{ wishlistStore.wishlistCount }}
+            </span>
+          </NuxtLink>
 
-          <button class="btn btn-link glass-icon-btn p-1 position-relative" aria-label="Shopping Cart">
+          <!-- Cart Button: always opens offcanvas. Guest login prompt is shown inside CartOffcanvas.vue -->
+          <button
+            @click="cartStore.toggleCart(true)"
+            class="btn btn-link glass-icon-btn p-1 position-relative"
+            aria-label="Shopping Cart"
+          >
             <i class="bi bi-bag fs-5 fw-bold"></i>
-            <span v-if="cartCount > 0"
-              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary-brand text-white cart-badge shadow-sm">
-              {{ cartCount }}
+            <span
+              v-if="auth.access_token && cartStore.cartCount > 0"
+              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary-brand text-white cart-badge shadow-sm"
+            >
+              {{ cartStore.cartCount }}
             </span>
           </button>
 
           <div class="dropdown">
-            <button class="btn btn-link glass-icon-btn p-1 dropdown-toggle no-arrow" type="button"
-              id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User Account">
-              <i class="bi bi-person fs-5 fw-bold"></i>
+            <button
+              class="btn btn-link glass-icon-btn p-1 dropdown-toggle no-arrow"
+              type="button"
+              id="profileDropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              aria-label="User Account"
+            >
+              <!-- Show avatar when logged in AND profile data is loaded -->
+              <template v-if="auth.access_token && auth.userProfile">
+                <img
+                  :src="profileImageSrc"
+                  class="rounded-circle object-fit-cover"
+                  width="32"
+                  height="32"
+                  alt="Profile"
+                  referrerpolicy="no-referrer"
+                  @error="handleImageError"
+                />
+              </template>
+              <!-- Show person icon for guests OR when profile hasn't loaded yet -->
+              <template v-else>
+                <i class="bi bi-person fs-5 fw-bold"></i>
+              </template>
             </button>
-            <ul class="dropdown-menu dropdown-menu-end glass-dropdown shadow border-0 mt-3 animate slideIn"
-              aria-labelledby="profileDropdown">
-              <li>
-                <NuxtLink to="/auth/login" class="dropdown-item py-2 fw-medium">
-                  <i class="bi bi-box-arrow-in-right me-2 text-primary-brand"></i> {{ t('navbar.login') }}
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink to="/auth/register" class="dropdown-item py-2 fw-medium">
-                  <i class="bi bi-person-plus me-2 text-primary-brand"></i> {{ t('navbar.signUp') }}
-                </NuxtLink>
-              </li>
+
+            <ul
+              class="dropdown-menu dropdown-menu-end glass-dropdown shadow border-0 mt-3 animate slideIn"
+              aria-labelledby="profileDropdown"
+            >
+              <!-- Authenticated User Menu -->
+              <template v-if="auth.access_token">
+                <!-- Profile info header (only if profile data is loaded) -->
+                <li
+                  v-if="auth.userProfile"
+                  class="px-3 py-2 border-bottom border-custom-glass mb-1"
+                >
+                  <div class="fw-bold text-main">
+                    {{ auth.userProfile.full_name }}
+                  </div>
+                  <div
+                    class="small"
+                    style="
+                      color: var(--color-text-secondary);
+                      font-size: 0.75rem;
+                    "
+                  >
+                    {{ auth.userProfile.email }}
+                  </div>
+                </li>
+                <li
+                  v-else
+                  class="px-3 py-2 border-bottom border-custom-glass mb-1"
+                >
+                  <div class="fw-bold text-main">My Account</div>
+                </li>
+                <li>
+                  <NuxtLink to="/user" class="dropdown-item py-2 fw-medium">
+                    <i class="bi bi-person-circle me-2 text-primary-brand"></i>
+                    My Dashboard
+                  </NuxtLink>
+                </li>
+                <li>
+                  <NuxtLink
+                    to="/user/wishlist"
+                    class="dropdown-item py-2 fw-medium"
+                  >
+                    <i class="bi bi-heart me-2 text-primary-brand"></i> My
+                    Wishlist
+                  </NuxtLink>
+                </li>
+                <li>
+                  <hr class="dropdown-divider border-custom-glass my-1" />
+                </li>
+                <li>
+                  <button
+                    @click="handleLogout"
+                    class="dropdown-item py-2 fw-medium text-danger"
+                  >
+                    <i class="bi bi-box-arrow-right me-2"></i>
+                    {{ t("navbar.logout", "Logout") }}
+                  </button>
+                </li>
+              </template>
+
+              <!-- Guest Menu -->
+              <template v-else>
+                <li>
+                  <NuxtLink
+                    to="/auth/login"
+                    class="dropdown-item py-2 fw-medium"
+                  >
+                    <i
+                      class="bi bi-box-arrow-in-right me-2 text-primary-brand"
+                    ></i>
+                    {{ t("navbar.login") }}
+                  </NuxtLink>
+                </li>
+                <li>
+                  <NuxtLink
+                    to="/auth/register"
+                    class="dropdown-item py-2 fw-medium"
+                  >
+                    <i class="bi bi-person-plus me-2 text-primary-brand"></i>
+                    {{ t("navbar.signUp") }}
+                  </NuxtLink>
+                </li>
+              </template>
             </ul>
           </div>
 
           <!-- Offcanvas Mobile Menu Toggle Button -->
-          <button class="btn btn-link glass-icon-btn p-1 d-lg-none" type="button" 
-            data-bs-toggle="offcanvas" data-bs-target="#mobileNavbar" 
-            aria-controls="mobileNavbar" aria-label="Toggle Navigation Options">
+          <button
+            class="btn btn-link glass-icon-btn p-1 d-lg-none"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#mobileNavbar"
+            aria-controls="mobileNavbar"
+            aria-label="Toggle Navigation Options"
+          >
             <i class="bi bi-list fs-4 fw-bold"></i>
           </button>
-
         </div>
       </div>
     </header>
 
     <!-- Responsive Glassmorphic Mobile Offcanvas Sidebar Container -->
     <!-- FIXED: Added ref="offcanvasRef" to target programmatic closure -->
-    <div ref="offcanvasRef" class="offcanvas offcanvas-start mobile-glass-offcanvas d-lg-none" tabindex="-1" id="mobileNavbar" aria-labelledby="mobileNavbarLabel">
+    <div
+      ref="offcanvasRef"
+      class="offcanvas offcanvas-start mobile-glass-offcanvas d-lg-none"
+      tabindex="-1"
+      id="mobileNavbar"
+      aria-labelledby="mobileNavbarLabel"
+    >
       <div class="offcanvas-header border-bottom border-custom-glass">
-        <h5 class="offcanvas-title brand-text text-main" id="mobileNavbarLabel">
-          Tos<span class="text-primary-brand font-black">Louk</span><span class="brand-dot">.</span>
-        </h5>
-        <button type="button" class="btn-close btn-close-custom" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        <div class="offcanvas-title d-flex align-items-center gap-2" id="mobileNavbarLabel">
+          <NuxtImg
+            v-if="storeLogo"
+            :src="storeLogo"
+            :alt="storeName"
+            class="header-logo-img object-fit-contain"
+            style="max-height: 32px; max-width: 130px;"
+          />
+          <h5 v-else class="brand-text text-main mb-0 fw-bold">
+            {{ storeName }}<span class="brand-dot text-primary-brand">.</span>
+          </h5>
+        </div>
+        <button
+          type="button"
+          class="btn-close btn-close-custom"
+          data-bs-dismiss="offcanvas"
+          aria-label="Close"
+        ></button>
       </div>
       <div class="offcanvas-body py-4">
         <nav class="d-flex flex-column gap-3 small fw-semibold">
           <!-- FIXED: Replaced data-bs-dismiss with programmatic click handlers -->
-          <NuxtLink to="/" class="nav-custom-link mobile-nav-link text-decoration-none" @click="closeMobileMenu">{{ t('navbar.home') }}</NuxtLink>
-          <NuxtLink to="/categories" class="nav-custom-link mobile-nav-link text-decoration-none" @click="closeMobileMenu">{{ t('navbar.categories') }}</NuxtLink>
-          <NuxtLink to="/discount" class="nav-custom-link mobile-nav-link text-decoration-none" @click="closeMobileMenu">{{ t('navbar.discount') }}</NuxtLink>
-          <NuxtLink to="/about" class="nav-custom-link mobile-nav-link text-decoration-none" @click="closeMobileMenu">{{ t('navbar.about') }}</NuxtLink>
-          <NuxtLink to="/contact" class="nav-custom-link mobile-nav-link text-decoration-none" @click="closeMobileMenu">{{ t('navbar.contact') }}</NuxtLink>
+          <NuxtLink
+            to="/"
+            class="nav-custom-link mobile-nav-link text-decoration-none"
+            @click="closeMobileMenu"
+            >{{ t("navbar.home") }}</NuxtLink
+          >
+          <NuxtLink
+            to="/categories"
+            class="nav-custom-link mobile-nav-link text-decoration-none"
+            @click="closeMobileMenu"
+          >
+            {{ t("navbar.categories") }}</NuxtLink
+          >
+          <NuxtLink
+            to="/discount"
+            class="nav-custom-link mobile-nav-link text-decoration-none"
+            @click="closeMobileMenu"
+            >{{ t("navbar.discount") }}</NuxtLink
+          >
+          <NuxtLink
+            to="/about"
+            class="nav-custom-link mobile-nav-link text-decoration-none"
+            @click="closeMobileMenu"
+            >{{ t("navbar.about") }}</NuxtLink
+          >
+          <NuxtLink
+            to="/contact"
+            class="nav-custom-link mobile-nav-link text-decoration-none"
+            @click="closeMobileMenu"
+          >
+            {{ t("navbar.contact") }}</NuxtLink
+          >
         </nav>
       </div>
     </div>
-
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
-const { t, locale, setLocale } = useI18n()
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import { useAuthStore } from "~/stores/authStore";
+import { useCartStore } from "~/stores/cartStore";
+import { useWishlistStore } from "~/stores/wishlistStore";
+import { useSettingStore } from "~/stores/settingStore";
 
-const cartCount = ref(3)
-const isDark = ref(false)
-const offcanvasRef = ref(null)
-const isScrolled = ref(false)
+const { t, locale, setLocale } = useI18n();
+const auth = useAuthStore();
+const cartStore = useCartStore();
+const wishlistStore = useWishlistStore();
+const settingStore = useSettingStore();
+await useAsyncData("global-settings", () => settingStore.getSettings());
+
+const freeShippingThreshold = computed(() => {
+  const threshold = settingStore.settings?.shipping?.free_shipping_threshold;
+  return threshold ? `$${threshold}` : "$30";
+});
+const storeName = computed(() =>
+  settingStore.settings?.general?.store_name || "Tos Louk"
+);
+const storeLogo = computed(() =>
+  settingStore.settings?.general?.store_logo || null
+);
+const colorMode = useColorMode();
+const router = useRouter();
+const isDark = computed(() => colorMode.value === "dark");
+const offcanvasRef = ref(null);
+const isScrolled = ref(false);
+const imageError = ref(false);
+
+const profileImageSrc = computed(() => {
+  if (imageError.value) {
+    return "/image.png";
+  }
+  const img =
+    auth.userProfile?.userProfile?.profile_image ||
+    auth.userProfile?.profile_image;
+  return img || "/image.png";
+});
+
+const handleImageError = () => {
+  imageError.value = true;
+};
+
+watch(
+  () => auth.userProfile,
+  () => {
+    imageError.value = false;
+  },
+  { deep: true },
+);
+
+const handleLogout = async () => {
+  await auth.logout();
+};
 
 const handleScroll = () => {
   if (window.scrollY > 55) {
-    isScrolled.value = true
+    isScrolled.value = true;
   } else {
-    isScrolled.value = false
+    isScrolled.value = false;
   }
-}
+};
 
 // FIXED: Programmatically clean up Bootstrap's backdrop state during rapid Nuxt routing
 const closeMobileMenu = () => {
   if (process.client && offcanvasRef.value) {
     // Look up active structural instance assigned by bootstrap layout engine
-    const bootstrap = window.bootstrap || globalThis.bootstrap
+    const bootstrap = window.bootstrap || globalThis.bootstrap;
     if (bootstrap) {
-      const instance = bootstrap.Offcanvas.getInstance(offcanvasRef.value)
-      instance?.hide()
+      const instance = bootstrap.Offcanvas.getInstance(offcanvasRef.value);
+      instance?.hide();
     }
   }
-}
+};
 
 const toggleTheme = () => {
-  isDark.value = !isDark.value
-  if (isDark.value) {
-    document.documentElement.classList.add('dark')
-    localStorage.setItem('theme', 'dark')
-  } else {
-    document.documentElement.classList.remove('dark')
-    localStorage.setItem('theme', 'light')
-  }
-}
+  colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
+};
 
 onMounted(() => {
-  const savedTheme = localStorage.getItem('theme')
-  if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    isDark.value = true
-    document.documentElement.classList.add('dark')
-  }
-  window.addEventListener('scroll', handleScroll)
-})
+  window.addEventListener("scroll", handleScroll);
+  wishlistStore.initWishlist();
+});
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
-})
+  window.removeEventListener("scroll", handleScroll);
+});
 </script>
 
 <style scoped>
@@ -198,6 +446,7 @@ onUnmounted(() => {
 .glass-header {
   position: sticky;
   top: 0;
+  height: 60px;
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
@@ -210,8 +459,6 @@ onUnmounted(() => {
 .glass-header.scrolled-header {
   background: rgba(255, 255, 255, 0.9) !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  padding-top: 4px !important;
-  padding-bottom: 4px !important;
 }
 
 .dark .glass-header.scrolled-header {
@@ -242,11 +489,25 @@ onUnmounted(() => {
 }
 
 /* Color and Branding Helpers */
-.text-main { color: var(--color-text); }
-.text-primary-brand { color: var(--color-primary); }
-.bg-primary-brand { background-color: var(--color-primary) !important; }
-.text-accent { color: var(--color-warning) !important; }
-.text-white-muted { color: rgba(255, 255, 255, 0.4); }
+.text-main {
+  color: var(--color-text);
+}
+
+.text-primary-brand {
+  color: var(--color-primary);
+}
+
+.bg-primary-brand {
+  background-color: var(--color-primary) !important;
+}
+
+.text-accent {
+  color: var(--color-warning) !important;
+}
+
+.text-white-muted {
+  color: rgba(255, 255, 255, 0.4);
+}
 
 .brand-text {
   font-size: 1.45rem;
@@ -273,6 +534,12 @@ onUnmounted(() => {
 
 .glass-icon-btn:hover {
   background: var(--glass-hover-bg);
+  color: var(--color-primary) !important;
+}
+
+.glass-icon-btn:active {
+  transform: scale(0.85) !important;
+  background-color: var(--color-primary-light) !important;
   color: var(--color-primary) !important;
 }
 
@@ -309,15 +576,20 @@ onUnmounted(() => {
   opacity: 1 !important;
 }
 
-.opacity-70 { opacity: 0.7; }
-.no-arrow::after { display: none !important; }
+.opacity-70 {
+  opacity: 0.7;
+}
+
+.no-arrow::after {
+  display: none !important;
+}
 
 /* ========================================================
    ULTRA-SMOOTH GPU-ACCELERATED MOBILE OFFCANVAS STYLING
 ======================================================== */
 .mobile-glass-offcanvas {
   /* FIXED: Adjusted Light-mode color contrast fallback opacity to look crisp over active views */
-  background: rgba(245, 245, 245, 0.85) !important; 
+  background: rgba(245, 245, 245, 0.85) !important;
   backdrop-filter: var(--glass-blur) !important;
   -webkit-backdrop-filter: var(--glass-blur) !important;
   border-right: 1px solid var(--glass-border) !important;
@@ -335,7 +607,10 @@ onUnmounted(() => {
 .mobile-nav-link {
   transform: translateX(-15px);
   opacity: 0;
-  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease, background 0.2s ease;
+  transition:
+    transform 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+    opacity 0.4s ease,
+    background 0.2s ease;
 }
 
 /* Trigger sliding effects directly mapped to Bootstrap active status toggles */
@@ -345,11 +620,25 @@ onUnmounted(() => {
 }
 
 /* Stagger item lookups */
-.mobile-glass-offcanvas.show .mobile-nav-link:nth-child(1) { transition-delay: 0.05s; }
-.mobile-glass-offcanvas.show .mobile-nav-link:nth-child(2) { transition-delay: 0.10s; }
-.mobile-glass-offcanvas.show .mobile-nav-link:nth-child(3) { transition-delay: 0.15s; }
-.mobile-glass-offcanvas.show .mobile-nav-link:nth-child(4) { transition-delay: 0.20s; }
-.mobile-glass-offcanvas.show .mobile-nav-link:nth-child(5) { transition-delay: 0.25s; }
+.mobile-glass-offcanvas.show .mobile-nav-link:nth-child(1) {
+  transition-delay: 0.05s;
+}
+
+.mobile-glass-offcanvas.show .mobile-nav-link:nth-child(2) {
+  transition-delay: 0.1s;
+}
+
+.mobile-glass-offcanvas.show .mobile-nav-link:nth-child(3) {
+  transition-delay: 0.15s;
+}
+
+.mobile-glass-offcanvas.show .mobile-nav-link:nth-child(4) {
+  transition-delay: 0.2s;
+}
+
+.mobile-glass-offcanvas.show .mobile-nav-link:nth-child(5) {
+  transition-delay: 0.25s;
+}
 
 .border-custom-glass {
   border-color: var(--glass-border) !important;

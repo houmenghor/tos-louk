@@ -12,5 +12,48 @@
     "heroSubtitle": "Find the best deals here",
     "addToCart": "Add to Cart",
     "outOfStock": "Out of Stock"
+  },
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "Manage your profile details, security settings, order history, and app configuration.",
+    "memberSince": "Member since",
+    "personalInfo": "Personal Info",
+    "security": "Security & Password",
+    "orders": "Order History",
+    "settings": "App Settings",
+    "fullName": "Full Name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "gender": "Gender",
+    "dob": "Date of Birth",
+    "address": "Address",
+    "saveChanges": "Save Changes",
+    "saving": "Saving...",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm New Password",
+    "updatePassword": "Update Password",
+    "updating": "Updating...",
+    "noOrders": "No orders found.",
+    "theme": "Theme Mode",
+    "language": "App Language",
+    "logout": "Logout",
+    "orderId": "Order ID",
+    "date": "Date",
+    "total": "Total",
+    "status": "Status",
+    "selectGender": "Select Gender",
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "orderHistory": "Order History"
+  },
+  "seo": {
+    "siteName": "Tos Louk",
+    "defaultProductDesc": "Shop premium products at Tos Louk"
+  },
+  "product": {
+    "copySuccess": "Link copied to clipboard!",
+    "copyError": "Failed to copy link"
   }
 }

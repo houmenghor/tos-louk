@@ -1,0 +1,448 @@
+<template>
+  <div
+    class="discount-card h-100 position-relative overflow-hidden"
+    @mouseenter="hovered = true"
+    @mouseleave="hovered = false"
+  >
+    <!-- Deal Badge (Show only if discount/sale) -->
+    <div v-if="product.badge && product.badge !== 'Best Seller'" class="deal-badge position-absolute z-2">
+      <span class="deal-badge-pill">
+        {{ product.badge }}
+      </span>
+    </div>
+
+    <!-- Wishlist Button -->
+    <button
+      class="wishlist-btn position-absolute z-2"
+      :class="{ wishlisted: wishlistStore.isInWishlist(product.id) }"
+      @click.stop="handleToggleWishlist"
+      :title="
+        wishlistStore.isInWishlist(product.id)
+          ? 'Remove from Wishlist'
+          : 'Add to Wishlist'
+      "
+    >
+      <i
+        class="bi"
+        :class="
+          wishlistStore.isInWishlist(product.id) ? 'bi-heart-fill' : 'bi-heart'
+        "
+      ></i>
+    </button>
+
+    <!-- Quick View Button -->
+    <NuxtLink
+      :to="generateProductUrl(product)"
+      class="quick-view-btn position-absolute z-2"
+      title="View Details"
+    >
+      <i class="bi bi-eye"></i>
+    </NuxtLink>
+
+    <!-- Product Image -->
+    <NuxtLink
+      :to="generateProductUrl(product)"
+      class="image-area text-decoration-none d-block"
+    >
+      <NuxtImg
+        :src="product.thumbnail || product.images?.[0]?.image_url || product.image || 'https://placehold.co/400x400/png?text=Product'"
+        :alt="product.title"
+        class="product-img"
+        :class="{ 'img-zoomed': hovered }"
+      />
+      <!-- Hover overlay CTA -->
+      <div class="img-overlay" :class="{ 'overlay-visible': hovered && !isSoldOut }">
+        <button class="overlay-cart-btn" @click.prevent="handleAddToCart" :disabled="isSoldOut">
+          Quick Add
+        </button>
+      </div>
+    </NuxtLink>
+
+    <!-- Card Content -->
+    <div class="card-content">
+      <!-- Category tag -->
+      <span v-if="product.category" class="category-tag">{{
+        product.category
+      }}</span>
+
+      <!-- Title & Description Group -->
+      <div class="title-desc-group">
+        <NuxtLink :to="generateProductUrl(product)" class="text-decoration-none">
+          <h6 class="product-title">{{ product.title }}</h6>
+        </NuxtLink>
+        <p class="product-desc">{{ product.description || product.desc || 'Experience premium quality with modern design and exceptional performance.' }}</p>
+      </div>
+
+      <!-- Footer Section (Price & Actions aligned to bottom) -->
+      <div class="card-footer-section mt-auto">
+        <!-- Price Row -->
+        <div class="price-row">
+          <span class="price-now">${{ product.price }}</span>
+          <del v-if="product.oldPrice" class="price-was"
+            >${{ product.oldPrice }}</del
+          >
+          <span v-if="savings" class="save-chip">-${{ savings }}</span>
+        </div>
+
+        <!-- Actions -->
+        <div class="action-row pt-2">
+          <BaseButton
+            variants="primary"
+            size="md"
+            class="flex-grow-1"
+            :disabled="isSoldOut"
+            @click="handleAddToCart"
+          >
+            {{ isSoldOut ? 'Sold Out' : 'Add to Cart' }}
+          </BaseButton>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed } from "vue";
+import { useAuthStore } from "~/stores/authStore";
+import { useCartStore } from "~/stores/cartStore";
+import { useWishlistStore } from "~/stores/wishlistStore";
+import { useAppToast } from "~/composables/ui/useAppToast";
+import { useI18n } from "vue-i18n";
+
+const props = defineProps({
+  product: {
+    type: Object,
+    required: true,
+  },
+});
+
+const hovered = ref(false);
+const authStore = useAuthStore();
+const cartStore = useCartStore();
+const wishlistStore = useWishlistStore();
+const { showSuccess, showError } = useAppToast();
+const { locale } = useI18n();
+
+const itemsLeft = computed(() => {
+  if (props.product.stock !== undefined && props.product.stock !== null) {
+    return Number(props.product.stock);
+  }
+  return 20; // Default fallback when stock not specified
+});
+
+const isSoldOut = computed(() => {
+  return itemsLeft.value <= 0;
+});
+
+const savings = computed(() => {
+  if (props.product.oldPrice && props.product.price) {
+    const s = (props.product.oldPrice - props.product.price).toFixed(0);
+    return s > 0 ? s : null;
+  }
+  return null;
+});
+
+const verifyLogin = (actionName) => {
+  if (!authStore.access_token) {
+    showError(
+      locale.value === "kh"
+        ? `សូមចូលគណនីជាមុនសិនដើម្បី ${actionName}!`
+        : `Please login first to ${actionName}!`,
+    );
+    navigateTo("/auth/login");
+    return false;
+  }
+  return true;
+};
+
+const handleAddToCart = () => {
+  if (isSoldOut.value) return;
+  if (verifyLogin(locale.value === "kh" ? "បន្ថែមទៅកន្ត្រក" : "add to cart")) {
+    cartStore.addToCart(props.product);
+    showSuccess(
+      locale.value === "kh"
+        ? "បានបន្ថែមទៅក្នុងកន្ត្រកជោគជ័យ!"
+        : "Added to cart successfully!",
+    );
+  }
+};
+
+const handleToggleWishlist = () => {
+  if (
+    verifyLogin(
+      locale.value === "kh" ? "បន្ថែមទៅបញ្ជីប្រាថ្នា" : "add to wishlist",
+    )
+  ) {
+    wishlistStore.toggleWishlist(props.product);
+    const isNowAdded = wishlistStore.isInWishlist(props.product.id);
+    if (isNowAdded) {
+      showSuccess(
+        locale.value === "kh"
+          ? "បានបន្ថែមទៅក្នុងបញ្ជីប្រាថ្នា!"
+          : "Added to wishlist!",
+      );
+    } else {
+      showSuccess(
+        locale.value === "kh"
+          ? "បានលុបចេញពីបញ្ជីប្រាថ្នា!"
+          : "Removed from wishlist!",
+      );
+    }
+  }
+};
+</script>
+
+<style scoped>
+/* ── Card Shell ── */
+.discount-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  transition:
+    box-shadow 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.3s ease;
+  color: var(--color-text);
+}
+
+.discount-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(0, 220, 130, 0.4);
+  box-shadow:
+    0 20px 40px -12px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(0, 220, 130, 0.1);
+}
+
+/* ── Deal/Best Seller Badge ── */
+.deal-badge {
+  top: 14px;
+  left: 14px;
+}
+.deal-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 220, 130, 0.35);
+}
+
+/* ── Wishlist Button ── */
+.wishlist-btn {
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(8px);
+}
+.wishlist-btn:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+  transform: scale(1.1);
+}
+.wishlist-btn.wishlisted {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+/* ── Quick View Button ── */
+.quick-view-btn {
+  top: 56px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(8px);
+  text-decoration: none;
+}
+.quick-view-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  transform: scale(1.1);
+}
+
+/* ── Image Area ── */
+.image-area {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+  background: var(--color-bg-secondary);
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 1rem;
+  transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.img-zoomed {
+  transform: scale(1.07);
+}
+
+/* Hover overlay */
+.img-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 15, 30, 0.5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.overlay-visible {
+  opacity: 1;
+}
+.overlay-cart-btn {
+  padding: 9px 22px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.95);
+  color: #111;
+  border: none;
+  cursor: pointer;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  backdrop-filter: blur(8px);
+}
+.overlay-visible .overlay-cart-btn {
+  transform: translateY(0);
+}
+.overlay-cart-btn:hover {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+/* ── Card Content ── */
+.card-content {
+  padding: 18px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 10px;
+}
+
+/* Category tag */
+.category-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-primary);
+  background: rgba(0, 220, 130, 0.1);
+  border: 1px solid rgba(0, 220, 130, 0.2);
+  padding: 3px 9px;
+  border-radius: 999px;
+  align-self: flex-start;
+}
+
+/* Title & Description Group */
+.title-desc-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Card Footer Section (anchored to bottom) */
+.card-footer-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Title */
+.product-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--color-text);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Description */
+.product-desc {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.35;
+  margin: 0;
+}
+
+/* Price */
+.price-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.price-now {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+.price-was {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  text-decoration: line-through;
+}
+.save-chip {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(0, 220, 130, 0.12);
+  color: var(--color-primary);
+  border: 1px solid rgba(0, 220, 130, 0.2);
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+/* Actions */
+.action-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: auto;
+}
+</style>

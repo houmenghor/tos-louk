@@ -5,12 +5,11 @@
     <main class="flex-grow-1">
       <slot />
     </main>
-
   </div>
 </template>
 
 <script setup>
-import AppHeader from '~/components/layout/app-header.vue';
+import AppHeader from "~/components/layout/app-header.vue";
 </script>
 
 <style scoped>

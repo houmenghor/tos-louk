@@ -1,0 +1,9 @@
+bunx nuxt module add image
+bun add pinia @pinia/nuxt
+bun add @nuxtjs/turnstile
+bun add zod vee-validate @vee-validate/zod
+bun add vue3-toastify
+bun add -d @types/node
+bun add @nuxtjs/color-mode
+bun add -d prettier
+bunx prettier --write .
