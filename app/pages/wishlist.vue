@@ -31,17 +31,16 @@
       <!-- Members Only Badge -->
       <div class="mb-3">
         <span class="guest-pill">
-          <i class="bi bi-lock-fill me-1"></i> Members Only Feature
+          <i class="bi bi-lock-fill me-1"></i> {{ $t('auth.membersOnly') }}
         </span>
       </div>
 
       <!-- Heading -->
-      <h1 class="hero-title mb-3">Your Wishlist Awaits</h1>
+      <h1 class="hero-title mb-3">{{ $t('wishlist.title') }}</h1>
 
       <!-- Subtitle -->
       <p class="hero-subtitle mx-auto mb-5">
-        Save the products you love, build your dream collection, and add them to
-        cart whenever you're ready. It only takes a moment to sign in.
+        {{ $t('wishlist.subtitle') }}
       </p>
 
       <!-- CTA Buttons using BaseButton -->
@@ -55,7 +54,7 @@
           id="wishlist-login-btn"
         >
           <i class="bi bi-box-arrow-in-right"></i>
-          Log In to My Account
+          {{ $t('auth.loginToMyAccount') }}
         </BaseButton>
 
         <BaseButton
@@ -65,7 +64,7 @@
           id="wishlist-register-btn"
         >
           <i class="bi bi-person-plus"></i>
-          Create Free Account
+          {{ $t('auth.createFreeAccount') }}
         </BaseButton>
       </div>
     </div>

@@ -10,14 +10,14 @@
     <div class="offcanvas-header border-bottom border-custom-glass py-3 px-4">
       <div class="d-flex align-items-center gap-2">
         <h5 class="offcanvas-title fw-bold text-main" id="cartOffcanvasLabel">
-          Your Cart
+          {{ $t('cart.title') }}
         </h5>
         <span
           v-if="authStore.access_token"
           class="badge bg-primary-brand text-white rounded-pill px-2.5 py-1 text-xs"
         >
           {{ cartStore.cartCount }}
-          {{ cartStore.cartCount === 1 ? "item" : "items" }}
+          {{ cartStore.cartCount === 1 ? $t('cart.item') : $t('cart.items') }}
         </span>
       </div>
       <button
@@ -41,13 +41,12 @@
             class="bi bi-bag-heart display-3 text-muted position-relative z-1"
           ></i>
         </div>
-        <h4 class="fw-bold text-main mb-2">Sign In to Use Cart</h4>
+        <h4 class="fw-bold text-main mb-2">{{ $t('cart.signInToUse') }}</h4>
         <p
           class="small text-muted-custom mb-4 mx-auto"
           style="max-width: 240px"
         >
-          Log in to your account to add items, save your cart, and checkout
-          securely.
+          {{ $t('cart.signInDesc') }}
         </p>
         <BaseButton
           variants="primary"
@@ -61,7 +60,7 @@
             }
           "
         >
-          <i class="bi bi-box-arrow-in-right"></i> Log In to Account
+          <i class="bi bi-box-arrow-in-right"></i> {{ $t('auth.loginToAccount') }}
         </BaseButton>
         <BaseButton
           variants="secondary"
@@ -75,7 +74,7 @@
             }
           "
         >
-          <i class="bi bi-person-plus"></i> Create an Account
+          <i class="bi bi-person-plus"></i> {{ $t('auth.createAccount') }}
         </BaseButton>
       </div>
 
@@ -93,16 +92,12 @@
               v-if="cartStore.isFreeShipping"
               class="fw-semibold text-success d-flex align-items-center gap-1.5 animate-pulse"
             >
-              <i class="bi bi-truck fs-5"></i> 🎉 You qualify for FREE shipping!
+              <i class="bi bi-truck fs-5"></i> {{ $t('cart.qualifyFreeShipping') }}
             </span>
             <span v-else class="fw-medium text-muted-custom">
-              Spend
-              <strong class="text-primary-brand"
-                >${{ cartStore.amountToFreeShipping.toFixed(2) }}</strong
-              >
-              more for
+              {{ $t('cart.spendMoreFor', { amount: `$${cartStore.amountToFreeShipping.toFixed(2)}` }) }}
               <strong class="text-primary-brand text-nowrap"
-                >FREE SHIPPING!</strong
+                >{{ $t('cart.freeShipping') }}</strong
               >
             </span>
           </div>
@@ -218,19 +213,19 @@
               class="bi bi-bag-x display-3 text-muted position-relative z-1 animate-bounce"
             ></i>
           </div>
-          <h4 class="fw-bold text-main mb-2">Your Cart is Empty</h4>
+          <h4 class="fw-bold text-main mb-2">{{ $t('cart.empty') }}</h4>
           <p
             class="small text-muted-custom mb-4 mx-auto"
             style="max-width: 250px"
           >
-            Looks like you haven't added any products to your cart yet.
+            {{ $t('cart.emptyDesc') }}
           </p>
           <BaseButton
             variants="primary"
             size="md"
             @click="cartStore.toggleCart(false)"
           >
-            Start Shopping <i class="bi bi-arrow-right"></i>
+            {{ $t('cart.startShopping') }} <i class="bi bi-arrow-right"></i>
           </BaseButton>
         </div>
 
@@ -241,17 +236,17 @@
         >
           <div class="d-flex flex-column gap-2 mb-4">
             <div class="d-flex justify-content-between align-items-center">
-              <span class="text-muted-custom small">Subtotal</span>
+              <span class="text-muted-custom small">{{ $t('cart.subtotal') }}</span>
               <span class="text-main fw-semibold"
                 >${{ cartStore.cartSubtotal.toFixed(2) }}</span
               >
             </div>
             <div class="d-flex justify-content-between align-items-center">
-              <span class="text-muted-custom small">Shipping</span>
+              <span class="text-muted-custom small">{{ $t('cart.shipping') }}</span>
               <span
                 v-if="cartStore.isFreeShipping"
                 class="text-success fw-bold small"
-                >FREE</span
+                >{{ $t('cart.free') }}</span
               >
               <span v-else class="text-main fw-semibold"
                 >${{ shippingCost.toFixed(2) }}</span
@@ -259,7 +254,7 @@
             </div>
             <hr class="border-custom-glass my-2" />
             <div class="d-flex justify-content-between align-items-center">
-              <span class="fw-bold text-main">Total</span>
+              <span class="fw-bold text-main">{{ $t('cart.total') }}</span>
               <span class="fw-extrabold text-main fs-4"
                 >${{ cartTotal.toFixed(2) }}</span
               >
@@ -271,7 +266,7 @@
             class="w-100 mb-2"
             @click="handleCheckout"
           >
-            Secure Checkout <i class="bi bi-shield-lock-fill ms-1"></i>
+            {{ $t('cart.secureCheckout') }} <i class="bi bi-shield-lock-fill ms-1"></i>
           </BaseButton>
           <BaseButton
             variants="secondary"
@@ -279,7 +274,7 @@
             class="w-100"
             @click="cartStore.toggleCart(false)"
           >
-            Continue Shopping
+            {{ $t('cart.continueShopping') }}
           </BaseButton>
         </div>
       </template>

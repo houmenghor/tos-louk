@@ -18,11 +18,10 @@
               <i class="bi bi-envelope-paper-fill me-2"></i>Newsletter
             </span>
             <h2 class="fw-extrabold mb-2 newsletter-title">
-              Stay in the Loop
+              {{ $t('newsletter.title') }}
             </h2>
             <p class="newsletter-subtitle mb-0">
-              Subscribe to receive early access to weekly deals, curated
-              collections, and exclusive product drops.
+              {{ $t('newsletter.subtitle') }}
             </p>
           </div>
 
@@ -36,7 +35,7 @@
                   class="bi bi-patch-check-fill text-primary fs-1 d-block mb-2"
                 ></i>
                 <h5 class="fw-bold mb-1 success-title">
-                  Subscription Successful!
+                  {{ $t('newsletter.success') }}
                 </h5>
                 <p class="text-muted-custom small mb-0">
                   Welcome to our exclusive inner circle.
@@ -55,14 +54,12 @@
                       v-model="emailInput"
                       type="email"
                       class="form-control border-0 bg-transparent py-2 ps-5 subscribe-input"
-                      placeholder="Enter your email address"
+                      :placeholder="$t('newsletter.placeholder')"
                       required
                     />
                   </div>
-                  <button
-                    class="btn btn-primary-custom px-4 py-2 d-flex align-items-center gap-2 rounded-2 shadow-sm fw-semibold"
-                  >
-                    Subscribe <i class="bi bi-arrow-right"></i>
+                  <button class="btn btn-primary-custom px-4 py-2 d-flex align-items-center gap-2 rounded-2 shadow-sm fw-semibold text-nowrap">
+                    {{ $t('newsletter.subscribe') }} <i class="bi bi-arrow-right"></i>
                   </button>
                 </form>
 
@@ -70,12 +67,11 @@
                   class="d-flex align-items-center gap-3 mt-3 px-2 text-muted-custom small"
                 >
                   <span class="d-flex align-items-center gap-1">
-                    <i class="bi bi-shield-check text-primary"></i> No Spam
+                    <i class="bi bi-shield-check text-primary"></i> {{ $t('newsletter.noSpam') }}
                   </span>
                   <span class="d-inline-block text-border-sep">•</span>
                   <span class="d-flex align-items-center gap-1">
-                    <i class="bi bi-patch-check text-primary"></i> Unsubscribe
-                    anytime
+                    <i class="bi bi-patch-check text-primary"></i> {{ $t('newsletter.unsubscribeAnytime') }}
                   </span>
                 </div>
               </div>

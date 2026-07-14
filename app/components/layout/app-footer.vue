@@ -22,8 +22,7 @@
             </template>
           </div>
           <p class="footer-desc mb-4">
-            Discover what defines modern living. Shop our premium collections of
-            clothing, accessories, and state-of-the-art electronics.
+            {{ $t('footer.defaultDesc') }}
           </p>
           <!-- Social Icons -->
           <div class="d-flex gap-3 social-group">
@@ -44,29 +43,29 @@
 
         <!-- Quick Links -->
         <div class="col-lg-2 col-md-6 col-6">
-          <h6 class="footer-heading text-uppercase fw-bold mb-3">Shop Link</h6>
+          <h6 class="footer-heading text-uppercase fw-bold mb-3">{{ $t('footer.shopLink') }}</h6>
           <ul class="list-unstyled footer-links d-flex flex-column gap-2">
-            <li><a href="#best-seller">Best Sellers</a></li>
-            <li><a href="#discount">Flash Sales</a></li>
-            <li><a href="/categories">All Categories</a></li>
-            <li><a href="#">New Arrivals</a></li>
+            <li><a href="#best-seller">{{ $t('footer.bestSellers') }}</a></li>
+            <li><a href="#discount">{{ $t('footer.flashSales') }}</a></li>
+            <li><a href="/categories">{{ $t('footer.allCategories') }}</a></li>
+            <li><a href="#">{{ $t('footer.newArrivals') }}</a></li>
           </ul>
         </div>
 
         <!-- Support Info -->
         <div class="col-lg-2 col-md-6 col-6">
-          <h6 class="footer-heading text-uppercase fw-bold mb-3">Support</h6>
+          <h6 class="footer-heading text-uppercase fw-bold mb-3">{{ $t('footer.support') }}</h6>
           <ul class="list-unstyled footer-links d-flex flex-column gap-2">
-            <li><a href="#">Help Center</a></li>
-            <li><a href="#">Shipping Info</a></li>
-            <li><a href="/privacy-policy">Privacy Policy</a></li>
-            <li><a href="/terms">Terms of Service</a></li>
+            <li><a href="#">{{ $t('footer.helpCenter') }}</a></li>
+            <li><a href="#">{{ $t('footer.shippingInfo') }}</a></li>
+            <li><a href="/privacy-policy">{{ $t('footer.privacyPolicy') }}</a></li>
+            <li><a href="/terms">{{ $t('footer.termsOfService') }}</a></li>
           </ul>
         </div>
 
         <!-- Contact Column -->
         <div class="col-lg-4 col-md-6">
-          <h6 class="footer-heading text-uppercase fw-bold mb-3">Contact Us</h6>
+          <h6 class="footer-heading text-uppercase fw-bold mb-3">{{ $t('footer.contactUs') }}</h6>
           <ul class="list-unstyled footer-contact d-flex flex-column gap-3">
             <li class="d-flex gap-3 align-items-center">
               <div class="contact-icon-circle d-flex align-items-center justify-content-center flex-shrink-0">
@@ -101,8 +100,7 @@
         <div class="col-md-6 text-center text-md-start">
           <p class="copyright-text mb-0">
             &copy; {{ currentYear }}
-            <strong class="brand-title-small">{{ storeName }}</strong>. All rights
-            reserved.
+            <strong class="brand-title-small">{{ storeName }}</strong>. {{ $t('footer.rightsReserved') }}
           </p>
         </div>
         <div class="col-md-6 text-center text-md-end">
@@ -124,8 +122,10 @@
 <script setup>
 import { computed } from "vue";
 import { useSettingStore } from "~/stores/settingStore";
+import { useI18n } from "vue-i18n";
 
 const settingStore = useSettingStore();
+const { t } = useI18n();
 const currentYear = computed(() => new Date().getFullYear());
 
 const storeLocation = computed(() =>

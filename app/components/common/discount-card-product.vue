@@ -93,7 +93,7 @@
             :disabled="isSoldOut"
             @click="handleAddToCart"
           >
-            {{ isSoldOut ? 'Sold Out' : 'Add to Cart' }}
+            {{ isSoldOut ? $t('product.soldOut') : $t('product.addToCart') }}
           </BaseButton>
         </div>
       </div>

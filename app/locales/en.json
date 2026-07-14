@@ -54,6 +54,130 @@
   },
   "product": {
     "copySuccess": "Link copied to clipboard!",
-    "copyError": "Failed to copy link"
+    "copyError": "Failed to copy link",
+    "details": "Product Details",
+    "home": "Home",
+    "categoryDefault": "Category",
+    "save": "Save ${amount}",
+    "color": "Color",
+    "size": "Size",
+    "sizeGuide": "Size Guide",
+    "soldOut": "Sold Out",
+    "addToCart": "Add to Cart",
+    "freeShippingOver": "Free Shipping Over ${amount}",
+    "loading": "Loading product...",
+    "loadingDesc": "Please wait while we fetch the product details.",
+    "notFound": "Product Not Found",
+    "notFoundDesc": "The product you are looking for does not exist or has been removed.",
+    "description": "Description",
+    "specifications": "Specifications",
+    "noDescription": "No description available.",
+    "brand": "Brand",
+    "sku": "SKU",
+    "weight": "Weight",
+    "noSpecifications": "No specifications available for this product."
+  },
+  "category": {
+    "all": "All",
+    "noProducts": "No products found in this category yet.",
+    "viewAll": "View All Products \u2192"
+  },
+  "apiError": {
+    "401": "Invalid email or password. Please check your credentials and try again.",
+    "403": "You do not have permission to perform this action or your account requires verification.",
+    "404": "The requested resource or account could not be found.",
+    "422": "The provided information is invalid. Please check your input and try again.",
+    "429": "Too many requests. Please wait a moment before trying again.",
+    "500": "Server error. Our team has been notified. Please try again later.",
+    "default": "Something went wrong. Please try again."
+  },
+  "auth": {
+    "loginToAccount": "Log In to Account",
+    "loginToMyAccount": "Log In to My Account",
+    "createAccount": "Create an Account",
+    "createFreeAccount": "Create Free Account",
+    "membersOnly": "Members Only Feature"
+  },
+  "wishlist": {
+    "title": "Your Wishlist Awaits",
+    "subtitle": "Save the products you love, build your dream collection, and add them to cart whenever you're ready. It only takes a moment to sign in."
+  },
+  "cart": {
+    "title": "Your Cart",
+    "item": "item",
+    "items": "items",
+    "signInToUse": "Sign In to Use Cart",
+    "signInDesc": "Log in to your account to add items, save your cart, and checkout securely.",
+    "empty": "Your Cart is Empty",
+    "emptyDesc": "Looks like you haven't added any products to your cart yet.",
+    "startShopping": "Start Shopping",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "free": "FREE",
+    "total": "Total",
+    "secureCheckout": "Secure Checkout",
+    "continueShopping": "Continue Shopping",
+    "spendMoreFor": "Spend {amount} more for",
+    "freeShipping": "FREE SHIPPING!",
+    "qualifyFreeShipping": "\ud83c\udf89 You qualify for FREE shipping!"
+  },
+  "hero": {
+    "badge": "CURATED COLLECTION",
+    "titleLine1": "Discover What",
+    "titleLine2": "Defines Modern Living",
+    "subtitle": "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae. Donec velit neque, auctor sit amet aliquam vel.",
+    "browseItems": "Browse Items",
+    "seeAllCategories": "See All Categories",
+    "freeShipping": "Free Shipping",
+    "verifiedQuality": "Verified Quality",
+    "easyReturns": "Easy Returns",
+    "bestSeller": "Best Seller",
+    "trendingNow": "Trending Now",
+    "justLaunched": "Just Launched",
+    "fallbackTitle1": "Precision Audio Hub",
+    "fallbackTitle2": "Smart Wearable Pro",
+    "fallbackTitle3": "Essential Daily Companion",
+    "fallbackDesc": "Proin eget tortor risus. Vivamus magna justo, lacinia eget consectetur sed."
+  },
+  "bestSellers": {
+    "title": "Best Sellers",
+    "subtitle": "Curated selections for your lifestyle"
+  },
+  "discount": {
+    "flashSale": "Flash Sale — Up to {percent}% Off",
+    "defaultTitle": "Exclusive Offers Just for You",
+    "description": "Discover our limited-time special promotions across top categories. Grab your favorite deals before the countdown runs out!",
+    "endsIn": "ENDS IN:",
+    "days": "DAYS",
+    "hours": "HOURS",
+    "minutes": "MINUTES",
+    "seconds": "SECONDS",
+    "claimOffer": "Claim Offer",
+    "viewAllItems": "View All Items"
+  },
+  "newsletter": {
+    "title": "Stay in the Loop",
+    "subtitle": "Subscribe to receive early access to weekly deals, curated collections, and exclusive product drops.",
+    "placeholder": "Enter your email address",
+    "subscribe": "Subscribe",
+    "noSpam": "No Spam",
+    "unsubscribeAnytime": "Unsubscribe anytime",
+    "success": "Subscribed successfully!",
+    "error": "Failed to subscribe. Please try again."
+  },
+  "footer": {
+    "defaultDesc": "Discover what defines modern living. Shop our premium collections of clothing, accessories, and state-of-the-art electronics.",
+    "shopLink": "SHOP LINK",
+    "support": "SUPPORT",
+    "contactUs": "CONTACT US",
+    "bestSellers": "Best Sellers",
+    "flashSales": "Flash Sales",
+    "allCategories": "All Categories",
+    "newArrivals": "New Arrivals",
+    "helpCenter": "Help Center",
+    "shippingInfo": "Shipping Info",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "rightsReserved": "All rights reserved."
   }
 }

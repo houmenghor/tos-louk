@@ -9,16 +9,16 @@
 
     <div class="container position-relative z-1 mb-5 mt-2">
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-        <h2 class="h3 fw-bold text-main mb-0">Product Details</h2>
+        <h2 class="h3 fw-bold text-main mb-0">{{ $t('product.details') }}</h2>
         <!-- Breadcrumbs -->
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item">
-              <NuxtLink to="/" class="text-decoration-none text-muted-custom hover-primary">Home</NuxtLink>
+              <NuxtLink to="/" class="text-decoration-none text-muted-custom hover-primary">{{ $t('product.home') }}</NuxtLink>
             </li>
             <li class="breadcrumb-item">
               <NuxtLink to="/categories" class="text-decoration-none text-muted-custom hover-primary">
-                <span class="capitalize-text">{{ product?.category || 'Products' }}</span>
+                <span class="capitalize-text">{{ product?.category || $t('product.categoryDefault') }}</span>
               </NuxtLink>
             </li>
             <li class="breadcrumb-item active text-main fw-semibold" aria-current="page">
@@ -77,7 +77,9 @@ const activeImage = ref('');
 const selectedColor = ref('#0f172a');
 const selectedSize = ref('M');
 const quantity = ref(1);
-const { pending } = await useAsyncData(`product-${route.params.uuid}`, async () => {
+const { pending, error } = useAsyncData(`product-${route.params.uuid}`, async () => {
+  // Clear current product before fetching new one to avoid showing old product
+  currentProduct.value = null;
   if (route.params.uuid) {
     // Extract only the UUID (last 36 characters) from the slug-uuid combo
     const param = route.params.uuid;
@@ -85,7 +87,7 @@ const { pending } = await useAsyncData(`product-${route.params.uuid}`, async () 
     await productStore.getProductByUuid(actualUuid);
   }
   return true;
-});
+}, { lazy: true });
 
 const isLoading = computed(() => pending.value);
 
@@ -101,8 +103,8 @@ const product = computed(() => {
     return {
       id: null,
       uuid: route.params.uuid,
-      title: "Loading product...",
-      description: "Please wait while we fetch the product details.",
+      title: error.value ? t('product.notFound', 'Product not found') : t('product.loading'),
+      description: error.value ? t('product.notFoundDesc', 'The product you are looking for does not exist.') : t('product.loadingDesc'),
       price: 0,
       oldPrice: null,
       badge: "",
