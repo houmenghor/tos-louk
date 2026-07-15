@@ -13,6 +13,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@nuxtjs/turnstile",
     "@nuxtjs/color-mode",
+    "@vercel/speed-insights",
   ],
   colorMode: {
     classSuffix: "", // so it applies 'dark' instead of 'dark-mode'
