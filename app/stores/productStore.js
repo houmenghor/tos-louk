@@ -21,6 +21,10 @@ export const useProductStore = defineStore('product', () => {
         if (params.collection) query.collection = params.collection;
         if (params.column) query.column = params.column;
         if (params.sort) query.sort = typeof params.sort === 'string' ? params.sort.toLowerCase() : params.sort;
+        if (params.min_price !== undefined && params.min_price !== null) query.min_price = params.min_price;
+        if (params.max_price !== undefined && params.max_price !== null) query.max_price = params.max_price;
+        if (params.brand) query.brand = params.brand;
+        if (params.color) query.color = params.color;
 
         const response = await $fetch('/api/products', { query });
 
@@ -55,6 +59,10 @@ export const useProductStore = defineStore('product', () => {
         if (params.collection) query.collection = params.collection;
         if (params.column) query.column = params.column;
         if (params.sort) query.sort = typeof params.sort === 'string' ? params.sort.toLowerCase() : params.sort;
+        if (params.min_price !== undefined && params.min_price !== null) query.min_price = params.min_price;
+        if (params.max_price !== undefined && params.max_price !== null) query.max_price = params.max_price;
+        if (params.brand) query.brand = params.brand;
+        if (params.color) query.color = params.color;
 
         return await $fetch('/api/products', { query });
     }

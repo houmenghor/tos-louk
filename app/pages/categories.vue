@@ -1,65 +1,38 @@
 <template>
-  <div class="categories-page py-5">
-    <div class="container">
-      <!-- Hero Section -->
-      <div
-        class="categories-hero p-5 rounded-4 mb-5 text-center position-relative overflow-hidden shadow-sm"
-      >
-        <div class="glow-bubble-1"></div>
-        <div class="glow-bubble-2"></div>
-        <div class="position-relative z-1">
-          <span
-            class="badge rounded-pill bg-primary-light text-primary mb-3 px-3 py-2 fw-semibold text-uppercase"
-          >
-            Browse Catalog
-          </span>
-          <h1 class="display-4 fw-extrabold text-main mb-3">
-            Explore Categories
-          </h1>
-          <p class="lead subtitle-text mx-auto" style="max-width: 600px">
-            Find exactly what you are looking for by browsing our curated
-            collections. Toggle filters, search items, and discover modern
-            essentials.
-          </p>
+  <div class="categories-page pb-5">
+    <!-- Simple Breadcrumb Header -->
+    <div class="breadcrumb-banner py-4 mb-5" style="background-color: var(--color-surface); border-bottom: 1px solid var(--color-border);">
+      <div class="container d-flex">
+        <!-- <h4 class="fw-bold mb-0 text-main mx-auto position-absolute start-50 translate-middle-x" style="color: #002d5b;">Category</h4> -->
+        <div class="breadcrumb-text small">
+          <NuxtLink to="/" class="text-primary text-decoration-none">Home</NuxtLink>
+          <span class="text-muted-custom mx-2">/</span>
+          <span class="text-muted-custom">Category</span>
         </div>
       </div>
+    </div>
+
+    <div class="container">
 
       <!-- Categories Card Grid -->
       <div class="row g-4 mb-5">
         <div v-for="cat in categories" :key="cat.id" class="col-xl-3 col-md-6">
-          <div
-            class="category-card rounded-4 overflow-hidden border shadow-sm"
-            :class="{ 'active-card': selectedCategory === cat.slug }"
-            @click="selectCategory(cat.slug)"
-          >
-            <div class="img-container position-relative">
-              <NuxtImg
-                :src="cat.image"
-                :alt="cat.name"
-                class="w-100 h-100 object-fit-cover"
-              />
-              <div class="img-overlay"></div>
-              <span
-                class="badge position-absolute top-0 end-0 m-3 item-count-badge"
-              >
-                {{ cat.count }} Items
-              </span>
-            </div>
-            <div class="card-content p-4">
+          <div class="category-card rounded-4 overflow-hidden border shadow-sm d-flex flex-column">
+            <div class="card-content p-4 d-flex flex-column flex-grow-1">
               <div class="d-flex align-items-center gap-2 mb-2">
-                <i :class="['bi', cat.icon, 'text-primary-icon']"></i>
+                <i :class="['bi', cat.icon || 'bi-grid', 'text-primary-icon']"></i>
                 <h5 class="fw-bold mb-0 text-main">{{ cat.name }}</h5>
               </div>
-              <p class="small text-muted-custom mb-3">{{ cat.desc }}</p>
+              <p class="small text-muted-custom mb-4 flex-grow-1 line-clamp-2" :title="cat.description">{{ cat.description }}</p>
 
               <!-- Subcategory pills -->
-              <div class="d-flex flex-wrap gap-1">
+              <div class="d-flex flex-wrap gap-1 mt-auto">
                 <span
-                  v-for="sub in cat.subcategories"
-                  :key="sub"
+                  v-for="sub in cat.sub_categories || cat.subcategories"
+                  :key="sub.id || sub"
                   class="sub-pill"
                 >
-                  {{ sub }}
+                  {{ sub.name || sub }}
                 </span>
               </div>
             </div>
@@ -68,20 +41,21 @@
       </div>
 
       <!-- Catalog Header / Filter bar -->
-      <div class="mb-4 p-4 rounded-4 bg-surface shadow-sm border filter-bar-container">
+      <div class="mb-4 p-4 rounded-4 bg-surface filter-bar-container">
         <div class="d-flex flex-column flex-lg-row gap-4 align-items-lg-end">
           
           <!-- Search -->
           <div class="flex-grow-1">
-            <label class="form-label fw-bold mb-2 small" style="font-size: 15px; color: var(--color-text);">Search Products</label>
+            <label class="form-label fw-bold mb-2 small" style="font-size: 15px; color: var(--color-text);">Search</label>
             <div class="input-group">
               <input 
                 type="text" 
                 v-model="searchQuery" 
+                @keyup.enter="handleSearch"
                 class="form-control top-filter-input" 
-                placeholder="Search for products..."
+                placeholder="Search categories and products..."
               >
-              <button class="btn btn-primary-custom d-flex align-items-center justify-content-center px-4 search-addon-btn" type="button">
+              <button @click="handleSearch" class="btn btn-primary-custom d-flex align-items-center justify-content-center px-4 search-addon-btn" type="button">
                 <i class="bi bi-search text-white"></i>
               </button>
             </div>
@@ -164,15 +138,22 @@
               <!-- Category Pill -->
               <span v-if="selectedCategory !== 'all'" class="badge position-relative overflow-hidden d-flex align-items-center gap-2 px-3 py-2 border-0 fw-medium rounded-pill capitalize-text" style="color: var(--color-primary); z-index: 1;">
                 <div class="position-absolute w-100 h-100 top-0 start-0 z-n1" style="background-color: var(--color-primary); opacity: 0.1;"></div>
-                {{ selectedCategory }}
-                <i class="bi bi-x cursor-pointer fs-6 lh-1" @click="selectedCategory = 'all'"></i>
+                {{ selectedCategoryName }}
+                <i class="bi bi-x cursor-pointer fs-6 lh-1" @click="handleCategorySelect('all', 'All Categories')"></i>
               </span>
 
-              <!-- Price Select Pill -->
+              <!-- Price Select Pill (Dropdown) -->
               <span v-if="priceRangeSelect !== 'all'" class="badge position-relative overflow-hidden d-flex align-items-center gap-2 px-3 py-2 border-0 fw-medium rounded-pill" style="color: var(--color-primary); z-index: 1;">
                 <div class="position-absolute w-100 h-100 top-0 start-0 z-n1" style="background-color: var(--color-primary); opacity: 0.1;"></div>
                 {{ priceOptions.find(o => o.value === priceRangeSelect)?.label }}
                 <i class="bi bi-x cursor-pointer fs-6 lh-1" @click="priceRangeSelect = 'all'"></i>
+              </span>
+
+              <!-- Custom Price Pill (Slider) -->
+              <span v-if="minPrice > 0 || maxPrice < 300" class="badge position-relative overflow-hidden d-flex align-items-center gap-2 px-3 py-2 border-0 fw-medium rounded-pill" style="color: var(--color-primary); z-index: 1;">
+                <div class="position-absolute w-100 h-100 top-0 start-0 z-n1" style="background-color: var(--color-primary); opacity: 0.1;"></div>
+                ${{ minPrice }} - ${{ maxPrice }}
+                <i class="bi bi-x cursor-pointer fs-6 lh-1" @click="clearCustomPrice"></i>
               </span>
 
               <!-- Brands Pill -->
@@ -207,96 +188,24 @@
             <div class="product-categories-widget widget-item mb-4">
               <h3 class="widget-title">Categories</h3>
               <ul class="category-tree list-unstyled mb-0">
-                <!-- Clothing -->
-                <li class="category-item">
-                  <div class="category-header d-flex justify-content-between align-items-center" @click="toggleAccordion('clothing')">
-                    <a href="javascript:void(0)" class="category-link">Clothing</a>
-                    <span class="category-toggle">
-                      <i class="bi" :class="activeAccordion.clothing ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+                <li v-for="cat in categories" :key="cat.id" class="category-item">
+                  <div class="category-header d-flex justify-content-between align-items-center" @click="toggleAccordion(cat.id)">
+                    <a href="javascript:void(0)" class="category-link" @click.stop="(cat.sub_categories?.length || cat.subcategories?.length) ? toggleAccordion(cat.id) : handleCategorySelect(cat.id, cat.name)">
+                      {{ cat.name }}
+                    </a>
+                    <span class="category-toggle" v-if="cat.sub_categories?.length || cat.subcategories?.length">
+                      <i class="bi" :class="activeAccordion[cat.id] ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
                     </span>
                   </div>
-                  <ul :class="['subcategory-list list-unstyled ps-3', { expanded: activeAccordion.clothing }]">
-                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'clothing'">Men's Wear</a></li>
-                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'clothing'">Women's Wear</a></li>
-                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'clothing'">Kids' Clothing</a></li>
-                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'clothing'">Accessories</a></li>
-                  </ul>
-                </li>
-
-                <!-- Electronics -->
-                <li class="category-item">
-                  <div class="category-header d-flex justify-content-between align-items-center" @click="toggleAccordion('electronics')">
-                    <a href="javascript:void(0)" class="category-link">Electronics</a>
-                    <span class="category-toggle">
-                      <i class="bi" :class="activeAccordion.electronics ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
-                    </span>
-                  </div>
-                  <ul :class="['subcategory-list list-unstyled ps-3', { expanded: activeAccordion.electronics }]">
-                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'electronics'">Mobiles</a></li>
-                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'electronics'">Laptops</a></li>
-                  </ul>
-                </li>
-
-                <!-- Home & Kitchen -->
-                <li class="category-item">
-                  <div class="category-header d-flex justify-content-between align-items-center" @click="toggleAccordion('homeKitchen')">
-                    <a href="javascript:void(0)" class="category-link">Home &amp; Kitchen</a>
-                    <span class="category-toggle">
-                      <i class="bi" :class="activeAccordion.homeKitchen ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
-                    </span>
-                  </div>
-                  <ul :class="['subcategory-list list-unstyled ps-3', { expanded: activeAccordion.homeKitchen }]">
-                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'homeKitchen'">Kitchenware</a></li>
-                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'homeKitchen'">Home Decor</a></li>
-                  </ul>
-                </li>
-
-                <!-- Beauty & Personal Care -->
-                <li class="category-item">
-                  <div class="category-header d-flex justify-content-between align-items-center" @click="toggleAccordion('beautyPersonal')">
-                    <a href="javascript:void(0)" class="category-link">Beauty &amp; Personal Care</a>
-                    <span class="category-toggle">
-                      <i class="bi" :class="activeAccordion.beautyPersonal ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
-                    </span>
-                  </div>
-                  <ul :class="['subcategory-list list-unstyled ps-3', { expanded: activeAccordion.beautyPersonal }]">
-                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'beautyPersonal'">Makeup</a></li>
-                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'beautyPersonal'">Skincare</a></li>
-                  </ul>
-                </li>
-
-                <!-- Sports & Outdoors -->
-                <li class="category-item">
-                  <div class="category-header d-flex justify-content-between align-items-center" @click="toggleAccordion('sportsOutdoors')">
-                    <a href="javascript:void(0)" class="category-link">Sports &amp; Outdoors</a>
-                    <span class="category-toggle">
-                      <i class="bi" :class="activeAccordion.sportsOutdoors ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
-                    </span>
-                  </div>
-                  <ul :class="['subcategory-list list-unstyled ps-3', { expanded: activeAccordion.sportsOutdoors }]">
-                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'sportsOutdoors'">Fitness</a></li>
-                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'sportsOutdoors'">Camping</a></li>
-                  </ul>
-                </li>
-
-                <!-- Books -->
-                <li class="category-item">
-                  <div class="category-header d-flex justify-content-between align-items-center" @click="selectedCategory = 'books'">
-                    <a href="javascript:void(0)" class="category-link">Books</a>
-                  </div>
-                </li>
-
-                <!-- Toys & Games -->
-                <li class="category-item">
-                  <div class="category-header d-flex justify-content-between align-items-center" @click="toggleAccordion('toysGames')">
-                    <a href="javascript:void(0)" class="category-link">Toys &amp; Games</a>
-                    <span class="category-toggle">
-                      <i class="bi" :class="activeAccordion.toysGames ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
-                    </span>
-                  </div>
-                  <ul :class="['subcategory-list list-unstyled ps-3', { expanded: activeAccordion.toysGames }]">
-                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'toysGames'">Action Figures</a></li>
-                    <li><a href="#" class="subcategory-link" @click.prevent="selectedCategory = 'toysGames'">Board Games</a></li>
+                  <ul 
+                    v-if="cat.sub_categories?.length || cat.subcategories?.length"
+                    :class="['subcategory-list list-unstyled ps-3', { expanded: activeAccordion[cat.id] }]"
+                  >
+                    <li v-for="sub in (cat.sub_categories || cat.subcategories)" :key="sub.id || sub.uuid || sub">
+                      <a href="javascript:void(0)" class="subcategory-link" @click.prevent="handleCategorySelect((sub.id || sub.uuid || sub), (typeof sub === 'object' ? sub.name : sub))">
+                        {{ typeof sub === 'object' ? sub.name : sub }}
+                      </a>
+                    </li>
                   </ul>
                 </li>
               </ul>
@@ -522,23 +431,32 @@ import BasePagination from '~/components/base/base-pagination.vue';
 import { useCartStore } from '~/stores/cartStore';
 import { useProductStore } from '~/stores/productStore';
 import { useAppToast } from '~/composables/ui/useAppToast';
+import { useCategoryStore } from '~/stores/categoryStore';
 
 const cartStore = useCartStore();
 const productStore = useProductStore();
-const { products } = storeToRefs(productStore);
+const { products, pagination } = storeToRefs(productStore);
 const { showSuccess } = useAppToast();
+const categoryStore = useCategoryStore();
+const { categories } = storeToRefs(categoryStore);
 
-await useAsyncData("categories-products", async () => {
-  if (products.value.length === 0) {
-    await productStore.getAllProducts({
-      per_page: 50,
-      status: 1
-    });
-  }
+await useAsyncData("categories", async () => {
+  // Fetch all active categories
+  await categoryStore.getCategories({ per_page: 50, parent_id: "null" });
+  console.log(categories.value);
+  console.log(products.value);
   return true;
+
 });
 
 const selectedCategory = ref("all");
+const selectedCategoryName = ref("All Categories");
+
+const handleCategorySelect = (id, name) => {
+  selectedCategory.value = id;
+  selectedCategoryName.value = name || id;
+};
+
 const searchQuery = ref("");
 const sortBy = ref("default");
 
@@ -583,20 +501,22 @@ const progressStyle = computed(() => {
 const applyPriceFilter = () => {
   minPrice.value = tempMinPrice.value;
   maxPrice.value = tempMaxPrice.value;
+  currentPage.value = 1;
+};
+
+const clearCustomPrice = () => {
+  minPrice.value = 0;
+  maxPrice.value = 300;
+  tempMinPrice.value = 0;
+  tempMaxPrice.value = 300;
+  currentPage.value = 1;
 };
 
 // Accordion Toggles
-const activeAccordion = reactive({
-  clothing: false,
-  electronics: false,
-  homeKitchen: false,
-  beautyPersonal: false,
-  sportsOutdoors: false,
-  toysGames: false
-});
+const activeAccordion = ref({});
 
 const toggleAccordion = (section) => {
-  activeAccordion[section] = !activeAccordion[section];
+  activeAccordion.value[section] = !activeAccordion.value[section];
 };
 
 // Brand States
@@ -624,11 +544,13 @@ const applyBrandFilter = () => {
   selectedBrands.value = brands.value
     .filter((b) => b.checked)
     .map((b) => b.name.toLowerCase());
+  currentPage.value = 1;
 };
 
 const clearBrandFilter = () => {
   brands.value.forEach((b) => (b.checked = false));
   selectedBrands.value = [];
+  currentPage.value = 1;
 };
 
 // Color States
@@ -655,194 +577,196 @@ const selectColor = (colorName) => {
 
 const applyColorFilter = () => {
   selectedColorApplied.value = activeColorFilter.value;
+  currentPage.value = 1;
 };
 
 const clearColorFilter = () => {
   activeColorFilter.value = null;
   selectedColorApplied.value = null;
+  currentPage.value = 1;
 };
 
 // Categories metadata
-const categories = [
-  {
-    id: 1,
-    name: "Electronics",
-    slug: "electronics",
-    icon: "bi-laptop",
-    count: 120,
-    desc: "Gadgets, accessories, smart devices and premium acoustics.",
-    image: "https://placehold.co/400x250/png?text=Electronics",
-    subcategories: ["Audio", "Wearables", "Chargers", "Computers"],
-  },
-  {
-    id: 2,
-    name: "Clothing",
-    slug: "clothing",
-    icon: "bi-tags",
-    count: 85,
-    desc: "Modern and curated premium design collections for daily active wear.",
-    image: "https://placehold.co/400x250/png?text=Clothing",
-    subcategories: ["Polo Shirts", "T-Shirts", "Blazers", "Pants"],
-  },
-  {
-    id: 3,
-    name: "Accessories",
-    slug: "accessories",
-    icon: "bi-watch",
-    count: 42,
-    desc: "Wallets, belts, sunglasses, and high-end leather accessories.",
-    image: "https://placehold.co/400x250/png?text=Accessories",
-    subcategories: ["Watches", "Sunglasses", "Belts", "Wallets"],
-  },
-  {
-    id: 4,
-    name: "Bags & Travel",
-    slug: "bags-travel",
-    icon: "bi-backpack",
-    count: 29,
-    desc: "Lightweight backpacks, suitcases, travel gear, and active duffels.",
-    image: "https://placehold.co/400x250/png?text=Travel+Gear",
-    subcategories: ["Backpacks", "Duffle Bags", "Luggage"],
-  },
-];
+// const categories = [
+//   {
+//     id: 1,
+//     name: "Electronics",
+//     slug: "electronics",
+//     icon: "bi-laptop",
+//     count: 120,
+//     desc: "Gadgets, accessories, smart devices and premium acoustics.",
+//     image: "https://placehold.co/400x250/png?text=Electronics",
+//     subcategories: ["Audio", "Wearables", "Chargers", "Computers"],
+//   },
+//   {
+//     id: 2,
+//     name: "Clothing",
+//     slug: "clothing",
+//     icon: "bi-tags",
+//     count: 85,
+//     desc: "Modern and curated premium design collections for daily active wear.",
+//     image: "https://placehold.co/400x250/png?text=Clothing",
+//     subcategories: ["Polo Shirts", "T-Shirts", "Blazers", "Pants"],
+//   },
+//   {
+//     id: 3,
+//     name: "Accessories",
+//     slug: "accessories",
+//     icon: "bi-watch",
+//     count: 42,
+//     desc: "Wallets, belts, sunglasses, and high-end leather accessories.",
+//     image: "https://placehold.co/400x250/png?text=Accessories",
+//     subcategories: ["Watches", "Sunglasses", "Belts", "Wallets"],
+//   },
+//   {
+//     id: 4,
+//     name: "Bags & Travel",
+//     slug: "bags-travel",
+//     icon: "bi-backpack",
+//     count: 29,
+//     desc: "Lightweight backpacks, suitcases, travel gear, and active duffels.",
+//     image: "https://placehold.co/400x250/png?text=Travel+Gear",
+//     subcategories: ["Backpacks", "Duffle Bags", "Luggage"],
+//   },
+// ];
 
-const mockProducts = [
-  {
-    id: 1,
-    title: "Premium Wireless Headphones",
-    category: "electronics",
-    brand: "nike",
-    color: "Black",
-    price: 98,
-    oldPrice: 179,
-    rating: 4.8,
-    image: "https://placehold.co/300x300/png?text=Headphones",
-  },
-  {
-    id: 2,
-    title: "Smart Fitness Tracker Pro",
-    category: "electronics",
-    brand: "puma",
-    color: "Blue",
-    price: 60,
-    oldPrice: 120,
-    rating: 4.5,
-    image: "https://placehold.co/300x300/png?text=Fitness+Tracker",
-  },
-  {
-    id: 3,
-    title: "Wireless Charging Pad",
-    category: "electronics",
-    brand: "vans",
-    color: "White",
-    price: 49,
-    oldPrice: 75,
-    rating: 4.2,
-    image: "https://placehold.co/300x300/png?text=Charger",
-  },
-  {
-    id: 4,
-    title: "Precision Audio Hub",
-    category: "electronics",
-    brand: "nike",
-    color: "Black",
-    price: 219,
-    oldPrice: 299,
-    rating: 4.9,
-    image: "https://placehold.co/300x300/png?text=Audio+Hub",
-  },
-  {
-    id: 5,
-    title: "Classic Polo Shirt",
-    category: "clothing",
-    brand: "nike",
-    color: "Red",
-    price: 45,
-    oldPrice: 60,
-    rating: 4.3,
-    image: "https://placehold.co/300x300/png?text=Polo+Shirt",
-  },
-  {
-    id: 6,
-    title: "Slim Fit Denim",
-    category: "clothing",
-    brand: "adidas",
-    color: "Blue",
-    price: 79,
-    oldPrice: 110,
-    rating: 4.1,
-    image: "https://placehold.co/300x300/png?text=Denim+Jeans",
-  },
-  {
-    id: 7,
-    title: "Wool Blend Blazer",
-    category: "clothing",
-    brand: "reebok",
-    color: "Brown",
-    price: 129,
-    oldPrice: 180,
-    rating: 4.7,
-    image: "https://placehold.co/300x300/png?text=Blazer",
-  },
-  {
-    id: 8,
-    title: "Minimalist Leather Wallet",
-    category: "accessories",
-    brand: "nike",
-    color: "Brown",
-    price: 35,
-    oldPrice: 50,
-    rating: 4.6,
-    image: "https://placehold.co/300x300/png?text=Leather+Wallet",
-  },
-  {
-    id: 9,
-    title: "Polarized Sunglasses",
-    category: "accessories",
-    brand: "adidas",
-    color: "Black",
-    price: 120,
-    oldPrice: 160,
-    rating: 4.4,
-    image: "https://placehold.co/300x300/png?text=Sunglasses",
-  },
-  {
-    id: 10,
-    title: "Leather Watch Strap",
-    category: "accessories",
-    brand: "converse",
-    color: "Brown",
-    price: 59,
-    oldPrice: 85,
-    rating: 4.0,
-    image: "https://placehold.co/300x300/png?text=Watch+Strap",
-  },
-  {
-    id: 11,
-    title: "Lightweight Travel Backpack",
-    category: "bags-travel",
-    brand: "under armour",
-    color: "Pink",
-    price: 136,
-    oldPrice: 210,
-    rating: 4.8,
-    image: "https://placehold.co/300x300/png?text=Travel+Backpack",
-  },
-  ...Array.from({ length: 25 }, (_, i) => ({
-    id: 12 + i,
-    title: `Premium Item ${i + 12}`,
-    category: i % 2 === 0 ? "clothing" : "accessories",
-    brand: i % 3 === 0 ? "nike" : i % 2 === 0 ? "adidas" : "puma",
-    color: i % 2 === 0 ? "Black" : "White",
-    price: Math.floor(Math.random() * 80) + 20,
-    oldPrice: Math.floor(Math.random() * 150) + 100,
-    rating: (Math.random() * 1 + 4).toFixed(1),
-    image: `https://placehold.co/300x300/png?text=Item+${i + 12}`,
-  }))
-];
+// const mockProducts = [
+//   {
+//     id: 1,
+//     title: "Premium Wireless Headphones",
+//     category: "electronics",
+//     brand: "nike",
+//     color: "Black",
+//     price: 98,
+//     oldPrice: 179,
+//     rating: 4.8,
+//     image: "https://placehold.co/300x300/png?text=Headphones",
+//   },
+//   {
+//     id: 2,
+//     title: "Smart Fitness Tracker Pro",
+//     category: "electronics",
+//     brand: "puma",
+//     color: "Blue",
+//     price: 60,
+//     oldPrice: 120,
+//     rating: 4.5,
+//     image: "https://placehold.co/300x300/png?text=Fitness+Tracker",
+//   },
+//   {
+//     id: 3,
+//     title: "Wireless Charging Pad",
+//     category: "electronics",
+//     brand: "vans",
+//     color: "White",
+//     price: 49,
+//     oldPrice: 75,
+//     rating: 4.2,
+//     image: "https://placehold.co/300x300/png?text=Charger",
+//   },
+//   {
+//     id: 4,
+//     title: "Precision Audio Hub",
+//     category: "electronics",
+//     brand: "nike",
+//     color: "Black",
+//     price: 219,
+//     oldPrice: 299,
+//     rating: 4.9,
+//     image: "https://placehold.co/300x300/png?text=Audio+Hub",
+//   },
+//   {
+//     id: 5,
+//     title: "Classic Polo Shirt",
+//     category: "clothing",
+//     brand: "nike",
+//     color: "Red",
+//     price: 45,
+//     oldPrice: 60,
+//     rating: 4.3,
+//     image: "https://placehold.co/300x300/png?text=Polo+Shirt",
+//   },
+//   {
+//     id: 6,
+//     title: "Slim Fit Denim",
+//     category: "clothing",
+//     brand: "adidas",
+//     color: "Blue",
+//     price: 79,
+//     oldPrice: 110,
+//     rating: 4.1,
+//     image: "https://placehold.co/300x300/png?text=Denim+Jeans",
+//   },
+//   {
+//     id: 7,
+//     title: "Wool Blend Blazer",
+//     category: "clothing",
+//     brand: "reebok",
+//     color: "Brown",
+//     price: 129,
+//     oldPrice: 180,
+//     rating: 4.7,
+//     image: "https://placehold.co/300x300/png?text=Blazer",
+//   },
+//   {
+//     id: 8,
+//     title: "Minimalist Leather Wallet",
+//     category: "accessories",
+//     brand: "nike",
+//     color: "Brown",
+//     price: 35,
+//     oldPrice: 50,
+//     rating: 4.6,
+//     image: "https://placehold.co/300x300/png?text=Leather+Wallet",
+//   },
+//   {
+//     id: 9,
+//     title: "Polarized Sunglasses",
+//     category: "accessories",
+//     brand: "adidas",
+//     color: "Black",
+//     price: 120,
+//     oldPrice: 160,
+//     rating: 4.4,
+//     image: "https://placehold.co/300x300/png?text=Sunglasses",
+//   },
+//   {
+//     id: 10,
+//     title: "Leather Watch Strap",
+//     category: "accessories",
+//     brand: "converse",
+//     color: "Brown",
+//     price: 59,
+//     oldPrice: 85,
+//     rating: 4.0,
+//     image: "https://placehold.co/300x300/png?text=Watch+Strap",
+//   },
+//   {
+//     id: 11,
+//     title: "Lightweight Travel Backpack",
+//     category: "bags-travel",
+//     brand: "under armour",
+//     color: "Pink",
+//     price: 136,
+//     oldPrice: 210,
+//     rating: 4.8,
+//     image: "https://placehold.co/300x300/png?text=Travel+Backpack",
+//   },
+//   ...Array.from({ length: 25 }, (_, i) => ({
+//     id: 12 + i,
+//     title: `Premium Item ${i + 12}`,
+//     category: i % 2 === 0 ? "clothing" : "accessories",
+//     brand: i % 3 === 0 ? "nike" : i % 2 === 0 ? "adidas" : "puma",
+//     color: i % 2 === 0 ? "Black" : "White",
+//     price: Math.floor(Math.random() * 80) + 20,
+//     oldPrice: Math.floor(Math.random() * 150) + 100,
+//     rating: (Math.random() * 1 + 4).toFixed(1),
+//     image: `https://placehold.co/300x300/png?text=Item+${i + 12}`,
+//   }))
+// ];
 
-const selectCategory = (slug) => {
-  selectedCategory.value = selectedCategory.value === slug ? "all" : slug;
+const selectCategory = (identifier) => {
+  selectedCategory.value = selectedCategory.value === identifier ? "all" : identifier;
 };
 
 const totalProductCount = computed(() => mockProducts.length);
@@ -857,17 +781,55 @@ const hasActiveFilters = computed(() => {
          selectedColorApplied.value !== null;
 });
 
+const currentPage = ref(1);
+
+const fetchProducts = async () => {
+  const params = {
+    per_page: 200, // Fetch bulk to allow local filtering for price/brand/color
+    status: 1
+  };
+  
+  if (selectedCategory.value !== 'all') {
+    params.category_id = selectedCategory.value;
+  }
+  
+  if (searchQuery.value) {
+    params.search = searchQuery.value;
+  }
+  
+  await productStore.getAllProducts(params);
+};
+
+const handleSearch = async () => {
+  currentPage.value = 1;
+  await categoryStore.getCategories({
+    per_page: 50,
+    parent_id: "null",
+    search: searchQuery.value
+  });
+  await fetchProducts();
+};
+
 const resetFilters = () => {
-  selectedCategory.value = 'all';
+  handleCategorySelect('all', 'All Categories');
   searchQuery.value = '';
   sortBy.value = 'default';
   priceRangeSelect.value = 'all';
   tempMinPrice.value = 0;
   tempMaxPrice.value = 300;
-  applyPriceFilter();
-  clearBrandFilter();
-  clearColorFilter();
+  activeColorFilter.value = null;
+  selectedColorApplied.value = null;
+  brands.value.forEach((b) => (b.checked = false));
+  selectedBrands.value = [];
+  minPrice.value = tempMinPrice.value;
+  maxPrice.value = tempMaxPrice.value;
+  currentPage.value = 1;
+  handleSearch(); // this triggers both category and product fetch
 };
+
+onMounted(() => {
+  fetchProducts();
+});
 
 const filteredProducts = computed(() => {
   const sourceProducts = products.value.length > 0
@@ -886,7 +848,7 @@ const filteredProducts = computed(() => {
           id: item.id,
           uuid: item.uuid,
           title: item.title,
-          category: item.category?.slug || item.category?.name?.toLowerCase() || 'electronics',
+          category: item.category?.uuid || item.category?.slug || item.category?.name?.toLowerCase() || 'electronics',
           brand: item.brand?.toLowerCase() || 'nike',
           color: 'Black',
           price: Number(finalPrice.toFixed(2)),
@@ -897,23 +859,17 @@ const filteredProducts = computed(() => {
           images: item.images || []
         };
       })
-    : mockProducts;
+    : [];
 
   let result = [...sourceProducts];
 
-  // Category filter
-  if (selectedCategory.value !== "all") {
-    result = result.filter((p) => p.category === selectedCategory.value);
-  }
-
-  // Search filter
-  if (searchQuery.value) {
-    const q = searchQuery.value.toLowerCase();
-    result = result.filter((p) => p.title.toLowerCase().includes(q));
-  }
-
   // Price filter (slider)
-  result = result.filter(p => p.price >= minPrice.value && p.price <= maxPrice.value);
+  result = result.filter(p => {
+    if (p.price < minPrice.value) return false;
+    // If maxPrice is at the absolute slider limit (300), treat it as $300+
+    if (maxPrice.value < 300 && p.price > maxPrice.value) return false;
+    return true;
+  });
 
   // Top bar price select filter
   if (priceRangeSelect.value === 'under-50') {
@@ -926,16 +882,12 @@ const filteredProducts = computed(() => {
 
   // Brand filter
   if (selectedBrands.value.length > 0) {
-    result = result.filter((p) =>
-      selectedBrands.value.includes(p.brand.toLowerCase()),
-    );
+    result = result.filter(p => selectedBrands.value.includes(p.brand.toLowerCase()));
   }
 
   // Color filter
   if (selectedColorApplied.value) {
-    result = result.filter(
-      (p) => p.color.toLowerCase() === selectedColorApplied.value.toLowerCase(),
-    );
+    result = result.filter(p => p.color.toLowerCase() === selectedColorApplied.value.toLowerCase());
   }
 
   // Sorting
@@ -948,26 +900,29 @@ const filteredProducts = computed(() => {
   return result;
 });
 
-const currentPage = ref(1);
-
-const totalPages = computed(() => {
-  return Math.ceil(filteredProducts.value.length / itemsPerPage.value) || 1;
-});
-
 const paginatedProducts = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value;
   const end = start + itemsPerPage.value;
   return filteredProducts.value.slice(start, end);
 });
 
-watch(filteredProducts, () => {
-  currentPage.value = 1;
+const totalPages = computed(() => {
+  return Math.ceil(filteredProducts.value.length / itemsPerPage.value) || 1;
 });
 
 const handlePageChange = (page) => {
   currentPage.value = page;
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
+
+watch([selectedCategory], () => {
+  currentPage.value = 1;
+  fetchProducts();
+});
+
+watch([itemsPerPage, sortBy, priceRangeSelect], () => {
+  currentPage.value = 1;
+});
 
 const handleAddToCart = (product) => {
   cartStore.addToCart(product);
@@ -1001,47 +956,9 @@ useSeoMeta({
   color: var(--color-text-secondary);
 }
 
-/* Category Hero */
-.categories-hero {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-}
-
-.dark .categories-hero {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-  border-color: rgba(255, 255, 255, 0.05);
-}
-
-.glow-bubble-1 {
-  position: absolute;
-  top: -80px;
-  right: -80px;
-  width: 250px;
-  height: 250px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(0, 220, 130, 0.12) 0%,
-    transparent 70%
-  );
-  filter: blur(50px);
-  pointer-events: none;
-}
-
-.glow-bubble-2 {
-  position: absolute;
-  bottom: -100px;
-  left: -100px;
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(0, 220, 130, 0.08) 0%,
-    transparent 70%
-  );
-  filter: blur(60px);
-  pointer-events: none;
+/* Breadcrumb styles */
+.breadcrumb-banner {
+  border-bottom: 1px solid var(--color-border);
 }
 
 .bg-primary-light {
@@ -1138,22 +1055,7 @@ useSeoMeta({
 .category-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border) !important;
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
   height: 100%;
-}
-
-.category-card:hover,
-.category-card.active-card {
-  transform: translateY(-5px);
-  border-color: var(--color-primary) !important;
-  box-shadow:
-    var(--shadow-md),
-    0 8px 25px rgba(0, 220, 130, 0.1) !important;
-}
-
-.category-card.active-card {
-  background-color: var(--color-bg-secondary);
 }
 
 .img-container {
@@ -1207,6 +1109,11 @@ useSeoMeta({
 }
 
 /* Filter bar & Inputs */
+.filter-bar-container {
+  border: 1px solid var(--color-border) !important;
+  border-radius: 1rem;
+}
+
 .filter-bar {
   background-color: var(--color-surface);
   border-color: var(--color-border) !important;
@@ -1560,5 +1467,12 @@ useSeoMeta({
   max-height: 500px;
   opacity: 1;
   margin-top: 0.5rem !important; /* mt-2 equivalent */
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 </style>
