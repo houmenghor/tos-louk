@@ -7,3 +7,4 @@ bun add -d @types/node
 bun add @nuxtjs/color-mode
 bun add -d prettier
 bunx prettier --write .
+bun add @vercel/speed-insights

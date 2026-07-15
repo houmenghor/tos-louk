@@ -1,9 +1,9 @@
 <template>
-  <div class="d-flex flex-column h-100 p-4 p-md-5 border rounded-4 bg-white shadow-sm">
+  <div class="d-flex flex-column h-100 p-4 p-md-5 border rounded-4 shadow-sm info-wrapper">
     <div class="d-flex align-items-center justify-content-between mb-3">
       <NuxtLink to="/categories"
         class="badge rounded-pill border text-primary bg-primary-subtle text-decoration-none px-3 py-2 fw-medium">{{
-          product?.category || 'Category' }}</NuxtLink>
+          product?.category || $t('product.categoryDefault') }}</NuxtLink>
       <span v-if="product?.stock !== undefined && product?.stock !== null" class="fw-semibold small d-flex align-items-center gap-2"
         :class="`text-${stockStatus.color}`">
         <span class="rounded-circle flex-shrink-0" style="width: 8px; height: 8px;" :class="`bg-${stockStatus.color}`"></span>
@@ -13,11 +13,11 @@
 
     <h2 class="display-6 fw-bold text-main mb-4" style="line-height: 1.2;">{{ product?.title }}</h2>
 
-    <div class="bg-light rounded-3 p-3 mb-4 d-flex align-items-center gap-3">
+    <div class="rounded-3 p-3 mb-4 d-flex align-items-center gap-3 price-box">
       <h2 class="text-main mb-0 fw-bold">${{ product?.price }}</h2>
-      <h5 v-if="product?.oldPrice" class="text-muted mb-0 text-decoration-line-through">${{ product.oldPrice }}</h5>
+      <h5 v-if="product?.oldPrice" class="text-muted-custom mb-0 text-decoration-line-through">${{ product.oldPrice }}</h5>
       <span v-if="product?.oldPrice" class="badge bg-success-subtle text-success rounded-pill px-3 py-2 fw-medium">
-        Save ${{ (product.oldPrice - product.price).toFixed(2) }}
+        {{ $t('product.save', { amount: (product.oldPrice - product.price).toFixed(2) }) }}
       </span>
     </div>
 
@@ -25,7 +25,7 @@
     <div class="row g-4 mb-4">
       <!-- Colors -->
       <div class="col-sm-6" v-if="product?.colors?.length">
-        <h6 class="fw-semibold text-main mb-3">Color</h6>
+        <h6 class="fw-semibold text-main mb-3">{{ $t('product.color') }}</h6>
         <div class="d-flex gap-2">
           <div v-for="color in product.colors" :key="color"
             class="color-swatch rounded-circle cursor-pointer position-relative shadow-sm"
@@ -37,8 +37,8 @@
       <!-- Sizes -->
       <div class="col-sm-6" v-if="product?.sizes?.length">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h6 class="fw-semibold text-main mb-0">Size</h6>
-          <a href="#" class="small text-primary text-decoration-none">Size Guide</a>
+          <h6 class="fw-semibold text-main mb-0">{{ $t('product.size') }}</h6>
+          <a href="#" class="small text-primary text-decoration-none">{{ $t('product.sizeGuide') }}</a>
         </div>
         <div class="d-flex flex-wrap gap-2">
           <button v-for="size in product.sizes" :key="size" class="btn btn-outline-custom size-btn flex-grow-1"
@@ -53,7 +53,7 @@
     <div class="mt-4">
       <div class="d-flex gap-3 mb-3">
         <!-- Quantity Selector -->
-        <div class="quantity-selector d-flex align-items-center border rounded-3 px-2 bg-white" style="height: 48px;">
+        <div class="quantity-selector d-flex align-items-center border rounded-3 px-2 bg-input-wrapper" style="height: 48px;">
           <button class="btn btn-link text-main p-0 border-0" style="width: 24px;"
             @click="quantity > 1 ? $emit('update:quantity', quantity - 1) : null">
             <i class="bi bi-dash"></i>
@@ -72,18 +72,18 @@
         <button
           class="btn btn-primary-custom flex-grow-1 rounded-3 fw-medium d-flex align-items-center justify-content-center gap-2 shadow-none"
           :disabled="isSoldOut" @click="!isSoldOut && $emit('add-to-cart')" style="height: 48px;">
-          <i class="bi bi-bag" v-if="!isSoldOut"></i> {{ isSoldOut ? 'Sold Out' : 'Add to Cart' }}
+          <i class="bi bi-bag" v-if="!isSoldOut"></i> {{ isSoldOut ? $t('product.soldOut') : $t('product.addToCart') }}
         </button>
 
         <!-- Wishlist Button -->
         <button
-          class="btn border rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 text-muted"
+          class="btn border rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 text-muted-custom"
           style="width: 48px; height: 48px; background: transparent;" @click="$emit('toggle-wishlist')" title="Wishlist">
           <i class="bi" :class="wishlistStore.isInWishlist(product?.id) ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
         </button>
 
         <!-- Share Button -->
-        <button class="btn border rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 text-muted"
+        <button class="btn border rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 text-muted-custom"
           style="width: 48px; height: 48px; background: transparent;" @click="copyLink" title="Copy Link">
           <i class="bi bi-share"></i>
         </button>
@@ -92,7 +92,7 @@
       <!-- Extra info Grid -->
       <div class="border rounded-3">
         <div class="p-3 py-3 d-flex align-items-center justify-content-center gap-2 fw-medium text-main text-center">
-          <i class="bi bi-truck text-primary fs-5"></i> Free Shipping Over ${{ freeShippingThreshold }}
+          <i class="bi bi-truck text-primary fs-5"></i> {{ $t('product.freeShippingOver', { amount: freeShippingThreshold }) }}
         </div>
       </div>
     </div>
@@ -169,6 +169,18 @@ const copyLink = async () => {
 </script>
 
 <style scoped>
+.info-wrapper {
+  background-color: var(--color-surface);
+}
+
+.price-box {
+  background-color: var(--color-bg);
+}
+
+.border {
+  border-color: var(--color-border) !important;
+}
+
 .text-main {
   color: var(--color-text);
 }

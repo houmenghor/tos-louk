@@ -1,4 +1,16 @@
+import { useNuxtApp } from '#app'
+
 export function getApiError(error, customMessages = {}) {
+  let t = (key, fallback) => fallback;
+  try {
+    const nuxtApp = useNuxtApp();
+    if (nuxtApp && nuxtApp.$i18n && nuxtApp.$i18n.t) {
+      t = nuxtApp.$i18n.t.bind(nuxtApp.$i18n);
+    }
+  } catch (e) {
+    // Ignore error if useNuxtApp is called outside context
+  }
+
   // Support passing a simple string as default message for backwards compatibility
   const overrides =
     typeof customMessages === "string"
@@ -32,27 +44,27 @@ export function getApiError(error, customMessages = {}) {
   }
 
   if (status === 401) {
-    return "Invalid email or password. Please check your credentials and try again.";
+    return t('apiError.401', "Invalid email or password. Please check your credentials and try again.");
   }
 
   if (status === 403) {
-    return "You do not have permission to perform this action or your account requires verification.";
+    return t('apiError.403', "You do not have permission to perform this action or your account requires verification.");
   }
 
   if (status === 404) {
-    return "The requested resource or account could not be found.";
+    return t('apiError.404', "The requested resource or account could not be found.");
   }
 
   if (status === 422) {
-    return "The provided information is invalid. Please check your input and try again.";
+    return t('apiError.422', "The provided information is invalid. Please check your input and try again.");
   }
 
   if (status === 429) {
-    return "Too many requests. Please wait a moment before trying again.";
+    return t('apiError.429', "Too many requests. Please wait a moment before trying again.");
   }
 
   if (status >= 500) {
-    return "Server error. Our team has been notified. Please try again later.";
+    return t('apiError.500', "Server error. Our team has been notified. Please try again later.");
   }
 
   // 3. Only fallback to backend message if it's not a standard HTTP error status handled above
@@ -68,5 +80,5 @@ export function getApiError(error, customMessages = {}) {
     return error.message;
   }
 
-  return overrides.default || "Something went wrong. Please try again.";
+  return overrides.default || t('apiError.default', "Something went wrong. Please try again.");
 }

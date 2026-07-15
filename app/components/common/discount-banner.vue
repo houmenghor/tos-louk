@@ -12,7 +12,7 @@ const props = defineProps({
   },
   title: {
     type: String,
-    default: "Exclusive Offers Just for You",
+    default: "",
   },
 });
 
@@ -69,37 +69,37 @@ onUnmounted(() => {
     <div class="row align-items-center">
       <div class="col-lg-6">
         <span class="badge bg-warning text-dark mb-2">
-          <i class="bi bi-lightning-fill"></i> Flash Sale — Up to {{ maxPercent }}% Off
+          <i class="bi bi-lightning-fill"></i> {{ $t('discount.flashSale', { percent: maxPercent }) }}
         </span>
-        <h3 class="fw-bold text-white">{{ title }}</h3>
+        <h3 class="fw-bold text-white">{{ title || $t('discount.defaultTitle') }}</h3>
         <p class="text-white-50 small mb-0">
-          Discover our limited-time special promotions across top categories. Grab your favorite deals before the countdown runs out!
+          {{ $t('discount.description') }}
         </p>
       </div>
       <div class="col-lg-6">
         <div class="d-flex align-items-center justify-content-lg-end gap-3">
           <div class="text-center text-white">
-            <small class="d-block text-white-50">ENDS IN:</small>
+            <small class="d-block text-white-50">{{ $t('discount.endsIn') }}</small>
             <div class="d-flex gap-2 mt-1">
               <div class="time-box">
-                {{ formatNumber(days) }}<small class="d-block">DAYS</small>
+                {{ formatNumber(days) }}<small class="d-block">{{ $t('discount.days') }}</small>
               </div>
               <div class="time-box">
-                {{ formatNumber(hours) }}<small class="d-block">HOURS</small>
+                {{ formatNumber(hours) }}<small class="d-block">{{ $t('discount.hours') }}</small>
               </div>
               <div class="time-box">
                 {{ formatNumber(minutes)
-                }}<small class="d-block">MINUTES</small>
+                }}<small class="d-block">{{ $t('discount.minutes') }}</small>
               </div>
               <div class="time-box">
                 {{ formatNumber(seconds)
-                }}<small class="d-block">SECONDS</small>
+                }}<small class="d-block">{{ $t('discount.seconds') }}</small>
               </div>
             </div>
           </div>
           <div class="d-flex flex-column gap-2 ms-3">
-            <button class="btn btn-success px-4">Claim Offer →</button>
-            <button class="btn btn-outline-light px-4">View All Items</button>
+            <button class="btn btn-success px-4 text-nowrap">{{ $t('discount.claimOffer') }} &rarr;</button>
+            <button class="btn btn-outline-light px-4 text-nowrap">{{ $t('discount.viewAllItems') }}</button>
           </div>
         </div>
       </div>
