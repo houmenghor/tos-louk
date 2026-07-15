@@ -2,8 +2,8 @@
   <section id="best-seller" class="best-seller py-6">
     <div class="container">
       <div class="text-center mb-5">
-        <h2 class="fw-bold">Best Sellers</h2>
-        <p class="subtitle-text">Curated selections for your lifestyle</p>
+        <h2 class="fw-bold">{{ $t('bestSellers.title') }}</h2>
+        <p class="subtitle-text">{{ $t('bestSellers.subtitle') }}</p>
       </div>
 
       <div class="row g-4">

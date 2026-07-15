@@ -4,19 +4,19 @@
       <li class="nav-item" role="presentation">
         <button class="nav-link active" id="desc-tab" data-bs-toggle="tab" data-bs-target="#desc" type="button"
           role="tab">
-          Description
+          {{ $t('product.description') }}
         </button>
       </li>
       <li class="nav-item" role="presentation">
         <button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs" type="button" role="tab">
-          Specifications
+          {{ $t('product.specifications') }}
         </button>
       </li>
     </ul>
     <div class="tab-content text-main lh-lg" id="productTabsContent">
       <div class="tab-pane fade show active" id="desc" role="tabpanel">
         <p v-if="product?.description">{{ product.description }}</p>
-        <p v-else>No description available.</p>
+        <p v-else>{{ $t('product.noDescription') }}</p>
       </div>
       <div class="tab-pane fade" id="specs" role="tabpanel">
         <div class="row">
@@ -25,20 +25,20 @@
               <!-- Brand -->
               <li v-if="product?.brand"
                 class="list-group-item bg-transparent text-main d-flex justify-content-between border-secondary-subtle">
-                <span class="fw-semibold">Brand</span>
+                <span class="fw-semibold">{{ $t('product.brand') }}</span>
                 <span>{{ product.brand }}</span>
               </li>
               <!-- Master SKU -->
               <li v-if="product?.sku"
                 class="list-group-item bg-transparent text-main d-flex justify-content-between border-secondary-subtle">
-                <span class="fw-semibold">SKU</span>
+                <span class="fw-semibold">{{ $t('product.sku') }}</span>
                 <span>{{ product.sku }}</span>
               </li>
 
               <!-- Weight -->
               <li v-if="product.weight"
                 class="list-group-item bg-transparent text-main d-flex justify-content-between border-secondary-subtle">
-                <span class="fw-semibold">Weight</span>
+                <span class="fw-semibold">{{ $t('product.weight') }}</span>
                 <span>{{ product.weight }} Kg</span>
               </li>
               <!-- Fallback if no specs are set -->
@@ -48,7 +48,7 @@
                 (product?.weight === null || product?.weight === undefined)
               "
                 class="list-group-item bg-transparent text-muted-custom d-flex justify-content-between border-secondary-subtle">
-                <span>No specifications available for this product.</span>
+                <span>{{ $t('product.noSpecifications') }}</span>
               </li>
             </ul>
           </div>

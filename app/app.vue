@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
+const requestUrl = useRequestURL();
 
 useHead({
   titleTemplate: computed(() => `%s | ${t('seo.siteName')}`)
@@ -10,7 +11,12 @@ useHead({
 
 useSeoMeta({
   description: () => t('seo.defaultProductDesc'),
-  ogDescription: () => t('seo.defaultProductDesc')
+  ogDescription: () => t('seo.defaultProductDesc'),
+  ogImage: () => `${requestUrl.origin}/tos-louk.webp`,
+  ogUrl: () => requestUrl.href,
+  ogType: 'website',
+  twitterCard: 'summary',
+  twitterImage: () => `${requestUrl.origin}/tos-louk.webp`
 });
 </script>
 

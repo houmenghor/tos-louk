@@ -2,6 +2,9 @@
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: false },
+  routeRules: {
+    "/product/**": { isr: 3600 }, // Cache on CDN for 1 hour
+  },
 
   modules: [
     "nuxt-auth-utils",
@@ -10,6 +13,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@nuxtjs/turnstile",
     "@nuxtjs/color-mode",
+    "@vercel/speed-insights",
   ],
   colorMode: {
     classSuffix: "", // so it applies 'dark' instead of 'dark-mode'

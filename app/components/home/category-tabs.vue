@@ -12,7 +12,7 @@
         <div :key="activeTab" class="row g-4">
           <div v-if="currentCategoryData.length === 0 && !loadingCategoryTab" class="col-12 text-center py-5">
             <i class="bi bi-box fs-1 text-muted mb-3 d-block"></i>
-            <p class="text-muted fw-medium">No products found in this category yet.</p>
+            <p class="text-muted fw-medium">{{ $t('category.noProducts') }}</p>
           </div>
           <div v-else v-for="item in currentCategoryData" :key="item.id" class="col-12 col-md-4 col-lg-3">
             <CategoryProductCard :product="item" @add-to-cart="handleAddToCart" />
@@ -23,7 +23,7 @@
       <div class="text-center mt-5">
         <NuxtLink to="/categories"
           class="btn btn-primary-custom rounded-pill px-5 py-2 text-decoration-none d-inline-block">
-          View All Products →
+          {{ $t('category.viewAll') }}
         </NuxtLink>
       </div>
     </div>
@@ -36,11 +36,13 @@ import { storeToRefs } from "pinia";
 import { useAsyncData } from "nuxt/app";
 import { useProductStore } from "~/stores/productStore";
 import { useCategoryStore } from "~/stores/categoryStore";
+import { useI18n } from "vue-i18n";
 import CategoryProductCard from "~/components/common/category-product-card.vue";
 import { getProductPricing } from "~/utils/helpers";
 
 const productStore = useProductStore();
 const categoryStore = useCategoryStore();
+const { t } = useI18n();
 const { products } = storeToRefs(productStore);
 
 const { data: fetchedParentCategories } = await useAsyncData("home-category-tabs", () =>
@@ -48,7 +50,7 @@ const { data: fetchedParentCategories } = await useAsyncData("home-category-tabs
 );
 
 const tabs = computed(() => {
-  const list = [{ id: "all", label: "All" }];
+  const list = [{ id: "all", label: t('category.all') }];
   if (fetchedParentCategories.value?.data && Array.isArray(fetchedParentCategories.value.data)) {
     fetchedParentCategories.value.data.forEach((cat) => {
       list.push({ id: cat.id, label: cat.name });

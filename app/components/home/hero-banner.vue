@@ -4,40 +4,36 @@
       <div class="row align-items-center gy-5">
         <div class="col-lg-5">
           <span class="badge custom-badge mb-3 px-3 py-2 rounded-pill">
-            CURATED COLLECTION
+            {{ $t('hero.badge') }}
           </span>
 
           <h1 class="display-5 fw-bold mb-3 title-text leading-tight">
-            Discover What <br class="d-none d-lg-block" />
-            Defines Modern Living
+            {{ $t('hero.titleLine1') }} <br class="d-none d-lg-block" />
+            {{ $t('hero.titleLine2') }}
           </h1>
 
           <p class="subtitle-text mb-4 pe-lg-4">
-            Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
-            posuere cubilia curae. Donec velit neque, auctor sit amet aliquam
-            vel.
+            {{ $t('hero.subtitle') }}
           </p>
 
           <div class="d-flex flex-wrap gap-3 mb-4">
-            <button class="btn btn-primary-custom px-4 py-2 shadow-sm">
-              Browse Items
+            <button class="btn btn-primary-custom px-4 py-2 shadow-sm text-nowrap">
+              {{ $t('hero.browseItems') }}
             </button>
-            <button class="btn btn-outline-custom px-4 py-2 shadow-sm d-flex align-items-center gap-2">
-              See All Categories <i class="bi bi-arrow-right"></i>
+            <button class="btn btn-outline-custom px-4 py-2 shadow-sm d-flex align-items-center gap-2 text-nowrap">
+              {{ $t('hero.seeAllCategories') }} <i class="bi bi-arrow-right"></i>
             </button>
           </div>
 
           <div class="d-flex flex-wrap gap-4 small subtitle-text mt-3">
             <span class="d-flex align-items-center gap-2">
-              <i class="bi bi-box-seam text-primary-icon"></i> Free Shipping
+              <i class="bi bi-box-seam text-primary-icon"></i> {{ $t('hero.freeShipping') }}
             </span>
             <span class="d-flex align-items-center gap-2">
-              <i class="bi bi-shield-check text-primary-icon"></i> Verified
-              Quality
+              <i class="bi bi-shield-check text-primary-icon"></i> {{ $t('hero.verifiedQuality') }}
             </span>
             <span class="d-flex align-items-center gap-2">
-              <i class="bi bi-arrow-return-left text-primary-icon"></i> Easy
-              Returns
+              <i class="bi bi-arrow-return-left text-primary-icon"></i> {{ $t('hero.easyReturns') }}
             </span>
           </div>
         </div>
@@ -50,7 +46,7 @@
             <div class="col-md-5">
               <NuxtLink :to="generateProductUrl(heroBestSeller)"
                 class="card glass-card h-100 border-0 shadow-sm p-3 position-relative text-decoration-none text-main">
-                <span class="badge custom-badge position-absolute top-0 start-0 m-3">Best Seller</span>
+                <span class="badge custom-badge position-absolute top-0 start-0 m-3">{{ $t('hero.bestSeller') }}</span>
                 <NuxtImg :src="heroBestSeller.thumbnail || heroBestSeller.image"
                   class="card-img-top w-75 mx-auto mt-4 mb-2 object-fit-contain" style="height: 140px;"
                   :alt="heroBestSeller.title" draggable="false" />
@@ -71,7 +67,7 @@
             <div class="col-md-7">
               <NuxtLink :to="generateProductUrl(heroTrending)"
                 class="card glass-card h-100 border-0 shadow-sm p-3 position-relative text-decoration-none text-main">
-                <span class="badge custom-badge position-absolute top-0 start-0 m-3">Trending Now</span>
+                <span class="badge custom-badge position-absolute top-0 start-0 m-3">{{ $t('hero.trendingNow') }}</span>
                 <NuxtImg :src="heroTrending.thumbnail || heroTrending.image"
                   class="card-img-top w-75 mx-auto mt-4 mb-2 object-fit-contain" style="height: 140px;"
                   :alt="heroTrending.title" draggable="false" />
@@ -90,7 +86,7 @@
             <div class="col-12">
               <NuxtLink :to="generateProductUrl(heroJustLaunched)"
                 class="card glass-card border-0 shadow-sm p-3 position-relative text-decoration-none text-main">
-                <span class="badge custom-badge position-absolute top-0 start-0 m-3 z-1">Just Launched</span>
+                <span class="badge custom-badge position-absolute top-0 start-0 m-3 z-1">{{ $t('hero.justLaunched') }}</span>
                 <div class="row g-0 align-items-center mt-4">
                   <div class="col-sm-4 text-center">
                     <NuxtImg :src="heroJustLaunched.thumbnail || heroJustLaunched.image"
@@ -127,10 +123,12 @@
 import { computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useProductStore } from "~/stores/productStore";
+import { useI18n } from "vue-i18n";
 import SkeletonHeroBanner from "~/components/skeleton/hero-banner.vue";
 
 const productStore = useProductStore();
 const { products } = storeToRefs(productStore);
+const { t } = useI18n();
 
 const heroBestSeller = computed(() => {
   const item = products.value.find(p => p.collection === 'best_seller') || products.value[0] || {};
@@ -139,7 +137,7 @@ const heroBestSeller = computed(() => {
   return {
     id: item.id || 1,
     uuid: item.uuid || '',
-    title: item.title || 'Precision Audio Hub',
+    title: item.title || t('hero.fallbackTitle1'),
     price: price || 0,
     oldPrice,
     thumbnail: imgUrl,
@@ -155,7 +153,7 @@ const heroTrending = computed(() => {
   return {
     id: item.id || 2,
     uuid: item.uuid || '',
-    title: item.title || 'Smart Wearable Pro',
+    title: item.title || t('hero.fallbackTitle2'),
     price: price || 0,
     oldPrice,
     thumbnail: imgUrl,
@@ -171,8 +169,8 @@ const heroJustLaunched = computed(() => {
   return {
     id: item.id || 3,
     uuid: item.uuid || '',
-    title: item.title || 'Essential Daily Companion',
-    desc: item.description || 'Proin eget tortor risus. Vivamus magna justo, lacinia eget consectetur sed.',
+    title: item.title || t('hero.fallbackTitle3'),
+    desc: item.description || t('hero.fallbackDesc'),
     price: price || 0,
     oldPrice,
     thumbnail: imgUrl,
