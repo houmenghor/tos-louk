@@ -87,9 +87,23 @@ const { pending, error } = useAsyncData(`product-${route.params.uuid}`, async ()
     await productStore.getProductByUuid(actualUuid);
   }
   return true;
-}, { lazy: true });
+}, {
+  lazy: true,
+  watch: [() => route.params.uuid]
+});
 
 const isLoading = computed(() => pending.value);
+
+// Reset local and store states when navigating to a new product URL
+watch(() => route.params.uuid, (newUuid) => {
+  if (newUuid) {
+    activeImage.value = '';
+    selectedColor.value = '#0f172a';
+    selectedSize.value = 'M';
+    quantity.value = 1;
+    currentProduct.value = null;
+  }
+}, { immediate: true });
 
 watch(() => currentProduct.value, (newP) => {
   if (newP && !activeImage.value) {
