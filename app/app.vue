@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import { useSettingStore } from '~/stores/settingStore';
 import { useAuthStore } from '~/stores/authStore';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const requestUrl = useRequestURL();
 const settingStore = useSettingStore();
 const authStore = useAuthStore();
@@ -42,6 +42,9 @@ await Promise.all([
 ]);
 
 useHead({
+  htmlAttrs: {
+    lang: computed(() => locale.value || 'km'),
+  },
   titleTemplate: computed(() => `%s | ${t('seo.siteName')}`)
 });
 

@@ -3,6 +3,7 @@
   src: url("../fonts/KantumruyPro-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -10,6 +11,7 @@
   src: url("../fonts/Poppins-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 body {
@@ -32,17 +34,17 @@ html {
 ======================================== */
 ::placeholder {
   color: var(--color-text-secondary) !important;
-  opacity: 0.7 !important;
+  opacity: 0.85 !important;
 }
 
 ::-webkit-input-placeholder {
   color: var(--color-text-secondary) !important;
-  opacity: 0.7 !important;
+  opacity: 0.85 !important;
 }
 
 :-ms-input-placeholder {
   color: var(--color-text-secondary) !important;
-  opacity: 0.7 !important;
+  opacity: 0.85 !important;
 }
 
 /* ========================================
@@ -58,8 +60,8 @@ html {
   --color-bg-secondary: #f8fafc;
   --color-surface: #ffffff;
 
-  --color-text: #111827b3;
-  --color-text-secondary: #6b7280;
+  --color-text: #111827;
+  --color-text-secondary: #4b5563;
   --color-border: #e5e7eb;
 
   --color-success: #22c55e;
@@ -93,7 +95,7 @@ html {
   --color-surface: #1e293b;
 
   --color-text: #f8fafc;
-  --color-text-secondary: #94a3b8;
+  --color-text-secondary: #cbd5e1;
   --color-border: #334155;
 
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 30%);
