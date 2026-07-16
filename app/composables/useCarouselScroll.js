@@ -39,26 +39,60 @@ export const useCarouselScroll = () => {
 
   // --- Pagination Logic ---
   const calculateDots = () => {
-    if (carouselTrack.value) {
-      const track = carouselTrack.value;
-      totalDots.value = Math.ceil(track.scrollWidth / track.clientWidth);
+    if (!carouselTrack.value) return;
+    const track = carouselTrack.value;
+    const slides = track.querySelectorAll(".product-slide");
+    if (slides.length > 0 && slides[0].offsetWidth > 0) {
+      const slidesPerPage = Math.max(1, Math.round(track.clientWidth / slides[0].offsetWidth));
+      totalDots.value = Math.ceil(slides.length / slidesPerPage);
+    } else {
+      totalDots.value = Math.max(1, Math.ceil(track.scrollWidth / track.clientWidth));
     }
   };
 
   const handleScroll = () => {
-    if (carouselTrack.value) {
-      const track = carouselTrack.value;
+    if (!carouselTrack.value) return;
+    const track = carouselTrack.value;
+    const trackCenter = track.scrollLeft + track.clientWidth / 2;
+    const slides = track.querySelectorAll(".product-slide");
+    if (slides.length > 0) {
+      let minDiff = Infinity;
+      let closestIndex = 0;
+      slides.forEach((slide, idx) => {
+        const slideCenter = slide.offsetLeft + slide.offsetWidth / 2;
+        const diff = Math.abs(slideCenter - trackCenter);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestIndex = idx;
+        }
+      });
+      const slidesPerPage = Math.max(1, Math.round(track.clientWidth / slides[0].offsetWidth));
+      activeIndex.value = Math.floor(closestIndex / slidesPerPage);
+    } else {
       activeIndex.value = Math.round(track.scrollLeft / track.clientWidth);
     }
   };
 
   const scrollToPage = (index) => {
-    if (carouselTrack.value) {
-      carouselTrack.value.scrollTo({
-        left: index * carouselTrack.value.clientWidth,
-        behavior: "smooth",
-      });
+    if (!carouselTrack.value) return;
+    const track = carouselTrack.value;
+    const slides = track.querySelectorAll(".product-slide");
+    if (slides.length > 0) {
+      const slidesPerPage = Math.max(1, Math.round(track.clientWidth / slides[0].offsetWidth));
+      const targetIndex = index * slidesPerPage;
+      if (slides[targetIndex]) {
+        slides[targetIndex].scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center",
+        });
+        return;
+      }
     }
+    track.scrollTo({
+      left: index * track.clientWidth,
+      behavior: "smooth",
+    });
   };
 
   // --- Button Navigation ---

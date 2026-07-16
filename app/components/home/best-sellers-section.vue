@@ -6,10 +6,17 @@
         <p class="subtitle-text">{{ $t('bestSellers.subtitle') }}</p>
       </div>
 
-      <div class="row g-4">
-        <div v-for="item in bestSellersList" :key="item.id" class="col-lg-3 col-md-4">
-          <CardBestSeller :product="item" />
-        </div>
+      <div class="row g-3 g-md-4">
+        <template v-if="products.length === 0">
+          <div v-for="n in 4" :key="'skeleton-'+n" class="col-12 col-md-4 col-lg-3 px-3 px-md-2">
+            <SkeletonProductCard />
+          </div>
+        </template>
+        <template v-else>
+          <div v-for="item in bestSellersList" :key="item.id" class="col-12 col-md-4 col-lg-3 px-3 px-md-2">
+            <CardBestSeller :product="item" />
+          </div>
+        </template>
       </div>
     </div>
   </section>
@@ -37,6 +44,7 @@ const bestSellersList = computed(() => {
     return {
       id: item.id,
       uuid: item.uuid,
+      slug: item.slug,
       title: item.title,
       description: item.description || item.desc || "Experience premium quality with modern design and exceptional performance.",
       category: item.category?.name || "PREMIUM COLLECTION",

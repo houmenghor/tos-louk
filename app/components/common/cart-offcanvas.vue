@@ -13,7 +13,6 @@
           {{ $t('cart.title') }}
         </h5>
         <span
-          v-if="authStore.access_token"
           class="badge bg-primary-brand text-white rounded-pill px-2.5 py-1 text-xs"
         >
           {{ cartStore.cartCount }}
@@ -30,56 +29,7 @@
 
     <!-- Cart Body -->
     <div class="offcanvas-body d-flex flex-column p-0 bg-body-custom">
-      <!-- ====== GUEST STATE: User is NOT logged in ====== -->
-      <div
-        v-if="!authStore.access_token"
-        class="flex-grow-1 d-flex flex-column align-items-center justify-content-center p-5 text-center"
-      >
-        <div class="guest-cart-icon-container mb-4 position-relative">
-          <div class="glow-halo-green"></div>
-          <i
-            class="bi bi-bag-heart display-3 text-muted position-relative z-1"
-          ></i>
-        </div>
-        <h4 class="fw-bold text-main mb-2">{{ $t('cart.signInToUse') }}</h4>
-        <p
-          class="small text-muted-custom mb-4 mx-auto"
-          style="max-width: 240px"
-        >
-          {{ $t('cart.signInDesc') }}
-        </p>
-        <BaseButton
-          variants="primary"
-          size="lg"
-          status-type="button"
-          class="w-100 mb-2"
-          @click="
-            () => {
-              cartStore.toggleCart(false);
-              router.push('/auth/login');
-            }
-          "
-        >
-          <i class="bi bi-box-arrow-in-right"></i> {{ $t('auth.loginToAccount') }}
-        </BaseButton>
-        <BaseButton
-          variants="secondary"
-          size="lg"
-          status-type="button"
-          class="w-100"
-          @click="
-            () => {
-              cartStore.toggleCart(false);
-              router.push('/auth/register');
-            }
-          "
-        >
-          <i class="bi bi-person-plus"></i> {{ $t('auth.createAccount') }}
-        </BaseButton>
-      </div>
 
-      <!-- ====== AUTHENTICATED STATE: User IS logged in ====== -->
-      <template v-else>
         <!-- 1. Free Shipping Progress Tracker (Only shown when cart is not empty) -->
         <div
           v-if="cartStore.items.length > 0"
@@ -95,7 +45,7 @@
               <i class="bi bi-truck fs-5"></i> {{ $t('cart.qualifyFreeShipping') }}
             </span>
             <span v-else class="fw-medium text-muted-custom">
-              {{ $t('cart.spendMoreFor', { amount: `$${cartStore.amountToFreeShipping.toFixed(2)}` }) }}
+              {{ $t('cart.spendMoreFor', { amount: '$' + cartStore.amountToFreeShipping.toFixed(2) }) }}
               <strong class="text-primary-brand text-nowrap"
                 >{{ $t('cart.freeShipping') }}</strong
               >
@@ -134,8 +84,8 @@
               class="cart-item-img-wrapper rounded-3 overflow-hidden bg-light-custom flex-shrink-0"
             >
               <NuxtImg
-                :src="item.image"
-                :alt="item.title"
+                :src="item.image || item.thumbnail || 'https://placehold.co/400x400/png?text=Product'"
+                :alt="item.title || item.name || 'Product'"
                 class="w-100 h-100 object-fit-cover"
               />
             </div>
@@ -149,7 +99,7 @@
                   <h6
                     class="item-title mb-1 fw-bold text-main text-line-clamp-2"
                   >
-                    {{ item.title }}
+                    {{ item.title || item.name }}
                   </h6>
                   <BaseButton
                     variants="outline-danger"
@@ -173,7 +123,7 @@
                 class="d-flex align-items-center justify-content-between mt-2"
               >
                 <span class="item-price fw-bold text-main"
-                  >${{ item.price }}.00</span
+                  >${{ Number(item.price || 0).toFixed(2) }}</span
                 >
                 <div
                   class="qty-adjuster d-flex align-items-center rounded-pill bg-input border"
@@ -249,14 +199,14 @@
                 >{{ $t('cart.free') }}</span
               >
               <span v-else class="text-main fw-semibold"
-                >${{ shippingCost.toFixed(2) }}</span
+                >${{ cartStore.shippingCost.toFixed(2) }}</span
               >
             </div>
             <hr class="border-custom-glass my-2" />
             <div class="d-flex justify-content-between align-items-center">
               <span class="fw-bold text-main">{{ $t('cart.total') }}</span>
               <span class="fw-extrabold text-main fs-4"
-                >${{ cartTotal.toFixed(2) }}</span
+                >${{ cartStore.cartTotal.toFixed(2) }}</span
               >
             </div>
           </div>
@@ -266,7 +216,7 @@
             class="w-100 mb-2"
             @click="handleCheckout"
           >
-            {{ $t('cart.secureCheckout') }} <i class="bi bi-shield-lock-fill ms-1"></i>
+            {{ $t('cart.secureCheckout') }}
           </BaseButton>
           <BaseButton
             variants="secondary"
@@ -277,7 +227,6 @@
             {{ $t('cart.continueShopping') }}
           </BaseButton>
         </div>
-      </template>
     </div>
   </div>
 </template>
@@ -293,15 +242,6 @@ const router = useRouter();
 const offcanvasRef = ref(null);
 let offcanvasInstance = null;
 
-const shippingCost = ref(15.0);
-
-const cartTotal = computed(() => {
-  if (cartStore.isFreeShipping) {
-    return cartStore.cartSubtotal;
-  }
-  return cartStore.cartSubtotal + shippingCost.value;
-});
-
 const increaseQty = (item) => {
   cartStore.updateQuantity(item.id, item.quantity + 1);
 };
@@ -315,8 +255,13 @@ const decreaseQty = (item) => {
 };
 
 const handleCheckout = () => {
-  alert("Proceeding to checkout with total: $" + cartTotal.value.toFixed(2));
-  cartStore.toggleCart(false);
+  if (!authStore.access_token) {
+    cartStore.toggleCart(false);
+    router.push("/auth/login");
+  } else {
+    cartStore.toggleCart(false);
+    router.push("/checkout");
+  }
 };
 
 onMounted(() => {

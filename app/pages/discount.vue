@@ -128,6 +128,7 @@ const allDeals = computed(() => {
       return {
         id: item.id,
         uuid: item.uuid,
+        slug: item.slug,
         title: item.title,
         category: item.category?.name || "SPECIAL DEAL",
         price,

@@ -40,24 +40,18 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const isAuthPage = authOnlyRoutes.includes(to.path);
   const isProtectedRoute = !isPublicPage && !isAuthPage;
 
-  if (isProtectedRoute) {
-    // If guest user, redirect to login
-    if (!auth.access_token && !auth.refresh_token) {
-      return navigateTo("/auth/login");
-    }
-
-    // Attempt token refresh if token expired but refresh token exists
+  // Restore user profile if tokens exist on any non-auth page (public or protected)
+  if ((auth.access_token || auth.refresh_token) && !auth.userProfile && !isAuthPage) {
     if (!auth.access_token && auth.refresh_token) {
       try {
         await auth.refreshToken();
       } catch (e) {
         auth.refresh_token = null;
-        return navigateTo("/auth/login");
+        if (isProtectedRoute) return navigateTo("/auth/login");
       }
     }
 
-    // Retrieve profile details
-    if (!auth.userProfile) {
+    if (auth.access_token && !auth.userProfile) {
       try {
         await auth.fetchProfile();
       } catch (e) {
@@ -65,16 +59,24 @@ export default defineNuxtRouteMiddleware(async (to) => {
           try {
             await auth.refreshToken();
             await auth.fetchProfile(true);
-            return;
           } catch (refreshError) {
             console.error("Failed to refresh token:", refreshError);
+            auth.access_token = null;
+            auth.refresh_token = null;
+            auth.userProfile = null;
+            if (isProtectedRoute) return navigateTo("/auth/login");
           }
+        } else {
+          auth.access_token = null;
+          auth.refresh_token = null;
+          auth.userProfile = null;
+          if (isProtectedRoute) return navigateTo("/auth/login");
         }
-
-        auth.access_token = null;
-        auth.refresh_token = null;
-        return navigateTo("/auth/login");
       }
     }
+  }
+
+  if (isProtectedRoute && !auth.access_token && !auth.userProfile) {
+    return navigateTo("/auth/login");
   }
 });

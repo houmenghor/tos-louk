@@ -8,3 +8,4 @@ bun add @nuxtjs/color-mode
 bun add -d prettier
 bunx prettier --write .
 bun add @vercel/speed-insights
+/home/hou-menghor/.bun/bin/bun add pusher-js laravel-echo

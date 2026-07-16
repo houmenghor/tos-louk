@@ -1,18 +1,33 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
+import { useAuthStore } from "./authStore";
 
 export const useWishlistStore = defineStore("wishlist", () => {
   const items = ref([]);
+  const isInitialized = ref(false);
 
   // Initialize wishlist from localStorage (SSR-safe)
   const initWishlist = () => {
     if (process.client) {
+      if (isInitialized.value) return;
+      isInitialized.value = true;
+
       const saved = localStorage.getItem("tos_louk_wishlist");
       if (saved) {
         try {
           items.value = JSON.parse(saved);
         } catch (e) {
           console.error("Failed to parse wishlist items", e);
+        }
+      }
+
+      const authStore = useAuthStore();
+      if (authStore.access_token) {
+        const guestItems = items.value.filter((item) => !item.uuid);
+        if (guestItems.length > 0) {
+          syncWishlistWithDb();
+        } else {
+          fetchUserWishlist();
         }
       }
     }
@@ -30,31 +45,124 @@ export const useWishlistStore = defineStore("wishlist", () => {
     return items.value.some((item) => item.id === productId);
   });
 
-  const toggleWishlist = (product) => {
-    const existsIndex = items.value.findIndex((item) => item.id === product.id);
-    if (existsIndex > -1) {
-      items.value.splice(existsIndex, 1);
-    } else {
-      items.value.push({
-        id: product.id,
-        title: product.title,
-        price: product.price,
-        image: product.image,
-        category: product.category,
-        oldPrice: product.oldPrice,
-        rating: product.rating,
-      });
+  const fetchUserWishlist = async () => {
+    const authStore = useAuthStore();
+    if (!authStore.access_token) return;
+
+    const response = await $fetch("/api/wishlists");
+    if (response && response.data) {
+      const wishlist = response.data[0];
+      if (wishlist && wishlist.items) {
+        items.value = wishlist.items.map(item => ({
+          id: item.product.id,
+          title: item.product.title,
+          price: item.product.sell_price,
+          image: item.product.thumbnail || "https://placehold.co/400x400/png?text=Product",
+          category: item.product.category?.name || "",
+          oldPrice: item.product.oldPrice,
+          rating: item.product.rating,
+          is_free_shipping: Boolean(item.is_free_shipping || item.product?.is_free_shipping),
+          uuid: item.uuid,
+        }));
+      } else {
+        items.value = [];
+      }
+      saveWishlist();
     }
-    saveWishlist();
   };
 
-  const removeFromWishlist = (productId) => {
-    items.value = items.value.filter((item) => item.id !== productId);
-    saveWishlist();
+  let syncPromise = null;
+
+  const syncWishlistWithDb = async () => {
+    const authStore = useAuthStore();
+    if (!authStore.access_token) return;
+
+    if (syncPromise) {
+      return syncPromise;
+    }
+
+    syncPromise = (async () => {
+      try {
+        const guestItems = items.value.filter((item) => !item.uuid);
+        if (guestItems.length === 0) {
+          await fetchUserWishlist();
+          return;
+        }
+
+        const productIds = guestItems.map(item => item.id);
+        await $fetch("/api/wishlists/sync", {
+          method: "POST",
+          body: { product_ids: productIds }
+        });
+
+        items.value = [];
+        saveWishlist();
+        await fetchUserWishlist();
+      } finally {
+        syncPromise = null;
+      }
+    })();
+
+    return syncPromise;
+  };
+
+  const toggleWishlist = async (product) => {
+    const authStore = useAuthStore();
+    const exists = isInWishlist.value(product.id);
+
+    if (authStore.access_token) {
+      if (exists) {
+        const item = items.value.find(item => item.id === product.id);
+        if (item?.uuid) {
+          await $fetch(`/api/wishlists/${item.uuid}`, {
+            method: "DELETE"
+          });
+        }
+      } else {
+        await $fetch("/api/wishlists", {
+          method: "POST",
+          body: { product_id: product.id }
+        });
+      }
+      await fetchUserWishlist();
+    } else {
+      const existsIndex = items.value.findIndex((item) => item.id === product.id);
+      if (existsIndex > -1) {
+        items.value.splice(existsIndex, 1);
+      } else {
+        items.value.push({
+          id: product.id,
+          title: product.title,
+          price: product.price || product.sell_price,
+          image: product.image || product.thumbnail,
+          category: product.category?.name || product.category || "",
+          oldPrice: product.oldPrice,
+          rating: product.rating,
+          is_free_shipping: Boolean(product.is_free_shipping),
+        });
+      }
+      saveWishlist();
+    }
+  };
+
+  const removeFromWishlist = async (productId) => {
+    const authStore = useAuthStore();
+    const item = items.value.find((item) => item.id === productId);
+
+    if (authStore.access_token && item?.uuid) {
+      await $fetch(`/api/wishlists/${item.uuid}`, {
+        method: "DELETE"
+      });
+      await fetchUserWishlist();
+    } else {
+      items.value = items.value.filter((item) => item.id !== productId);
+      saveWishlist();
+    }
   };
 
   const clearWishlist = () => {
     items.value = [];
+    isInitialized.value = false;
     saveWishlist();
   };
 
@@ -66,5 +174,8 @@ export const useWishlistStore = defineStore("wishlist", () => {
     toggleWishlist,
     removeFromWishlist,
     clearWishlist,
+    fetchUserWishlist,
+    syncWishlistWithDb,
   };
 });
+

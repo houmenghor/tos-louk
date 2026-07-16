@@ -16,6 +16,7 @@
       class="wishlist-btn position-absolute z-2"
       :class="{ wishlisted: wishlistStore.isInWishlist(product.id) }"
       @click.stop="handleToggleWishlist"
+      :aria-label="`Add ${product.title} to wishlist`"
       :title="
         wishlistStore.isInWishlist(product.id)
           ? 'Remove from Wishlist'
@@ -31,24 +32,32 @@
     </button>
 
     <!-- Quick View Button -->
-    <NuxtLink
+    <NuxtLink :prefetch="false"
       :to="generateProductUrl(product)"
       class="quick-view-btn position-absolute z-2"
+      :aria-label="`Quick view ${product.title}`"
       title="View Details"
     >
       <i class="bi bi-eye"></i>
     </NuxtLink>
 
     <!-- Product Image -->
-    <NuxtLink
+    <NuxtLink :prefetch="false"
       :to="generateProductUrl(product)"
       class="image-area text-decoration-none d-block"
+      :aria-label="`View image of ${product.title}`"
     >
       <NuxtImg
         :src="product.thumbnail || product.images?.[0]?.image_url || product.image || 'https://placehold.co/400x400/png?text=Product'"
         :alt="product.title"
         class="product-img"
         :class="{ 'img-zoomed': hovered }"
+        loading="lazy"
+        decoding="async"
+        width="300"
+        height="300"
+        format="webp"
+        quality="80"
       />
       <!-- Hover overlay CTA -->
       <div class="img-overlay" :class="{ 'overlay-visible': hovered && !isSoldOut }">
@@ -67,8 +76,8 @@
 
       <!-- Title & Description Group -->
       <div class="title-desc-group">
-        <NuxtLink :to="generateProductUrl(product)" class="text-decoration-none">
-          <h6 class="product-title">{{ product.title }}</h6>
+        <NuxtLink :prefetch="false" :to="generateProductUrl(product)" class="text-decoration-none">
+          <h3 class="product-title fs-6">{{ product.title }}</h3>
         </NuxtLink>
         <p class="product-desc">{{ product.description || product.desc || 'Experience premium quality with modern design and exceptional performance.' }}</p>
       </div>
@@ -142,52 +151,26 @@ const savings = computed(() => {
   return null;
 });
 
-const verifyLogin = (actionName) => {
-  if (!authStore.access_token) {
-    showError(
-      locale.value === "kh"
-        ? `សូមចូលគណនីជាមុនសិនដើម្បី ${actionName}!`
-        : `Please login first to ${actionName}!`,
-    );
-    navigateTo("/auth/login");
-    return false;
-  }
-  return true;
-};
-
 const handleAddToCart = () => {
   if (isSoldOut.value) return;
-  if (verifyLogin(locale.value === "kh" ? "បន្ថែមទៅកន្ត្រក" : "add to cart")) {
-    cartStore.addToCart(props.product);
-    showSuccess(
-      locale.value === "kh"
-        ? "បានបន្ថែមទៅក្នុងកន្ត្រកជោគជ័យ!"
-        : "Added to cart successfully!",
-    );
-  }
+  cartStore.addToCart(props.product);
 };
 
 const handleToggleWishlist = () => {
-  if (
-    verifyLogin(
-      locale.value === "kh" ? "បន្ថែមទៅបញ្ជីប្រាថ្នា" : "add to wishlist",
-    )
-  ) {
-    wishlistStore.toggleWishlist(props.product);
-    const isNowAdded = wishlistStore.isInWishlist(props.product.id);
-    if (isNowAdded) {
-      showSuccess(
-        locale.value === "kh"
-          ? "បានបន្ថែមទៅក្នុងបញ្ជីប្រាថ្នា!"
-          : "Added to wishlist!",
-      );
-    } else {
-      showSuccess(
-        locale.value === "kh"
-          ? "បានលុបចេញពីបញ្ជីប្រាថ្នា!"
-          : "Removed from wishlist!",
-      );
-    }
+  wishlistStore.toggleWishlist(props.product);
+  const isNowAdded = wishlistStore.isInWishlist(props.product.id);
+  if (isNowAdded) {
+    showSuccess(
+      locale.value === "kh"
+        ? "បានបន្ថែមទៅក្នុងបញ្ជីប្រាថ្នា!"
+        : "Added to wishlist!",
+    );
+  } else {
+    showSuccess(
+      locale.value === "kh"
+        ? "បានលុបចេញពីបញ្ជីប្រាថ្នា!"
+        : "Removed from wishlist!",
+    );
   }
 };
 </script>
@@ -237,8 +220,8 @@ const handleToggleWishlist = () => {
 .wishlist-btn {
   top: 14px;
   right: 14px;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 1.5px solid var(--color-border);
   background: var(--color-bg);
@@ -263,10 +246,10 @@ const handleToggleWishlist = () => {
 
 /* ── Quick View Button ── */
 .quick-view-btn {
-  top: 56px;
+  top: 64px;
   right: 14px;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 1.5px solid var(--color-border);
   background: var(--color-bg);

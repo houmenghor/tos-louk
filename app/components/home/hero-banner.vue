@@ -44,16 +44,16 @@
 
             <!-- Best Seller -->
             <div class="col-md-5">
-              <NuxtLink :to="generateProductUrl(heroBestSeller)"
+              <NuxtLink :prefetch="false" :to="generateProductUrl(heroBestSeller)"
                 class="card glass-card h-100 border-0 shadow-sm p-3 position-relative text-decoration-none text-main">
                 <span class="badge custom-badge position-absolute top-0 start-0 m-3">{{ $t('hero.bestSeller') }}</span>
                 <NuxtImg :src="heroBestSeller.thumbnail || heroBestSeller.image"
                   class="card-img-top w-75 mx-auto mt-4 mb-2 object-fit-contain" style="height: 140px;"
-                  :alt="heroBestSeller.title" draggable="false" />
+                  :alt="heroBestSeller.title" draggable="false" width="200" height="140" format="webp" quality="85" fetchpriority="high" />
                 <div class="card-body px-1 pb-0 mt-auto">
-                  <h6 class="card-title text-truncate mb-1">
+                  <h2 class="card-title text-truncate mb-1 fs-6">
                     {{ heroBestSeller.title }}
-                  </h6>
+                  </h2>
                   <p class="price-text fw-bold mb-0">
                     ${{ heroBestSeller.price }}
                     <del v-if="heroBestSeller.oldPrice" class="subtitle-text fw-normal small ms-1">${{
@@ -63,20 +63,20 @@
               </NuxtLink>
             </div>
 
-            <!-- Trending -->
+            <!-- Popular -->
             <div class="col-md-7">
-              <NuxtLink :to="generateProductUrl(heroTrending)"
+              <NuxtLink :prefetch="false" :to="generateProductUrl(heroPopular)"
                 class="card glass-card h-100 border-0 shadow-sm p-3 position-relative text-decoration-none text-main">
-                <span class="badge custom-badge position-absolute top-0 start-0 m-3">{{ $t('hero.trendingNow') }}</span>
-                <NuxtImg :src="heroTrending.thumbnail || heroTrending.image"
+                <span class="badge custom-badge position-absolute top-0 start-0 m-3">{{ $t('hero.popularNow') }}</span>
+                <NuxtImg :src="heroPopular.thumbnail || heroPopular.image"
                   class="card-img-top w-75 mx-auto mt-4 mb-2 object-fit-contain" style="height: 140px;"
-                  :alt="heroTrending.title" draggable="false" />
+                  :alt="heroPopular.title" draggable="false" width="280" height="140" format="webp" quality="85" fetchpriority="high" />
                 <div class="card-body px-1 pb-0 mt-auto">
-                  <h6 class="card-title text-truncate mb-1">{{ heroTrending.title }}</h6>
+                  <h2 class="card-title text-truncate mb-1 fs-6">{{ heroPopular.title }}</h2>
                   <p class="price-text fw-bold mb-0">
-                    ${{ heroTrending.price }}
-                    <del v-if="heroTrending.oldPrice" class="subtitle-text fw-normal small ms-1">${{
-                      heroTrending.oldPrice }}</del>
+                    ${{ heroPopular.price }}
+                    <del v-if="heroPopular.oldPrice" class="subtitle-text fw-normal small ms-1">${{
+                      heroPopular.oldPrice }}</del>
                   </p>
                 </div>
               </NuxtLink>
@@ -84,20 +84,20 @@
 
             <!-- Just Launched -->
             <div class="col-12">
-              <NuxtLink :to="generateProductUrl(heroJustLaunched)"
+              <NuxtLink :prefetch="false" :to="generateProductUrl(heroJustLaunched)"
                 class="card glass-card border-0 shadow-sm p-3 position-relative text-decoration-none text-main">
                 <span class="badge custom-badge position-absolute top-0 start-0 m-3 z-1">{{ $t('hero.justLaunched') }}</span>
                 <div class="row g-0 align-items-center mt-4">
                   <div class="col-sm-4 text-center">
                     <NuxtImg :src="heroJustLaunched.thumbnail || heroJustLaunched.image"
                       class="img-fluid rounded-start w-75 object-fit-contain" style="max-height: 140px;"
-                      :alt="heroJustLaunched.title" draggable="false" />
+                      :alt="heroJustLaunched.title" draggable="false" width="160" height="140" format="webp" quality="85" fetchpriority="high" />
                   </div>
                   <div class="col-sm-8">
                     <div class="card-body py-0 pe-1">
-                      <h6 class="card-title mb-2">
+                      <h2 class="card-title mb-2 fs-6">
                         {{ heroJustLaunched.title }}
-                      </h6>
+                      </h2>
                       <p class="subtitle-text small mb-3 text-truncate-2">
                         {{ heroJustLaunched.desc }}
                       </p>
@@ -137,6 +137,7 @@ const heroBestSeller = computed(() => {
   return {
     id: item.id || 1,
     uuid: item.uuid || '',
+    slug: item.slug || '',
     title: item.title || t('hero.fallbackTitle1'),
     price: price || 0,
     oldPrice,
@@ -146,13 +147,14 @@ const heroBestSeller = computed(() => {
   };
 });
 
-const heroTrending = computed(() => {
+const heroPopular = computed(() => {
   const item = products.value.find(p => p.collection === 'popular') || products.value[1] || products.value[0] || {};
   const { price, oldPrice } = getProductPricing(item);
-  const imgUrl = item.thumbnail || item.images?.[0]?.image_url || 'https://placehold.co/300x150/png?text=Trending';
+  const imgUrl = item.thumbnail || item.images?.[0]?.image_url || 'https://placehold.co/300x150/png?text=Popular';
   return {
     id: item.id || 2,
     uuid: item.uuid || '',
+    slug: item.slug || '',
     title: item.title || t('hero.fallbackTitle2'),
     price: price || 0,
     oldPrice,
@@ -169,6 +171,7 @@ const heroJustLaunched = computed(() => {
   return {
     id: item.id || 3,
     uuid: item.uuid || '',
+    slug: item.slug || '',
     title: item.title || t('hero.fallbackTitle3'),
     desc: item.description || t('hero.fallbackDesc'),
     price: price || 0,

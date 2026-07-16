@@ -132,7 +132,7 @@ const storeLocation = computed(() =>
   settingStore.settings?.general?.store_location || "123 Russian Boulevard, Phnom Penh, Cambodia"
 );
 const supportPhone = computed(() =>
-  settingStore.settings?.general?.support_phone || "+855 (0) 12 345 678"
+  settingStore.settings?.general?.support_phone || "+855 12 345 678"
 );
 const supportEmail = computed(() =>
   settingStore.settings?.general?.support_email || "support@toslouksystem.com"

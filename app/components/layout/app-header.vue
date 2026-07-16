@@ -3,52 +3,59 @@
     <!-- Top Bar Segment -->
     <div class="glass-top-bar py-2 px-3 sm:px-4">
       <div
-        class="container-xl d-flex justify-content-between align-items-center"
+        class="container-xl d-flex flex-column flex-md-row justify-content-between align-items-center gap-2"
       >
-        <div class="fw-medium tracking-wide text-white small d-flex align-items-center gap-2">
-          <i class="bi bi-truck text-warning fs-6"></i>
+        <div class="fw-medium tracking-wide text-white small d-flex align-items-center justify-content-center justify-content-md-start gap-2 text-center order-2 order-md-1">
+          <i class="bi bi-truck text-white opacity-90 fs-6"></i>
           <span v-if="locale === 'kh'">ដឹកជញ្ជូនឥតគិតថ្លៃសម្រាប់ការទិញលើសពី {{ freeShippingThreshold }}</span>
           <span v-else>FREE DELIVERY OVER {{ freeShippingThreshold }}</span>
         </div>
 
-        <div class="d-flex align-items-center gap-3 small">
+        <div class="d-none d-md-flex align-items-center gap-3 small order-1 order-md-2">
           <button
             @click="toggleTheme"
-            class="btn btn-link btn-sm p-0 border-0 text-white opacity-70 hover-white d-flex align-items-center"
+            class="btn btn-link btn-sm p-0 border-0 text-white opacity-80 hover-white d-flex align-items-center"
             aria-label="Toggle Theme"
           >
-            <i
-              :class="
-                isDark ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-stars-fill'
-              "
-            ></i>
+            <ClientOnly>
+              <i
+                :class="
+                  isDark ? 'bi bi-sun-fill text-white' : 'bi bi-moon-stars-fill text-white'
+                "
+              ></i>
+              <template #fallback>
+                <i class="bi bi-moon-stars-fill text-white"></i>
+              </template>
+            </ClientOnly>
           </button>
 
           <span class="text-white-muted">|</span>
 
-          <div class="d-flex align-items-center gap-1">
+          <div class="d-flex align-items-center gap-2">
             <button
               @click="setLocale('kh')"
               :class="[
                 locale === 'kh'
-                  ? 'text-accent fw-bold'
-                  : 'text-light opacity-75 hover-white',
+                  ? 'text-white fw-bold opacity-100'
+                  : 'text-white opacity-65 hover-white fw-normal',
               ]"
-              class="btn btn-link btn-sm p-0 text-decoration-none border-0"
+              class="btn btn-link btn-sm p-0 text-decoration-none border-0 d-inline-flex align-items-center gap-1 transition-all"
             >
-              Khmer
+              <img src="https://flagcdn.com/kh.svg" width="18" height="13" alt="Cambodia" class="rounded-1 shadow-sm" style="object-fit: cover;" />
+              <span>KH</span>
             </button>
-            <span class="text-white-muted px-1">/</span>
+            <span class="text-white opacity-50">|</span>
             <button
               @click="setLocale('en')"
               :class="[
                 locale === 'en'
-                  ? 'text-accent fw-bold'
-                  : 'text-light opacity-75 hover-white',
+                  ? 'text-white fw-bold opacity-100'
+                  : 'text-white opacity-65 hover-white fw-normal',
               ]"
-              class="btn btn-link btn-sm p-0 text-decoration-none border-0"
+              class="btn btn-link btn-sm p-0 text-decoration-none border-0 d-inline-flex align-items-center gap-1 transition-all"
             >
-              English
+              <img src="https://flagcdn.com/gb.svg" width="18" height="13" alt="United Kingdom" class="rounded-1 shadow-sm" style="object-fit: cover;" />
+              <span>EN</span>
             </button>
           </div>
         </div>
@@ -109,6 +116,8 @@
 
         <!-- Actions Interface Menu -->
         <div class="d-flex align-items-center gap-2 gap-sm-3">
+          
+
           <NuxtLink
             :to="auth.access_token ? '/user/wishlist' : '/wishlist'"
             class="btn btn-link glass-icon-btn p-1 position-relative"
@@ -117,7 +126,7 @@
             <i class="bi bi-heart fw-bold"></i>
             <span
               v-if="wishlistStore.wishlistCount > 0"
-              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-white cart-badge shadow-sm"
+              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary-brand text-white cart-badge shadow-sm"
             >
               {{ wishlistStore.wishlistCount }}
             </span>
@@ -131,124 +140,144 @@
           >
             <i class="bi bi-bag fs-5 fw-bold"></i>
             <span
-              v-if="auth.access_token && cartStore.cartCount > 0"
+              v-if="cartStore.cartCount > 0"
               class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary-brand text-white cart-badge shadow-sm"
             >
               {{ cartStore.cartCount }}
             </span>
           </button>
 
-          <div class="dropdown">
-            <button
-              class="btn btn-link glass-icon-btn p-1 dropdown-toggle no-arrow"
-              type="button"
-              id="profileDropdown"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-              aria-label="User Account"
-            >
-              <!-- Show avatar when logged in AND profile data is loaded -->
-              <template v-if="auth.access_token && auth.userProfile">
-                <img
-                  :src="profileImageSrc"
-                  class="rounded-circle object-fit-cover"
-                  width="32"
-                  height="32"
-                  alt="Profile"
-                  referrerpolicy="no-referrer"
-                  @error="handleImageError"
-                />
-              </template>
-              <!-- Show person icon for guests OR when profile hasn't loaded yet -->
-              <template v-else>
-                <i class="bi bi-person fs-5 fw-bold"></i>
-              </template>
-            </button>
+          <ClientOnly>
+            <div class="dropdown">
+              <button
+                class="btn btn-link glass-icon-btn p-1 dropdown-toggle no-arrow"
+                type="button"
+                id="profileDropdown"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                aria-label="User Account"
+              >
+                <!-- Show avatar when logged in AND profile data is loaded -->
+                <template v-if="auth.access_token && auth.userProfile">
+                  <img
+                    :src="profileImageSrc"
+                    class="rounded-circle object-fit-cover shadow-sm border border-custom-glass"
+                    width="32"
+                    height="32"
+                    alt="Profile"
+                    referrerpolicy="no-referrer"
+                    @error="handleImageError"
+                  />
+                </template>
+                <!-- Show skeleton when logged in (or refreshing token) BUT profile hasn't loaded yet -->
+                <template v-else-if="auth.access_token || auth.refresh_token">
+                  <SkeletonAvatar :size="32" />
+                </template>
+                <!-- Show person icon for guests -->
+                <template v-else>
+                  <i class="bi bi-person fs-5 fw-bold"></i>
+                </template>
+              </button>
 
-            <ul
-              class="dropdown-menu dropdown-menu-end glass-dropdown shadow border-0 mt-3 animate slideIn"
-              aria-labelledby="profileDropdown"
-            >
-              <!-- Authenticated User Menu -->
-              <template v-if="auth.access_token">
-                <!-- Profile info header (only if profile data is loaded) -->
-                <li
-                  v-if="auth.userProfile"
-                  class="px-3 py-2 border-bottom border-custom-glass mb-1"
-                >
-                  <div class="fw-bold text-main">
-                    {{ auth.userProfile.full_name }}
-                  </div>
-                  <div
-                    class="small"
-                    style="
-                      color: var(--color-text-secondary);
-                      font-size: 0.75rem;
-                    "
+              <ul
+                class="dropdown-menu dropdown-menu-end glass-dropdown shadow border-0 mt-3 animate slideIn"
+                aria-labelledby="profileDropdown"
+              >
+                <!-- Authenticated User Menu -->
+                <template v-if="auth.access_token || auth.refresh_token">
+                  <!-- Profile info header (only if profile data is loaded) -->
+                  <li
+                    v-if="auth.userProfile"
+                    class="px-3 py-2 border-bottom border-custom-glass mb-1"
                   >
-                    {{ auth.userProfile.email }}
-                  </div>
-                </li>
-                <li
-                  v-else
-                  class="px-3 py-2 border-bottom border-custom-glass mb-1"
-                >
-                  <div class="fw-bold text-main">My Account</div>
-                </li>
-                <li>
-                  <NuxtLink to="/user" class="dropdown-item py-2 fw-medium">
-                    <i class="bi bi-person-circle me-2 text-primary-brand"></i>
-                    My Dashboard
-                  </NuxtLink>
-                </li>
-                <li>
-                  <NuxtLink
-                    to="/user/wishlist"
-                    class="dropdown-item py-2 fw-medium"
-                  >
-                    <i class="bi bi-heart me-2 text-primary-brand"></i> My
-                    Wishlist
-                  </NuxtLink>
-                </li>
-                <li>
-                  <hr class="dropdown-divider border-custom-glass my-1" />
-                </li>
-                <li>
-                  <button
-                    @click="handleLogout"
-                    class="dropdown-item py-2 fw-medium text-danger"
-                  >
-                    <i class="bi bi-box-arrow-right me-2"></i>
-                    {{ t("navbar.logout", "Logout") }}
-                  </button>
-                </li>
-              </template>
+                    <div class="fw-bold text-main">
+                      {{ auth.userProfile.full_name }}
+                    </div>
+                    <div
+                      class="small"
+                      style="
+                        color: var(--color-text-secondary);
+                        font-size: 0.75rem;
+                      "
+                    >
+                      {{ auth.userProfile.email }}
+                    </div>
+                  </li>
+                  <!-- Skeleton while loading profile info inside dropdown -->
+                  <SkeletonProfileHeader v-else />
+                  <li>
+                    <NuxtLink @click="closeProfileDropdown" to="/user" class="dropdown-item py-2 fw-medium">
+                      <i class="bi bi-person-circle me-2 text-primary-brand"></i>
+                      {{ t("navbar.myDashboard", "My Dashboard") }}
+                    </NuxtLink>
+                  </li>
+                  <li>
+                    <NuxtLink
+                      @click="closeProfileDropdown"
+                      to="/user/wishlist"
+                      class="dropdown-item py-2 fw-medium"
+                    >
+                      <i class="bi bi-heart me-2 text-primary-brand"></i> {{ t("navbar.myWishlist", "My Wishlist") }}
+                    </NuxtLink>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider border-custom-glass my-1" />
+                  </li>
+                  <li>
+                    <button
+                      @click="() => { closeProfileDropdown(); handleLogout(); }"
+                      class="dropdown-item py-2 fw-medium text-danger"
+                    >
+                      <i class="bi bi-box-arrow-right me-2"></i>
+                      {{ t("navbar.logout", "Logout") }}
+                    </button>
+                  </li>
+                </template>
 
-              <!-- Guest Menu -->
-              <template v-else>
-                <li>
-                  <NuxtLink
-                    to="/auth/login"
-                    class="dropdown-item py-2 fw-medium"
-                  >
-                    <i
-                      class="bi bi-box-arrow-in-right me-2 text-primary-brand"
-                    ></i>
-                    {{ t("navbar.login") }}
-                  </NuxtLink>
-                </li>
-                <li>
-                  <NuxtLink
-                    to="/auth/register"
-                    class="dropdown-item py-2 fw-medium"
-                  >
-                    <i class="bi bi-person-plus me-2 text-primary-brand"></i>
-                    {{ t("navbar.signUp") }}
-                  </NuxtLink>
-                </li>
-              </template>
-            </ul>
-          </div>
+                <!-- Guest Menu -->
+                <template v-else>
+                  <li>
+                    <NuxtLink
+                      @click="closeProfileDropdown"
+                      to="/auth/login"
+                      class="dropdown-item py-2 fw-medium"
+                    >
+                      <i
+                        class="bi bi-box-arrow-in-right me-2 text-primary-brand"
+                      ></i>
+                      {{ t("navbar.login") }}
+                    </NuxtLink>
+                  </li>
+                  <li>
+                    <NuxtLink
+                      @click="closeProfileDropdown"
+                      to="/auth/register"
+                      class="dropdown-item py-2 fw-medium"
+                    >
+                      <i class="bi bi-person-plus me-2 text-primary-brand"></i>
+                      {{ t("navbar.signUp") }}
+                    </NuxtLink>
+                  </li>
+                </template>
+              </ul>
+            </div>
+            <template #fallback>
+              <div class="dropdown">
+                <button
+                  class="btn btn-link glass-icon-btn p-1 dropdown-toggle no-arrow"
+                  type="button"
+                  aria-label="User Account"
+                >
+                  <template v-if="auth.access_token || auth.refresh_token">
+                    <SkeletonAvatar :size="32" />
+                  </template>
+                  <template v-else>
+                    <i class="bi bi-person fs-5 fw-bold"></i>
+                  </template>
+                </button>
+              </div>
+            </template>
+          </ClientOnly>
 
           <!-- Offcanvas Mobile Menu Toggle Button -->
           <button
@@ -329,7 +358,34 @@
           >
             {{ t("navbar.contact") }}</NuxtLink
           >
+          <!-- Mobile Theme Toggle -->
+          <button
+            @click="toggleTheme"
+            class="nav-custom-link mobile-nav-link text-decoration-none btn btn-link p-0 text-start"
+            aria-label="Toggle Theme"
+          >
+            <ClientOnly>
+              <i :class="isDark ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-stars-fill text-primary-custom'" class="fs-4"></i>
+              <template #fallback>
+                <i class="bi bi-moon-stars-fill text-primary-custom fs-4"></i>
+              </template>
+            </ClientOnly>
+          </button>
+
+          <!-- Mobile Locale Dropdown -->
+          <div class="mt-1" style="max-width: 160px;">
+            <BaseSelectOption
+              :model-value="locale"
+              @update:modelValue="setLocale"
+              :options="[
+                { value: 'kh', label: 'Khmer (KH)', img: 'https://flagcdn.com/kh.svg' },
+                { value: 'en', label: 'English (EN)', img: 'https://flagcdn.com/gb.svg' }
+              ]"
+              class="mb-0 w-100"
+            />
+          </div>
         </nav>
+
       </div>
     </div>
   </div>
@@ -364,20 +420,26 @@ const router = useRouter();
 const isDark = computed(() => colorMode.value === "dark");
 const offcanvasRef = ref(null);
 const isScrolled = ref(false);
+const defaultAvatar = "/images/default_profile.webp";
 const imageError = ref(false);
 
 const profileImageSrc = computed(() => {
   if (imageError.value) {
-    return "/image.png";
+    return defaultAvatar;
   }
   const img =
     auth.userProfile?.userProfile?.profile_image ||
     auth.userProfile?.profile_image;
-  return img || "/image.png";
+  if (!img) return defaultAvatar;
+  if (img.startsWith("http") || img.startsWith("/")) return img;
+  return `${useRuntimeConfig().public.apiBase.replace("/api/v1", "")}/storage/${img}`;
 });
 
-const handleImageError = () => {
+const handleImageError = (event) => {
   imageError.value = true;
+  if (event?.target && event.target.src !== defaultAvatar) {
+    event.target.src = defaultAvatar;
+  }
 };
 
 watch(
@@ -390,6 +452,17 @@ watch(
 
 const handleLogout = async () => {
   await auth.logout();
+};
+
+const closeProfileDropdown = () => {
+  if (process.client) {
+    const dropdownEl = document.getElementById("profileDropdown");
+    const bootstrap = window.bootstrap || globalThis.bootstrap;
+    if (dropdownEl && bootstrap?.Dropdown) {
+      const instance = bootstrap.Dropdown.getInstance(dropdownEl);
+      instance?.hide();
+    }
+  }
 };
 
 const handleScroll = () => {
@@ -419,6 +492,7 @@ const toggleTheme = () => {
 onMounted(() => {
   window.addEventListener("scroll", handleScroll);
   wishlistStore.initWishlist();
+  cartStore.initCart();
 });
 
 onUnmounted(() => {
@@ -524,8 +598,10 @@ onUnmounted(() => {
 .glass-icon-btn {
   color: var(--color-text-secondary) !important;
   border-radius: 50%;
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;

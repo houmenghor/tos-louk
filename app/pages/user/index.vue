@@ -25,19 +25,18 @@
             <span
               class="badge rounded-pill bg-primary-light text-primary mb-2 px-3 py-1.5 fw-bold text-uppercase text-xxs"
             >
-              Active Member
+              {{ t('dashboard.activeMember') }}
             </span>
             <h1 class="h2 fw-extrabold text-main mb-1">
-              Welcome back, {{ authStore.userProfile?.full_name || "Member" }}!
+              {{ t('dashboard.welcomeBack', { name: authStore.userProfile?.full_name || t('dashboard.member') }) }}
             </h1>
             <p class="text-secondary-custom text-sm mb-0">
-              Manage your preferences, track deliveries, and check active
-              community items.
+              {{ t('dashboard.subtitle') }}
             </p>
           </div>
           <div class="col-md-auto text-center text-md-end">
             <div class="text-muted text-xxs uppercase-text fw-semibold">
-              Member since
+              {{ t('dashboard.memberSince') }}
             </div>
             <div class="fw-extrabold text-main text-sm mt-0.5">
               {{ memberSinceDate }}
@@ -57,16 +56,16 @@
               <div
                 class="text-secondary-custom text-xxs fw-bold text-uppercase mb-1"
               >
-                My Wishlist
+                {{ t('dashboard.myWishlist') }}
               </div>
               <h3 class="fw-extrabold text-main mb-1">
-                {{ wishlistStore.wishlistCount }} items
+                {{ t('dashboard.items', { count: wishlistStore.wishlistCount }) }}
               </h3>
               <NuxtLink
                 to="/user/wishlist"
                 class="text-primary text-xs fw-semibold text-decoration-none"
               >
-                View wishlist <i class="bi bi-arrow-right-short"></i>
+                {{ t('dashboard.viewWishlist') }} <i class="bi bi-arrow-right-short"></i>
               </NuxtLink>
             </div>
             <div
@@ -87,16 +86,16 @@
               <div
                 class="text-secondary-custom text-xxs fw-bold text-uppercase mb-1"
               >
-                Active Cart
+                {{ t('dashboard.activeCart') }}
               </div>
               <h3 class="fw-extrabold text-main mb-1">
-                {{ cartStore.cartCount }} items
+                {{ t('dashboard.items', { count: cartStore.cartCount }) }}
               </h3>
               <button
                 @click="cartStore.toggleCart(true)"
                 class="btn p-0 text-primary text-xs fw-semibold text-decoration-none border-0 bg-transparent text-start"
               >
-                Open cart <i class="bi bi-arrow-right-short"></i>
+                {{ t('dashboard.openCart') }} <i class="bi bi-arrow-right-short"></i>
               </button>
             </div>
             <div
@@ -117,7 +116,7 @@
               <div
                 class="text-secondary-custom text-xxs fw-bold text-uppercase mb-1"
               >
-                Total Subtotal
+                {{ t('dashboard.totalSubtotal') }}
               </div>
               <h3 class="fw-extrabold text-primary-custom mb-1">
                 ${{ cartStore.cartSubtotal.toFixed(2) }}
@@ -125,8 +124,8 @@
               <span class="text-secondary-custom text-xs">
                 {{
                   cartStore.cartSubtotal >= 30
-                    ? "Free Shipping Active!"
-                    : `$${(30 - cartStore.cartSubtotal).toFixed(2)} to free shipping`
+                    ? t('dashboard.freeShippingActive')
+                    : t('dashboard.toFreeShipping', { amount: (30 - cartStore.cartSubtotal).toFixed(2) })
                 }}
               </span>
             </div>
@@ -145,7 +144,7 @@
         <div class="col-lg-6">
           <div class="d-flex align-items-center gap-2 mb-4">
             <i class="bi bi-compass text-primary fs-4"></i>
-            <h3 class="fw-extrabold text-main mb-0 text-sm">Quick Actions</h3>
+            <h3 class="fw-extrabold text-main mb-0 text-sm">{{ t('dashboard.quickActions') }}</h3>
           </div>
 
           <div class="d-flex flex-column gap-3">
@@ -162,10 +161,10 @@
               </div>
               <div class="flex-grow-1">
                 <h6 class="fw-bold text-main mb-0.5 text-sm">
-                  Edit Profile settings
+                  {{ t('dashboard.editProfile') }}
                 </h6>
                 <p class="text-secondary-custom text-xs mb-0">
-                  Update personal details, address, and login password.
+                  {{ t('dashboard.editProfileDesc') }}
                 </p>
               </div>
               <i class="bi bi-chevron-right text-muted-custom"></i>
@@ -184,10 +183,10 @@
               </div>
               <div class="flex-grow-1">
                 <h6 class="fw-bold text-main mb-0.5 text-sm">
-                  Shop Catalog Categories
+                  {{ t('dashboard.shopCatalog') }}
                 </h6>
                 <p class="text-secondary-custom text-xs mb-0">
-                  Browse modern items, toggle filters, and discover essentials.
+                  {{ t('dashboard.shopCatalogDesc') }}
                 </p>
               </div>
               <i class="bi bi-chevron-right text-muted-custom"></i>
@@ -206,10 +205,10 @@
               </div>
               <div class="flex-grow-1">
                 <h6 class="fw-bold text-main mb-0.5 text-sm">
-                  Active Deals & Flash Sales
+                  {{ t('dashboard.activeDeals') }}
                 </h6>
                 <p class="text-secondary-custom text-xs mb-0">
-                  View discounted items and free shipping qualifying deals.
+                  {{ t('dashboard.activeDealsDesc') }}
                 </p>
               </div>
               <i class="bi bi-chevron-right text-muted-custom"></i>
@@ -222,7 +221,7 @@
           <div class="d-flex align-items-center gap-2 mb-4">
             <i class="bi bi-truck text-primary fs-4"></i>
             <h3 class="fw-extrabold text-main mb-0 text-sm">
-              Recent Order Status
+              {{ t('dashboard.recentOrder') }}
             </h3>
           </div>
 
@@ -233,15 +232,15 @@
               class="d-flex align-items-center justify-content-between mb-4 border-bottom border-custom-glass pb-3"
             >
               <div>
-                <div class="fw-extrabold text-main text-sm">ORD-98231</div>
+                <div class="fw-extrabold text-main text-sm">{{ t('dashboard.orderId') }}</div>
                 <div class="text-secondary-custom text-xxs mt-0.5">
-                  Placed on July 1, 2026
+                  {{ t('dashboard.placedDate') }}
                 </div>
               </div>
               <span
                 class="badge rounded-pill bg-primary-light text-primary px-3 py-1.5 fw-bold text-xxs uppercase-text"
               >
-                SHIPPED
+                {{ t('dashboard.statusShipped') }}
               </span>
             </div>
 
@@ -256,10 +255,10 @@
                 </div>
                 <div class="timeline-content ms-4">
                   <h6 class="fw-bold text-main text-xs mb-0.5">
-                    Order Placed & Confirmed
+                    {{ t('dashboard.step1Title') }}
                   </h6>
                   <p class="text-secondary-custom text-xxs mb-0">
-                    Payment successful. Invoice dispatched.
+                    {{ t('dashboard.step1Desc') }}
                   </p>
                 </div>
               </div>
@@ -273,10 +272,10 @@
                 </div>
                 <div class="timeline-content ms-4">
                   <h6 class="fw-bold text-main text-xs mb-0.5">
-                    Shipped from Warehouse
+                    {{ t('dashboard.step2Title') }}
                   </h6>
                   <p class="text-secondary-custom text-xxs mb-0">
-                    Dispatched via Fast Express. Tracking: #FE9812A.
+                    {{ t('dashboard.step2Desc') }}
                   </p>
                 </div>
               </div>
@@ -290,10 +289,10 @@
                 </div>
                 <div class="timeline-content ms-4">
                   <h6 class="fw-bold text-secondary-custom text-xs mb-0.5">
-                    Out for Delivery & Received
+                    {{ t('dashboard.step3Title') }}
                   </h6>
                   <p class="text-muted-custom text-xxs mb-0">
-                    Expected delivery: July 12, 2026.
+                    {{ t('dashboard.step3Desc') }}
                   </p>
                 </div>
               </div>
@@ -306,7 +305,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useAuthStore } from "~/stores/authStore";
 import { useWishlistStore } from "~/stores/wishlistStore";
 import { useCartStore } from "~/stores/cartStore";
@@ -319,7 +318,7 @@ definePageMeta({
 const authStore = useAuthStore();
 const wishlistStore = useWishlistStore();
 const cartStore = useCartStore();
-const { locale } = useI18n();
+const { t, locale } = useI18n();
 
 // Fetch user dynamic statistics on load
 onMounted(async () => {
@@ -331,7 +330,7 @@ onMounted(async () => {
 
 // Member since calculation formatted nicely
 const memberSinceDate = computed(() => {
-  if (!authStore.userProfile?.created_at) return "July 2026";
+  if (!authStore.userProfile?.created_at) return locale.value === "kh" ? "កក្កដា ២០២៦" : "July 2026";
   const date = new Date(authStore.userProfile.created_at);
   return date.toLocaleDateString(locale.value === "kh" ? "km-KH" : "en-US", {
     year: "numeric",
@@ -339,22 +338,34 @@ const memberSinceDate = computed(() => {
   });
 });
 
-const defaultAvatar =
-  'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23a1a1aa"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-1-5.48-2.58C7.64 15.84 10 15 12 15s4.36.84 5.48 2.42C16.43 19 14.03 20 12 20z"/></svg>';
+const defaultAvatar = "/images/default_profile.webp";
+const avatarError = ref(false);
+
+watch(
+  () => authStore.userProfile,
+  () => {
+    avatarError.value = false;
+  },
+  { deep: true },
+);
 
 // Avatar Source Computed
 const profileImageSrc = computed(() => {
+  if (avatarError.value) return defaultAvatar;
   const avatar =
     authStore.userProfile?.userProfile?.profile_image ||
     authStore.userProfile?.profile_image;
   if (!avatar) return defaultAvatar;
 
-  if (avatar.startsWith("http")) return avatar;
+  if (avatar.startsWith("http") || avatar.startsWith("/")) return avatar;
   return `${useRuntimeConfig().public.apiBase.replace("/api/v1", "")}/storage/${avatar}`;
 });
 
 const handleAvatarError = (event) => {
-  event.target.src = defaultAvatar;
+  avatarError.value = true;
+  if (event?.target && event.target.src !== defaultAvatar) {
+    event.target.src = defaultAvatar;
+  }
 };
 </script>
 
