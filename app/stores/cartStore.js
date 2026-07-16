@@ -65,7 +65,7 @@ export const useCartStore = defineStore("cart", () => {
   });
 
   const isFreeShipping = computed(
-    () => cartSubtotal.value >= freeShippingThreshold.value,
+    () => cartSubtotal.value >= freeShippingThreshold.value || items.value.some((item) => Boolean(item.is_free_shipping)),
   );
 
   const amountToFreeShipping = computed(() => {
@@ -102,6 +102,7 @@ export const useCartStore = defineStore("cart", () => {
           thumbnail: product.thumbnail || product.image || "https://placehold.co/400x400/png?text=Product",
           category: product.category?.name || "",
           quantity: item.qty || item.quantity || 1,
+          is_free_shipping: Boolean(item.is_free_shipping || product.is_free_shipping),
           uuid: item.uuid,
         };
       });
@@ -155,6 +156,12 @@ export const useCartStore = defineStore("cart", () => {
     const existing = items.value.find((item) => item.id === product.id);
     if (existing) {
       existing.quantity += qty;
+      if (product.is_free_shipping !== undefined) {
+        existing.is_free_shipping = Boolean(product.is_free_shipping);
+      }
+      if (product.price || product.sell_price) {
+        existing.price = product.price || product.sell_price;
+      }
     } else {
       items.value.push({
         id: product.id,
@@ -164,6 +171,7 @@ export const useCartStore = defineStore("cart", () => {
         thumbnail: product.image || product.thumbnail || "https://placehold.co/400x400/png?text=Product",
         category: product.category?.name || product.category || "",
         quantity: qty,
+        is_free_shipping: Boolean(product.is_free_shipping),
       });
     }
     saveCart();

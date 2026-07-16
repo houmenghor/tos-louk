@@ -20,7 +20,7 @@
               <div class="avatar-wrapper-sm position-relative">
                 <img
                   :src="profileImageSrc"
-                  class="rounded-circle object-fit-cover border"
+                  class="rounded-circle object-fit-cover border border-2 border-surface shadow-sm"
                   width="44"
                   height="44"
                   alt="Avatar"
@@ -84,7 +84,7 @@
                     >
                       <img
                         :src="profileImageSrc"
-                        class="rounded-circle object-fit-cover border border-3 border-surface"
+                        class="rounded-circle object-fit-cover border border-3 border-surface shadow-sm"
                         width="84"
                         height="84"
                         alt="Avatar"
@@ -462,9 +462,6 @@ import BaseInputPassword from "~/components/base/base-input-password.vue";
 import BaseSelectDate from "~/components/base/base-select-date.vue";
 import BaseSelectOption from "~/components/base/base-select-option.vue";
 
-const defaultAvatar =
-  'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23a1a1aa"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-1-5.48-2.58C7.64 15.84 10 15 12 15s4.36.84 5.48 2.42C16.43 19 14.03 20 12 20z"/></svg>';
-
 // Page Metadata
 definePageMeta({
   layout: "default",
@@ -534,19 +531,34 @@ const memberSinceDate = computed(() => {
   });
 });
 
+const defaultAvatar = "/images/default_profile.webp";
+const avatarError = ref(false);
+
+watch(
+  () => authStore.userProfile,
+  () => {
+    avatarError.value = false;
+  },
+  { deep: true },
+);
+
 // Avatar Source Computed
 const profileImageSrc = computed(() => {
+  if (avatarError.value) return defaultAvatar;
   const avatar =
     authStore.userProfile?.userProfile?.profile_image ||
     authStore.userProfile?.profile_image;
   if (!avatar) return defaultAvatar;
 
-  if (avatar.startsWith("http")) return avatar;
+  if (avatar.startsWith("http") || avatar.startsWith("/")) return avatar;
   return `${useRuntimeConfig().public.apiBase.replace("/api/v1", "")}/storage/${avatar}`;
 });
 
 const handleAvatarError = (event) => {
-  event.target.src = defaultAvatar;
+  avatarError.value = true;
+  if (event?.target && event.target.src !== defaultAvatar) {
+    event.target.src = defaultAvatar;
+  }
 };
 
 // Form 1: Personal Information Validation

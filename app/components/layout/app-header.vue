@@ -161,7 +161,7 @@
                 <template v-if="auth.access_token && auth.userProfile">
                   <img
                     :src="profileImageSrc"
-                    class="rounded-circle object-fit-cover"
+                    class="rounded-circle object-fit-cover shadow-sm border border-custom-glass"
                     width="32"
                     height="32"
                     alt="Profile"
@@ -420,20 +420,26 @@ const router = useRouter();
 const isDark = computed(() => colorMode.value === "dark");
 const offcanvasRef = ref(null);
 const isScrolled = ref(false);
+const defaultAvatar = "/images/default_profile.webp";
 const imageError = ref(false);
 
 const profileImageSrc = computed(() => {
   if (imageError.value) {
-    return "/image.png";
+    return defaultAvatar;
   }
   const img =
     auth.userProfile?.userProfile?.profile_image ||
     auth.userProfile?.profile_image;
-  return img || "/image.png";
+  if (!img) return defaultAvatar;
+  if (img.startsWith("http") || img.startsWith("/")) return img;
+  return `${useRuntimeConfig().public.apiBase.replace("/api/v1", "")}/storage/${img}`;
 });
 
-const handleImageError = () => {
+const handleImageError = (event) => {
   imageError.value = true;
+  if (event?.target && event.target.src !== defaultAvatar) {
+    event.target.src = defaultAvatar;
+  }
 };
 
 watch(

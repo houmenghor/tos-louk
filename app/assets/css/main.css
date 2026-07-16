@@ -71,6 +71,11 @@ html {
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 5%);
   --shadow-md: 0 4px 12px rgb(0 0 0 / 8%);
 
+  /* --- Avatar Fallback Additions --- */
+  --avatar-fallback-bg: #e2e8f0;
+  --avatar-fallback-fg: #64748b;
+  --avatar-silhouette-color: #94a3b8;
+
   /* --- Glassmorphism Additions --- */
   --glass-bg: rgba(255, 255, 255, 0.45);
   --glass-top-bg: rgba(0, 220, 130, 0.85);
@@ -100,6 +105,11 @@ html {
 
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 30%);
   --shadow-md: 0 4px 12px rgb(0 0 0 / 40%);
+
+  /* --- Avatar Fallback Additions --- */
+  --avatar-fallback-bg: #ffffff;
+  --avatar-fallback-fg: #1e293b;
+  --avatar-silhouette-color: #1e293b;
 
   /* --- Glassmorphism Additions --- */
   --glass-bg: rgba(30, 41, 59, 0.45);
@@ -150,4 +160,32 @@ html {
   background-color: var(--color-primary-hover) !important;
   border-color: var(--color-primary-hover) !important;
   color: #fff !important;
+}
+
+/* ========================================
+   AVATAR FALLBACK CIRCLE STYLING
+======================================== */
+.avatar-fallback-circle {
+  background-color: var(--avatar-fallback-bg) !important;
+  color: var(--avatar-fallback-fg) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transition: all 0.3s ease;
+}
+
+.avatar-fallback-circle i,
+.avatar-fallback-circle span {
+  color: inherit !important;
+  position: relative;
+  z-index: 2;
+}
+
+.avatar-bg {
+  fill: var(--avatar-fallback-bg);
+  transition: fill 0.3s ease;
+}
+
+.avatar-silhouette {
+  fill: var(--avatar-silhouette-color);
+  transition: fill 0.3s ease;
 }

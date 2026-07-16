@@ -24,7 +24,6 @@ export const useProductStore = defineStore('product', () => {
         if (params.min_price !== undefined && params.min_price !== null) query.min_price = params.min_price;
         if (params.max_price !== undefined && params.max_price !== null) query.max_price = params.max_price;
         if (params.brand) query.brand = params.brand;
-        if (params.color) query.color = params.color;
 
         const response = await $fetch('/api/products', { query });
 
@@ -63,13 +62,16 @@ export const useProductStore = defineStore('product', () => {
         if (params.min_price !== undefined && params.min_price !== null) query.min_price = params.min_price;
         if (params.max_price !== undefined && params.max_price !== null) query.max_price = params.max_price;
         if (params.brand) query.brand = params.brand;
-        if (params.color) query.color = params.color;
 
         return await $fetch('/api/products', { query });
     }
 
     const getBestSellers = async (params = {}) => {
         return await getFilteredProducts({ ...params, collection: 'best_seller' });
+    }
+
+    const getPopular = async (params = {}) => {
+        return await getFilteredProducts({ ...params, collection: 'popular' });
     }
 
     const getTrending = async (params = {}) => {
@@ -84,6 +86,11 @@ export const useProductStore = defineStore('product', () => {
         return await getFilteredProducts(params);
     }
 
+    const getBrands = async (params = {}) => {
+        const response = await $fetch('/api/brands', { query: params });
+        return response?.data || [];
+    }
+
     return {
         products,
         currentProduct,
@@ -91,9 +98,11 @@ export const useProductStore = defineStore('product', () => {
         getAllProducts,
         getFilteredProducts,
         getBestSellers,
+        getPopular,
         getTrending,
         getNewArrivals,
         getDiscounts,
-        getProductByUuid
+        getProductByUuid,
+        getBrands
     }
 });
