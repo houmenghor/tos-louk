@@ -63,20 +63,20 @@
               </NuxtLink>
             </div>
 
-            <!-- Trending -->
+            <!-- Popular -->
             <div class="col-md-7">
-              <NuxtLink :prefetch="false" :to="generateProductUrl(heroTrending)"
+              <NuxtLink :prefetch="false" :to="generateProductUrl(heroPopular)"
                 class="card glass-card h-100 border-0 shadow-sm p-3 position-relative text-decoration-none text-main">
-                <span class="badge custom-badge position-absolute top-0 start-0 m-3">{{ $t('hero.trendingNow') }}</span>
-                <NuxtImg :src="heroTrending.thumbnail || heroTrending.image"
+                <span class="badge custom-badge position-absolute top-0 start-0 m-3">{{ $t('hero.popularNow') }}</span>
+                <NuxtImg :src="heroPopular.thumbnail || heroPopular.image"
                   class="card-img-top w-75 mx-auto mt-4 mb-2 object-fit-contain" style="height: 140px;"
-                  :alt="heroTrending.title" draggable="false" width="280" height="140" format="webp" quality="85" fetchpriority="high" />
+                  :alt="heroPopular.title" draggable="false" width="280" height="140" format="webp" quality="85" fetchpriority="high" />
                 <div class="card-body px-1 pb-0 mt-auto">
-                  <h2 class="card-title text-truncate mb-1 fs-6">{{ heroTrending.title }}</h2>
+                  <h2 class="card-title text-truncate mb-1 fs-6">{{ heroPopular.title }}</h2>
                   <p class="price-text fw-bold mb-0">
-                    ${{ heroTrending.price }}
-                    <del v-if="heroTrending.oldPrice" class="subtitle-text fw-normal small ms-1">${{
-                      heroTrending.oldPrice }}</del>
+                    ${{ heroPopular.price }}
+                    <del v-if="heroPopular.oldPrice" class="subtitle-text fw-normal small ms-1">${{
+                      heroPopular.oldPrice }}</del>
                   </p>
                 </div>
               </NuxtLink>
@@ -147,10 +147,10 @@ const heroBestSeller = computed(() => {
   };
 });
 
-const heroTrending = computed(() => {
+const heroPopular = computed(() => {
   const item = products.value.find(p => p.collection === 'popular') || products.value[1] || products.value[0] || {};
   const { price, oldPrice } = getProductPricing(item);
-  const imgUrl = item.thumbnail || item.images?.[0]?.image_url || 'https://placehold.co/300x150/png?text=Trending';
+  const imgUrl = item.thumbnail || item.images?.[0]?.image_url || 'https://placehold.co/300x150/png?text=Popular';
   return {
     id: item.id || 2,
     uuid: item.uuid || '',

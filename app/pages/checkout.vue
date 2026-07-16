@@ -350,6 +350,7 @@ onMounted(async () => {
     router.push("/auth/login");
     return;
   }
+  cartStore.initCart();
   await authStore.fetchProfile();
   if (authStore.userProfile) {
     const name = authStore.userProfile.name || authStore.userProfile.full_name;

@@ -61,6 +61,7 @@ export const useWishlistStore = defineStore("wishlist", () => {
           category: item.product.category?.name || "",
           oldPrice: item.product.oldPrice,
           rating: item.product.rating,
+          is_free_shipping: Boolean(item.is_free_shipping || item.product?.is_free_shipping),
           uuid: item.uuid,
         }));
       } else {
@@ -137,6 +138,7 @@ export const useWishlistStore = defineStore("wishlist", () => {
           category: product.category?.name || product.category || "",
           oldPrice: product.oldPrice,
           rating: product.rating,
+          is_free_shipping: Boolean(product.is_free_shipping),
         });
       }
       saveWishlist();

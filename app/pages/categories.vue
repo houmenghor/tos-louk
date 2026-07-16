@@ -160,15 +160,9 @@
               <span v-for="brand in selectedBrands" :key="brand" class="badge position-relative overflow-hidden d-flex align-items-center gap-2 px-3 py-2 border-0 fw-medium rounded-pill capitalize-text" style="color: var(--color-primary); z-index: 1;">
                 <div class="position-absolute w-100 h-100 top-0 start-0 z-n1" style="background-color: var(--color-primary); opacity: 0.1;"></div>
                 {{ brand }}
-                <i class="bi bi-x cursor-pointer fs-6 lh-1" @click="selectedBrands = selectedBrands.filter(b => b !== brand)"></i>
+                <i class="bi bi-x cursor-pointer fs-6 lh-1" @click="removeBrand(brand)"></i>
               </span>
 
-              <!-- Color Pill -->
-              <span v-if="selectedColorApplied" class="badge position-relative overflow-hidden d-flex align-items-center gap-2 px-3 py-2 border-0 fw-medium rounded-pill capitalize-text" style="color: var(--color-primary); z-index: 1;">
-                <div class="position-absolute w-100 h-100 top-0 start-0 z-n1" style="background-color: var(--color-primary); opacity: 0.1;"></div>
-                {{ selectedColorApplied }}
-                <i class="bi bi-x cursor-pointer fs-6 lh-1" @click="clearColorFilter"></i>
-              </span>
             </div>
 
             <button @click="resetFilters" class="btn btn-outline-primary-custom px-4 rounded-pill fw-medium clear-all-btn d-flex align-items-center justify-content-center" style="height: 38px;">
@@ -283,6 +277,7 @@
               <div class="search-input-group position-relative mb-3">
                 <input
                   v-model="brandSearchQuery"
+                  @keyup.enter="applyBrandFilter"
                   type="text"
                   class="form-control form-control-sm border bg-input ps-3 pe-4"
                   placeholder="Search brands..."
@@ -336,49 +331,6 @@
               </div>
             </div>
 
-            <!-- Filter by Color Widget -->
-            <div class="filter-widget p-3 border rounded-3 bg-card">
-              <h5 class="fw-bold mb-3 widget-title position-relative ps-3">
-                Filter by Color
-              </h5>
-
-              <!-- Colors Swatches Grid -->
-              <div class="d-flex flex-wrap gap-2 mb-3">
-                <button
-                  v-for="c in colors"
-                  :key="c.name"
-                  @click="selectColor(c.name)"
-                  class="color-swatch-btn rounded-circle position-relative"
-                  :style="{ backgroundColor: c.value }"
-                  :class="{
-                    'swatch-active': activeColorFilter === c.name,
-                    border: c.border,
-                  }"
-                  :title="c.name"
-                >
-                  <i
-                    v-if="activeColorFilter === c.name"
-                    class="bi bi-check check-mark-icon"
-                    :class="{ 'text-dark': c.name === 'White' }"
-                  ></i>
-                </button>
-              </div>
-
-              <div class="d-flex justify-content-between align-items-center">
-                <button
-                  @click="clearColorFilter"
-                  class="btn btn-link btn-sm p-0 text-decoration-none text-muted-custom hover-primary"
-                >
-                  Clear All
-                </button>
-                <button
-                  @click="applyColorFilter"
-                  class="btn btn-primary-custom py-1.5 px-3 btn-sm fw-bold"
-                >
-                  Apply Filter
-                </button>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -443,10 +395,10 @@ const { categories } = storeToRefs(categoryStore);
 await useAsyncData("categories", async () => {
   // Fetch all active categories
   await categoryStore.getCategories({ per_page: 50, parent_id: "null" });
+  await fetchDynamicBrands();
   console.log(categories.value);
   console.log(products.value);
   return true;
-
 });
 
 const selectedCategory = ref("all");
@@ -522,17 +474,30 @@ const toggleAccordion = (section) => {
 // Brand States
 const brandSearchQuery = ref("");
 const selectedBrands = ref([]);
+const brands = ref([]);
 
-const brands = ref([
-  { name: "Nike", count: 24, checked: false },
-  { name: "Adidas", count: 18, checked: false },
-  { name: "Puma", count: 12, checked: false },
-  { name: "Reebok", count: 9, checked: false },
-  { name: "Under Armour", count: 7, checked: false },
-  { name: "New Balance", count: 6, checked: false },
-  { name: "Converse", count: 5, checked: false },
-  { name: "Vans", count: 4, checked: false },
-]);
+const fetchDynamicBrands = async () => {
+  const brandNames = await productStore.getBrands();
+  const currentChecked = new Set(selectedBrands.value.map(b => b.toLowerCase()));
+  brands.value = (brandNames || []).map(name => {
+    const count = products.value ? products.value.filter(p => (p.brand || '').toLowerCase() === name.toLowerCase()).length : 0;
+    return {
+      name,
+      count,
+      checked: currentChecked.has(name.toLowerCase())
+    };
+  });
+};
+
+const updateBrandCounts = async () => {
+  if (!brands.value || brands.value.length === 0) {
+    await fetchDynamicBrands();
+  } else {
+    brands.value.forEach(b => {
+      b.count = products.value ? products.value.filter(p => (p.brand || '').toLowerCase() === b.name.toLowerCase()).length : 0;
+    });
+  }
+};
 
 const filteredBrandList = computed(() => {
   if (!brandSearchQuery.value) return brands.value;
@@ -540,51 +505,58 @@ const filteredBrandList = computed(() => {
   return brands.value.filter((b) => b.name.toLowerCase().includes(query));
 });
 
-const applyBrandFilter = () => {
-  selectedBrands.value = brands.value
+const applyBrandFilter = async () => {
+  if (!brands.value || brands.value.length === 0) {
+    await fetchDynamicBrands();
+  }
+
+  let checked = brands.value
     .filter((b) => b.checked)
     .map((b) => b.name.toLowerCase());
+
+  // If user typed inside the search input (e.g. "nike") and clicked Apply Filter without manually checking boxes:
+  if (checked.length === 0 && brandSearchQuery.value.trim() !== '') {
+    const query = brandSearchQuery.value.trim().toLowerCase();
+    const matches = brands.value
+      .filter((b) => b.name.toLowerCase().includes(query))
+      .map((b) => b.name.toLowerCase());
+    
+    checked = matches.length > 0 ? matches : [query];
+    
+    // Automatically check the matched brands in the UI checklist
+    brands.value.forEach((b) => {
+      if (checked.includes(b.name.toLowerCase())) {
+        b.checked = true;
+      }
+    });
+  }
+
+  selectedBrands.value = checked;
   currentPage.value = 1;
 };
 
 const clearBrandFilter = () => {
-  brands.value.forEach((b) => (b.checked = false));
+  if (brands.value) {
+    brands.value.forEach((b) => (b.checked = false));
+  }
+  brandSearchQuery.value = '';
   selectedBrands.value = [];
   currentPage.value = 1;
 };
 
-// Color States
-const activeColorFilter = ref(null);
-const selectedColorApplied = ref(null);
-
-const colors = [
-  { name: "Black", value: "#000000", border: false },
-  { name: "White", value: "#ffffff", border: true },
-  { name: "Red", value: "#ef4444", border: false },
-  { name: "Blue", value: "#3b82f6", border: false },
-  { name: "Green", value: "#10b981", border: false },
-  { name: "Yellow", value: "#f59e0b", border: false },
-  { name: "Purple", value: "#8b5cf6", border: false },
-  { name: "Orange", value: "#f97316", border: false },
-  { name: "Pink", value: "#ec4899", border: false },
-  { name: "Brown", value: "#78350f", border: false },
-];
-
-const selectColor = (colorName) => {
-  activeColorFilter.value =
-    activeColorFilter.value === colorName ? null : colorName;
-};
-
-const applyColorFilter = () => {
-  selectedColorApplied.value = activeColorFilter.value;
+const removeBrand = (brandToRemove) => {
+  selectedBrands.value = selectedBrands.value.filter(b => b.toLowerCase() !== brandToRemove.toLowerCase());
+  if (brands.value) {
+    brands.value.forEach(b => {
+      if (b.name.toLowerCase() === brandToRemove.toLowerCase()) {
+        b.checked = false;
+      }
+    });
+  }
   currentPage.value = 1;
 };
 
-const clearColorFilter = () => {
-  activeColorFilter.value = null;
-  selectedColorApplied.value = null;
-  currentPage.value = 1;
-};
+
 
 // Categories metadata
 // const categories = [
@@ -776,9 +748,7 @@ const hasActiveFilters = computed(() => {
          searchQuery.value !== '' || 
          minPrice.value > 0 || 
          maxPrice.value < 300 || 
-         priceRangeSelect.value !== 'all' ||
-         selectedBrands.value.length > 0 || 
-         selectedColorApplied.value !== null;
+         selectedBrands.value.length > 0;
 });
 
 const currentPage = ref(1);
@@ -798,6 +768,7 @@ const fetchProducts = async () => {
   }
   
   await productStore.getAllProducts(params);
+  await updateBrandCounts();
 };
 
 const handleSearch = async () => {
@@ -817,8 +788,6 @@ const resetFilters = () => {
   priceRangeSelect.value = 'all';
   tempMinPrice.value = 0;
   tempMaxPrice.value = 300;
-  activeColorFilter.value = null;
-  selectedColorApplied.value = null;
   brands.value.forEach((b) => (b.checked = false));
   selectedBrands.value = [];
   minPrice.value = tempMinPrice.value;
@@ -850,8 +819,7 @@ const filteredProducts = computed(() => {
           slug: item.slug,
           title: item.title,
           category: item.category?.uuid || item.category?.slug || item.category?.name?.toLowerCase() || 'electronics',
-          brand: item.brand?.toLowerCase() || 'nike',
-          color: 'Black',
+          brand: item.brand || '',
           price: Number(finalPrice.toFixed(2)),
           oldPrice: oldPrice ? Number(oldPrice.toFixed(2)) : null,
           rating: 4.8,
@@ -883,13 +851,10 @@ const filteredProducts = computed(() => {
 
   // Brand filter
   if (selectedBrands.value.length > 0) {
-    result = result.filter(p => selectedBrands.value.includes(p.brand.toLowerCase()));
+    result = result.filter(p => selectedBrands.value.includes((p.brand || '').toLowerCase()));
   }
 
-  // Color filter
-  if (selectedColorApplied.value) {
-    result = result.filter(p => p.color.toLowerCase() === selectedColorApplied.value.toLowerCase());
-  }
+
 
   // Sorting
   if (sortBy.value === "price-low") {
@@ -1282,35 +1247,6 @@ useSeoMeta({
   background-color: var(--color-bg-secondary);
   border-color: var(--color-border) !important;
   color: var(--color-text-secondary);
-}
-
-/* Color swatch swatches */
-.color-swatch-btn {
-  width: 30px;
-  height: 30px;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-.color-swatch-btn:hover {
-  transform: scale(1.1);
-}
-
-.color-swatch-btn.swatch-active {
-  box-shadow: 0 0 0 3px var(--color-primary);
-}
-
-.check-mark-icon {
-  color: #ffffff;
-  font-size: 1rem;
 }
 
 .hover-primary:hover {
