@@ -1,7 +1,7 @@
 <template>
   <div class="mb-3 position-relative" ref="containerRef">
     <!-- Field Label -->
-    <label v-if="label" class="form-label">
+    <label v-if="label" class="form-label text-xs fw-semibold text-uppercase tracking-wider mb-1.5">
       {{ label }} <span v-if="required" class="text-danger">*</span>
     </label>
 
@@ -18,13 +18,21 @@
         @keydown.down.prevent="navigateOptions('down')"
         @keydown.up.prevent="navigateOptions('up')"
       >
-        <span :class="{ 'placeholder-text': !selectedOption }">
-          {{
-            selectedOption
-              ? selectedOption.label
-              : placeholder || "Select option"
-          }}
-        </span>
+        <div class="d-flex align-items-center flex-grow-1 overflow-hidden">
+          <span v-if="leftIcon" class="me-2 d-flex align-items-center justify-content-center" style="min-width: 20px; color: var(--color-text-secondary); opacity: 0.7;">
+            <i :class="leftIcon" style="font-size: 1.05rem;"></i>
+          </span>
+          <span :class="[{ 'placeholder-text': !selectedOption }, 'd-flex align-items-center gap-2 text-truncate']">
+            <template v-if="selectedOption">
+              <img v-if="selectedOption.img" :src="selectedOption.img" width="18" height="13" class="rounded-1 shadow-sm object-fit-cover flex-shrink-0" alt="icon" />
+              <i v-else-if="selectedOption.icon" :class="[selectedOption.icon, 'flex-shrink-0']"></i>
+              <span class="text-truncate">{{ selectedOption.label }}</span>
+            </template>
+            <template v-else>
+              {{ placeholder || "Select option" }}
+            </template>
+          </span>
+        </div>
         <i class="bi bi-chevron-down arrow-icon" :class="{ open: isOpen }"></i>
       </div>
     </div>
@@ -76,7 +84,8 @@
             @mouseenter="highlightedIndex = index"
           >
             <div class="d-flex align-items-center gap-2">
-              <i v-if="option.icon" :class="[option.icon, 'option-icon']"></i>
+              <img v-if="option.img" :src="option.img" width="18" height="13" class="rounded-1 shadow-sm object-fit-cover" alt="icon" />
+              <i v-else-if="option.icon" :class="[option.icon, 'option-icon']"></i>
               <span>{{ option.label }}</span>
             </div>
             <i
@@ -127,6 +136,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  leftIcon: {
+    type: String,
+    default: "",
+  },
 });
 
 const emit = defineEmits(["update:modelValue", "blur", "change"]);
@@ -146,12 +159,14 @@ const normalizedOptions = computed(() => {
         value: option.value !== undefined ? option.value : option.label,
         label: option.label || option.value,
         icon: option.icon || null,
+        img: option.img || null,
       };
     }
     return {
       value: option,
       label: option,
       icon: null,
+      img: null,
     };
   });
 });

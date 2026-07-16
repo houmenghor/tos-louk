@@ -42,9 +42,23 @@ onMounted(async () => {
   }
 
   if (token) {
+    const oauthCookie = useCookie("at", {
+      maxAge: 7 * 24 * 60 * 60, // 7 days specifically for OAuth
+      path: "/",
+      sameSite: "lax"
+    });
+    oauthCookie.value = token;
     authStore.access_token = token;
     try {
       await authStore.fetchProfile(true);
+      
+      const cartStore = useCartStore();
+      const wishlistStore = useWishlistStore();
+      await Promise.all([
+        cartStore.syncCartWithDb(),
+        wishlistStore.syncWishlistWithDb(),
+      ]);
+
       showSuccess("Welcome back!", "Facebook login successful.");
       await navigateTo("/", { replace: true });
     } catch (error) {

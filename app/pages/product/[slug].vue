@@ -14,7 +14,8 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item">
-              <NuxtLink to="/" class="text-decoration-none text-muted-custom hover-primary">{{ $t('product.home') }}</NuxtLink>
+              <NuxtLink to="/" class="text-decoration-none text-muted-custom hover-primary">{{ $t('product.home') }}
+              </NuxtLink>
             </li>
             <li class="breadcrumb-item">
               <NuxtLink to="/categories" class="text-decoration-none text-muted-custom hover-primary">
@@ -77,31 +78,36 @@ const activeImage = ref('');
 const selectedColor = ref('#0f172a');
 const selectedSize = ref('M');
 const quantity = ref(1);
-const { pending, error } = useAsyncData(`product-${route.params.uuid}`, async () => {
-  // Clear current product before fetching new one to avoid showing old product
-  currentProduct.value = null;
-  if (route.params.uuid) {
-    // Extract only the UUID (last 36 characters) from the slug-uuid combo
-    const param = route.params.uuid;
-    const actualUuid = param.length >= 36 ? param.slice(-36) : param;
-    await productStore.getProductByUuid(actualUuid);
+
+const { data: productResponse, pending, error } = useAsyncData(`product-${route.params.slug}`, async () => {
+  if (route.params.slug) {
+    return await productStore.getProductByUuid(route.params.slug);
   }
-  return true;
+  return null;
 }, {
   lazy: true,
-  watch: [() => route.params.uuid]
+  watch: [() => route.params.slug]
 });
 
-const isLoading = computed(() => pending.value);
+const isLoading = computed(() => pending.value && !currentProduct.value);
 
-// Reset local and store states when navigating to a new product URL
-watch(() => route.params.uuid, (newUuid) => {
-  if (newUuid) {
-    activeImage.value = '';
-    selectedColor.value = '#0f172a';
-    selectedSize.value = 'M';
-    quantity.value = 1;
-    currentProduct.value = null;
+// Keep the store's currentProduct synchronized with the asyncData response during hydration / after fetch
+watch(() => productResponse.value, (newVal) => {
+  if (newVal?.data) {
+    currentProduct.value = newVal.data;
+  }
+}, { immediate: true });
+
+// Reset local and store states when navigating to a different product URL
+watch(() => route.params.slug, (newSlug) => {
+  if (newSlug) {
+    if (!currentProduct.value || (currentProduct.value.uuid !== newSlug && currentProduct.value.slug !== newSlug)) {
+      activeImage.value = '';
+      selectedColor.value = '#0f172a';
+      selectedSize.value = 'M';
+      quantity.value = 1;
+      currentProduct.value = null;
+    }
   }
 }, { immediate: true });
 
@@ -116,7 +122,7 @@ const product = computed(() => {
   if (!p) {
     return {
       id: null,
-      uuid: route.params.uuid,
+      uuid: route.params.slug,
       title: error.value ? t('product.notFound', 'Product not found') : t('product.loading'),
       description: error.value ? t('product.notFoundDesc', 'The product you are looking for does not exist.') : t('product.loadingDesc'),
       price: 0,
@@ -219,45 +225,23 @@ useSeoMeta({
   twitterImage: () => activeImage.value
 });
 
-const verifyLogin = (actionName) => {
-  if (!authStore.access_token) {
-    showError(
-      locale.value === "kh"
-        ? `សូមចូលគណនីជាមុនសិនដើម្បី ${actionName}!`
-        : `Please login first to ${actionName}!`
-    );
-    navigateTo("/auth/login");
-    return false;
-  }
-  return true;
-};
-
 const handleAddToCart = () => {
-  if (verifyLogin(locale.value === "kh" ? "បន្ថែមទៅកន្ត្រក" : "add to cart")) {
-    const itemToAdd = {
-      ...product.value,
-      quantity: quantity.value,
-      selectedColor: selectedColor.value,
-      selectedSize: selectedSize.value,
-      image: product.value.images[0] // for cart compatibility
-    };
-    cartStore.addToCart(itemToAdd);
-    showSuccess(
-      locale.value === "kh"
-        ? "បានបន្ថែមទៅក្នុងកន្ត្រកជោគជ័យ!"
-        : "Added to cart successfully!"
-    );
-  }
+  const itemToAdd = {
+    ...product.value,
+    quantity: quantity.value,
+    selectedColor: selectedColor.value,
+    selectedSize: selectedSize.value,
+    image: product.value.images[0] // for cart compatibility
+  };
+  cartStore.addToCart(itemToAdd);
 };
 
 const toggleWishlist = () => {
-  if (verifyLogin(locale.value === "kh" ? "បញ្ចូលទៅបញ្ជីចំណូលចិត្ត" : "add to wishlist")) {
-    wishlistStore.toggleWishlist(product.value.id);
-    if (wishlistStore.isInWishlist(product.value.id)) {
-      showSuccess(locale.value === "kh" ? "បានបន្ថែមទៅចំណូលចិត្ត!" : "Added to Wishlist!");
-    } else {
-      showSuccess(locale.value === "kh" ? "បានដកចេញពីចំណូលចិត្ត!" : "Removed from Wishlist!");
-    }
+  wishlistStore.toggleWishlist(product.value);
+  if (wishlistStore.isInWishlist(product.value.id)) {
+    showSuccess(locale.value === "kh" ? "បានបន្ថែមទៅចំណូលចិត្ត!" : "Added to Wishlist!");
+  } else {
+    showSuccess(locale.value === "kh" ? "បានដកចេញពីចំណូលចិត្ត!" : "Removed from Wishlist!");
   }
 };
 </script>

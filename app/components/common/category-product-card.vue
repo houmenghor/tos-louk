@@ -29,7 +29,7 @@
     </button>
 
     <!-- Quick View Button -->
-    <NuxtLink
+    <NuxtLink :prefetch="false"
       :to="generateProductUrl(product)"
       class="quick-view-btn position-absolute z-2"
       title="View Details"
@@ -38,7 +38,7 @@
     </NuxtLink>
 
     <!-- Product Image -->
-    <NuxtLink
+    <NuxtLink :prefetch="false"
       :to="generateProductUrl(product)"
       class="image-area text-decoration-none d-block"
       :class="layout === 'list' ? 'image-container-list flex-shrink-0' : ''"
@@ -66,7 +66,7 @@
 
       <!-- Title & Description Group -->
       <div class="title-desc-group">
-        <NuxtLink :to="generateProductUrl(product)" class="text-decoration-none">
+        <NuxtLink :prefetch="false" :to="generateProductUrl(product)" class="text-decoration-none">
           <h6 class="product-title" :class="layout === 'list' ? 'list-title fs-6' : ''">{{ product.title }}</h6>
         </NuxtLink>
         <p class="product-desc" :class="layout === 'list' ? 'list-desc' : ''">
@@ -146,40 +146,13 @@ const savings = computed(() => {
   return null;
 });
 
-const verifyLogin = (actionName) => {
-  if (!authStore.access_token) {
-    showError(
-      locale.value === "kh"
-        ? `សូមចូលគណនីជាមុនសិនដើម្បី ${actionName}!`
-        : `Please login first to ${actionName}!`,
-    );
-    navigateTo("/auth/login");
-    return false;
-  }
-  return true;
-};
-
 const toggleWishlist = () => {
-  if (
-    verifyLogin(
-      locale.value === "kh" ? "បន្ថែមទៅបញ្ជីប្រាថ្នា" : "add to wishlist",
-    )
-  ) {
-    wishlistStore.toggleWishlist(props.product);
-  }
+  wishlistStore.toggleWishlist(props.product);
 };
 
 const handleAddToCart = () => {
   if (isSoldOut.value) return;
-  if (verifyLogin(locale.value === "kh" ? "បន្ថែមទៅកន្ត្រក" : "add to cart")) {
-    emit('add-to-cart', props.product);
-    cartStore.addToCart(props.product);
-    showSuccess(
-      locale.value === "kh"
-        ? "បានបន្ថែមទៅក្នុងកន្ត្រកជោគជ័យ!"
-        : "Added to cart successfully!",
-    );
-  }
+  cartStore.addToCart(props.product);
 };
 </script>
 

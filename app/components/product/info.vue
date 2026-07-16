@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex flex-column h-100 p-4 p-md-5 border rounded-4 shadow-sm info-wrapper">
     <div class="d-flex align-items-center justify-content-between mb-3">
-      <NuxtLink to="/categories"
+      <NuxtLink :prefetch="false" to="/categories"
         class="badge rounded-pill border text-primary bg-primary-subtle text-decoration-none px-3 py-2 fw-medium">{{
           product?.category || $t('product.categoryDefault') }}</NuxtLink>
       <span v-if="product?.stock !== undefined && product?.stock !== null" class="fw-semibold small d-flex align-items-center gap-2"

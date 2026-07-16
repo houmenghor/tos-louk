@@ -1,27 +1,36 @@
 <template>
   <section class="category-tabs py-6">
     <div class="container">
-      <div class="tab-header d-flex justify-content-center align-items-center mb-5 gap-3">
-        <button v-for="tab in tabs" :key="tab.id" @click="handleSelectTab(tab.id)" class="tab-pill"
+      <div class="tab-header d-flex justify-content-start justify-content-md-center align-items-center mb-4 mb-md-5 gap-2 gap-md-3 overflow-auto hide-scrollbar py-2">
+        <button v-for="tab in tabs" :key="tab.id" @click="handleSelectTab(tab.id)" class="tab-pill text-nowrap flex-shrink-0"
           :class="{ active: activeTab === tab.id }">
           {{ tab.label }}
         </button>
       </div>
 
       <transition name="fade" mode="out-in">
-        <div :key="activeTab" class="row g-4">
-          <div v-if="currentCategoryData.length === 0 && !loadingCategoryTab" class="col-12 text-center py-5">
-            <i class="bi bi-box fs-1 text-muted mb-3 d-block"></i>
-            <p class="text-muted fw-medium">{{ $t('category.noProducts') }}</p>
-          </div>
-          <div v-else v-for="item in currentCategoryData" :key="item.id" class="col-12 col-md-4 col-lg-3">
-            <CategoryProductCard :product="item" @add-to-cart="handleAddToCart" />
-          </div>
+        <div :key="activeTab" class="row g-3 g-md-4">
+          <template v-if="loadingCategoryTab || (currentCategoryData.length === 0 && products.length === 0)">
+            <div v-for="n in 4" :key="'skeleton-'+n" class="col-12 col-md-4 col-lg-3 px-3 px-md-2">
+              <SkeletonProductCard />
+            </div>
+          </template>
+          <template v-else-if="currentCategoryData.length === 0">
+            <div class="col-12 text-center py-5">
+              <i class="bi bi-box fs-1 text-muted mb-3 d-block"></i>
+              <p class="text-muted fw-medium">{{ $t('category.noProducts') }}</p>
+            </div>
+          </template>
+          <template v-else>
+            <div v-for="item in currentCategoryData" :key="item.id" class="col-12 col-md-4 col-lg-3 px-3 px-md-2">
+              <CategoryProductCard :product="item" @add-to-cart="handleAddToCart" />
+            </div>
+          </template>
         </div>
       </transition>
 
       <div class="text-center mt-5">
-        <NuxtLink to="/categories"
+        <NuxtLink :prefetch="false" to="/categories"
           class="btn btn-primary-custom rounded-pill px-5 py-2 text-decoration-none d-inline-block">
           {{ $t('category.viewAll') }}
         </NuxtLink>
@@ -94,6 +103,7 @@ const currentCategoryData = computed(() => {
     return {
       id: item.id,
       uuid: item.uuid,
+      slug: item.slug,
       title: item.title,
       category: item.category?.name || "SPECIAL DEAL",
       price,
@@ -123,8 +133,22 @@ const handleAddToCart = (product) => {
 }
 
 .tab-header {
-  gap: 2rem;
-  flex-wrap: wrap;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+}
+
+@media (min-width: 768px) {
+  .tab-header {
+    flex-wrap: wrap;
+    gap: 1.25rem !important;
+  }
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 .tab-pill {
@@ -135,6 +159,14 @@ const handleAddToCart = (product) => {
   color: var(--color-text-secondary);
   font-weight: 500;
   transition: all 0.3s;
+  scroll-snap-align: start;
+}
+
+@media (max-width: 576px) {
+  .tab-pill {
+    padding: 6px 18px;
+    font-size: 0.875rem;
+  }
 }
 
 .tab-pill.active {

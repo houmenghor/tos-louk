@@ -65,41 +65,41 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="discount-banner p-4 rounded-4 mb-5">
-    <div class="row align-items-center">
-      <div class="col-lg-6">
+  <div class="discount-banner p-4 p-md-5 rounded-4 mb-5">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-6 text-center text-lg-start">
         <span class="badge bg-warning text-dark mb-2">
           <i class="bi bi-lightning-fill"></i> {{ $t('discount.flashSale', { percent: maxPercent }) }}
         </span>
-        <h3 class="fw-bold text-white">{{ title || $t('discount.defaultTitle') }}</h3>
+        <h3 class="fw-bold text-white mb-2 fs-2">{{ title || $t('discount.defaultTitle') }}</h3>
         <p class="text-white-50 small mb-0">
           {{ $t('discount.description') }}
         </p>
       </div>
       <div class="col-lg-6">
-        <div class="d-flex align-items-center justify-content-lg-end gap-3">
+        <div class="d-flex flex-column flex-sm-row align-items-center justify-content-center justify-content-lg-end gap-3">
           <div class="text-center text-white">
-            <small class="d-block text-white-50">{{ $t('discount.endsIn') }}</small>
+            <small class="d-block text-white-50 mb-2">{{ $t('discount.endsIn') }}</small>
             <div class="d-flex gap-2 mt-1">
               <div class="time-box">
-                {{ formatNumber(days) }}<small class="d-block">{{ $t('discount.days') }}</small>
+                {{ formatNumber(days) }}<small class="d-block mt-1">{{ $t('discount.days') }}</small>
               </div>
               <div class="time-box">
-                {{ formatNumber(hours) }}<small class="d-block">{{ $t('discount.hours') }}</small>
+                {{ formatNumber(hours) }}<small class="d-block mt-1">{{ $t('discount.hours') }}</small>
               </div>
               <div class="time-box">
                 {{ formatNumber(minutes)
-                }}<small class="d-block">{{ $t('discount.minutes') }}</small>
+                }}<small class="d-block mt-1">{{ $t('discount.minutes') }}</small>
               </div>
               <div class="time-box">
                 {{ formatNumber(seconds)
-                }}<small class="d-block">{{ $t('discount.seconds') }}</small>
+                }}<small class="d-block mt-1">{{ $t('discount.seconds') }}</small>
               </div>
             </div>
           </div>
-          <div class="d-flex flex-column gap-2 ms-3">
-            <button class="btn btn-success px-4 text-nowrap">{{ $t('discount.claimOffer') }} &rarr;</button>
-            <button class="btn btn-outline-light px-4 text-nowrap">{{ $t('discount.viewAllItems') }}</button>
+          <div class="d-flex flex-column gap-2 w-100 w-sm-auto mt-3 mt-sm-0">
+            <button class="btn btn-success px-4 py-2 text-nowrap w-100">{{ $t('discount.claimOffer') }} &rarr;</button>
+            <button class="btn btn-outline-light px-4 py-2 text-nowrap w-100">{{ $t('discount.viewAllItems') }}</button>
           </div>
         </div>
       </div>
