@@ -475,8 +475,8 @@
 
         <!-- Product Grid (Right Column on Desktop) -->
         <div class="col-lg-9 col-md-8">
-          <transition-group name="grid" tag="div" class="row g-4">
-            <div v-for="product in paginatedProducts" :key="product.id" :class="viewMode === 'grid' ? 'col-sm-6 col-lg-4' : 'col-12'">
+          <transition-group name="grid" tag="div" class="row g-3 g-md-4">
+            <div v-for="product in paginatedProducts" :key="product.id" :class="viewMode === 'grid' ? 'col-12 col-sm-6 col-lg-4 px-3 px-md-2' : 'col-12 px-3 px-md-2'">
               <CategoryProductCard :product="product" :layout="viewMode" @add-to-cart="handleAddToCart" />
             </div>
 
@@ -885,6 +885,7 @@ const filteredProducts = computed(() => {
         return {
           id: item.id,
           uuid: item.uuid,
+          slug: item.slug,
           title: item.title,
           category: item.category?.slug || item.category?.name?.toLowerCase() || 'electronics',
           brand: item.brand?.toLowerCase() || 'nike',
@@ -971,7 +972,6 @@ const handlePageChange = (page) => {
 
 const handleAddToCart = (product) => {
   cartStore.addToCart(product);
-  showSuccess(`${product.title} added to cart!`);
 };
 
 const { t } = useI18n();

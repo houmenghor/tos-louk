@@ -58,6 +58,7 @@ const productsList = computed(() => {
     return {
       id: item.id,
       uuid: item.uuid,
+      slug: item.slug,
       title: item.title,
       desc: item.description || "Premium quality product.",
       price,
@@ -152,7 +153,7 @@ const {
 /* Scrollable Track */
 .scroll-track {
   display: flex;
-  gap: 1.5rem;
+  gap: 1.25rem;
   overflow-x: auto;
   padding-bottom: 2rem;
   padding-top: 1rem;
@@ -182,26 +183,35 @@ const {
 }
 
 .product-slide {
-  flex: 0 0 calc(85% - 1.5rem);
+  flex: 0 0 80%;
   min-width: 0;
-  scroll-snap-align: start;
+  scroll-snap-align: center;
+}
+
+@media (max-width: 575px) {
+  .scroll-track {
+    padding-left: 10%;
+    padding-right: 10%;
+    gap: 1rem;
+  }
 }
 
 @media (min-width: 576px) {
   .product-slide {
-    flex: 0 0 calc(50% - 1.5rem);
+    flex: 0 0 calc(50% - 1.25rem);
+    scroll-snap-align: start;
   }
 }
 
 @media (min-width: 992px) {
   .product-slide {
-    flex: 0 0 calc(33.333% - 1.5rem);
+    flex: 0 0 calc(33.333% - 1.25rem);
   }
 }
 
 @media (min-width: 1200px) {
   .product-slide {
-    flex: 0 0 calc(25% - 1.5rem);
+    flex: 0 0 calc(25% - 1.25rem);
   }
 }
 

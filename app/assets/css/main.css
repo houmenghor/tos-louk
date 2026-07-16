@@ -28,6 +28,24 @@ html {
 }
 
 /* ========================================
+   GLOBAL PLACEHOLDER STYLES
+======================================== */
+::placeholder {
+  color: var(--color-text-secondary) !important;
+  opacity: 0.7 !important;
+}
+
+::-webkit-input-placeholder {
+  color: var(--color-text-secondary) !important;
+  opacity: 0.7 !important;
+}
+
+:-ms-input-placeholder {
+  color: var(--color-text-secondary) !important;
+  opacity: 0.7 !important;
+}
+
+/* ========================================
    LIGHT MODE
 ======================================== */
 :root {

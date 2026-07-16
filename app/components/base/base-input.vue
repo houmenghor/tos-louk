@@ -1,17 +1,36 @@
 <template>
-  <div class="mb-3">
-    <label v-if="label" :for="id" class="form-label">{{ label }} *</label>
-    <input
-      autocomplete="off"
-      :id="id"
-      :type="type"
-      :value="modelValue"
-      :placeholder="placeholder"
-      :class="['form-control', { 'is-invalid': error }]"
-      :disabled="disabled"
-      @input="$emit('update:modelValue', $event.target.value)"
-      @blur="$emit('blur')"
-    />
+  <div class="mb-3 position-relative">
+    <label v-if="label" :for="id" class="form-label text-xs fw-semibold text-uppercase tracking-wider mb-1.5">
+      {{ label }} <span v-if="required" class="text-danger">*</span>
+    </label>
+    <div class="position-relative input-wrapper">
+      <span v-if="leftIcon" :class="['position-absolute d-flex justify-content-center input-icon', type === 'textarea' ? 'align-items-start' : 'align-items-center']" :style="{ left: 0, top: 0, bottom: 0, minWidth: '44px', fontSize: '1.05rem', paddingTop: type === 'textarea' ? '0.65rem' : '0' }">
+        <i :class="leftIcon"></i>
+      </span>
+      <textarea
+        v-if="type === 'textarea'"
+        :id="id"
+        :value="modelValue"
+        :placeholder="placeholder"
+        :class="['form-control custom-base-input', { 'is-invalid': error }, { 'has-left-icon': leftIcon }]"
+        :disabled="disabled"
+        :rows="rows || 3"
+        @input="$emit('update:modelValue', $event.target.value)"
+        @blur="$emit('blur')"
+      ></textarea>
+      <input
+        v-else
+        autocomplete="off"
+        :id="id"
+        :type="type"
+        :value="modelValue"
+        :placeholder="placeholder"
+        :class="['form-control custom-base-input', { 'is-invalid': error }, { 'has-left-icon': leftIcon }]"
+        :disabled="disabled"
+        @input="$emit('update:modelValue', $event.target.value)"
+        @blur="$emit('blur')"
+      />
+    </div>
     <div v-if="error" class="invalid-feedback">{{ error }}</div>
   </div>
 </template>
@@ -25,6 +44,9 @@ defineProps({
   type: { type: String, default: "text" },
   error: String,
   disabled: { type: Boolean, default: false },
+  required: { type: Boolean, default: false },
+  leftIcon: { type: String, default: "" },
+  rows: { type: [Number, String], default: 3 }
 });
 
 defineEmits(["update:modelValue", "blur"]);
@@ -34,57 +56,74 @@ defineEmits(["update:modelValue", "blur"]);
 .form-label {
   font-size: 12px;
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--color-text-secondary);
   margin-bottom: 6px;
   display: inline-block;
 }
 
-.form-control {
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 12px;
-  background-color: var(--color-surface);
-  color: var(--color-text);
+.input-wrapper {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
   border: 1px solid var(--color-border);
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  border-radius: 10px;
+  background-color: var(--color-bg-secondary);
+  transition: all 0.2s ease;
+  overflow: hidden;
 }
 
-.form-control::placeholder {
-  color: var(--color-text-secondary);
-  opacity: 0.7;
-}
-
-.form-control:focus {
-  outline: none;
+.input-wrapper:focus-within {
   background-color: var(--color-surface);
-  color: var(--color-text);
-  border-color: var(--color-primary);
+  border-color: var(--color-primary) !important;
   box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
-.form-control:disabled {
-  background-color: var(--color-bg-secondary);
-  opacity: 0.6;
-  cursor: not-allowed;
+.input-icon {
+  color: var(--color-text-secondary);
+  opacity: 0.7;
+  transition: all 0.2s ease;
 }
 
-/* Invalid / Error States */
-.form-control.is-invalid {
-  border-color: var(--color-danger);
-  background-image: none;
-  padding-right: 12px;
+.input-wrapper:focus-within .input-icon {
+  color: var(--color-primary);
+  opacity: 1;
 }
 
-.form-control.is-invalid:focus {
+.custom-base-input {
+  background-color: transparent !important;
+  border: none !important;
+  color: var(--color-text);
+  font-size: 0.88rem;
+  padding: 0.65rem 0.9rem;
+  box-shadow: none !important;
+  width: 100%;
+}
+
+.custom-base-input:focus {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.custom-base-input.has-left-icon {
+  padding-left: 44px;
+}
+
+.input-wrapper:has(.is-invalid) {
+  border-color: var(--color-danger) !important;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
 }
 
-.invalid-feedback {
-  font-size: 12px;
+.input-wrapper:has(.is-invalid) .input-icon {
   color: var(--color-danger);
-  margin-top: 4px;
+}
+
+.invalid-feedback {
+  font-size: 0.73rem;
+  font-weight: 500;
+  margin-top: 0.25rem;
+  color: var(--color-danger);
+  display: block;
 }
 
 /* Autofill Fixes matching system dark/light variables */

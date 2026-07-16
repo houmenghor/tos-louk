@@ -4,10 +4,17 @@
       <DiscountBanner :target-date="activeDiscountEndDate" :max-percent="activeMaxPercent"
         :title="activeCampaignTitle" />
 
-      <div class="row g-4">
-        <div v-for="item in discountProducts" :key="item.id" class="col-lg-3 col-md-4">
-          <DiscountCardProduct :product="item" @add-to-cart="handleAddToCart" />
-        </div>
+      <div class="row g-3 g-md-4">
+        <template v-if="products.length === 0">
+          <div v-for="n in 4" :key="'skeleton-'+n" class="col-12 col-md-4 col-lg-3 px-3 px-md-2">
+            <SkeletonProductCard />
+          </div>
+        </template>
+        <template v-else>
+          <div v-for="item in discountProducts" :key="item.id" class="col-12 col-md-4 col-lg-3 px-3 px-md-2">
+            <DiscountCardProduct :product="item" @add-to-cart="handleAddToCart" />
+          </div>
+        </template>
       </div>
     </div>
   </section>
@@ -37,6 +44,7 @@ const discountProducts = computed(() => {
     return {
       id: item.id,
       uuid: item.uuid,
+      slug: item.slug,
       title: item.title,
       category: item.category?.name || "SPECIAL DEAL",
       price,

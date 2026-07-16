@@ -44,7 +44,7 @@
 
             <!-- Best Seller -->
             <div class="col-md-5">
-              <NuxtLink :to="generateProductUrl(heroBestSeller)"
+              <NuxtLink :prefetch="false" :to="generateProductUrl(heroBestSeller)"
                 class="card glass-card h-100 border-0 shadow-sm p-3 position-relative text-decoration-none text-main">
                 <span class="badge custom-badge position-absolute top-0 start-0 m-3">{{ $t('hero.bestSeller') }}</span>
                 <NuxtImg :src="heroBestSeller.thumbnail || heroBestSeller.image"
@@ -65,7 +65,7 @@
 
             <!-- Trending -->
             <div class="col-md-7">
-              <NuxtLink :to="generateProductUrl(heroTrending)"
+              <NuxtLink :prefetch="false" :to="generateProductUrl(heroTrending)"
                 class="card glass-card h-100 border-0 shadow-sm p-3 position-relative text-decoration-none text-main">
                 <span class="badge custom-badge position-absolute top-0 start-0 m-3">{{ $t('hero.trendingNow') }}</span>
                 <NuxtImg :src="heroTrending.thumbnail || heroTrending.image"
@@ -84,7 +84,7 @@
 
             <!-- Just Launched -->
             <div class="col-12">
-              <NuxtLink :to="generateProductUrl(heroJustLaunched)"
+              <NuxtLink :prefetch="false" :to="generateProductUrl(heroJustLaunched)"
                 class="card glass-card border-0 shadow-sm p-3 position-relative text-decoration-none text-main">
                 <span class="badge custom-badge position-absolute top-0 start-0 m-3 z-1">{{ $t('hero.justLaunched') }}</span>
                 <div class="row g-0 align-items-center mt-4">
@@ -137,6 +137,7 @@ const heroBestSeller = computed(() => {
   return {
     id: item.id || 1,
     uuid: item.uuid || '',
+    slug: item.slug || '',
     title: item.title || t('hero.fallbackTitle1'),
     price: price || 0,
     oldPrice,
@@ -153,6 +154,7 @@ const heroTrending = computed(() => {
   return {
     id: item.id || 2,
     uuid: item.uuid || '',
+    slug: item.slug || '',
     title: item.title || t('hero.fallbackTitle2'),
     price: price || 0,
     oldPrice,
@@ -169,6 +171,7 @@ const heroJustLaunched = computed(() => {
   return {
     id: item.id || 3,
     uuid: item.uuid || '',
+    slug: item.slug || '',
     title: item.title || t('hero.fallbackTitle3'),
     desc: item.description || t('hero.fallbackDesc'),
     price: price || 0,

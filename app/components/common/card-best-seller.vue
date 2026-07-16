@@ -31,7 +31,7 @@
     </button>
 
     <!-- Quick View Button -->
-    <NuxtLink
+    <NuxtLink :prefetch="false"
       :to="generateProductUrl(product)"
       class="quick-view-btn position-absolute z-2"
       title="View Details"
@@ -40,7 +40,7 @@
     </NuxtLink>
 
     <!-- Product Image -->
-    <NuxtLink
+    <NuxtLink :prefetch="false"
       :to="generateProductUrl(product)"
       class="image-area text-decoration-none d-block"
     >
@@ -67,7 +67,7 @@
 
       <!-- Title & Description Group -->
       <div class="title-desc-group">
-        <NuxtLink :to="generateProductUrl(product)" class="text-decoration-none">
+        <NuxtLink :prefetch="false" :to="generateProductUrl(product)" class="text-decoration-none">
           <h6 class="product-title">{{ product.title }}</h6>
         </NuxtLink>
         <p class="product-desc">{{ product.description || product.desc || 'Experience premium quality with modern design and exceptional performance.' }}</p>
@@ -142,52 +142,26 @@ const savings = computed(() => {
   return null;
 });
 
-const verifyLogin = (actionName) => {
-  if (!authStore.access_token) {
-    showError(
-      locale.value === "kh"
-        ? `សូមចូលគណនីជាមុនសិនដើម្បី ${actionName}!`
-        : `Please login first to ${actionName}!`,
-    );
-    navigateTo("/auth/login");
-    return false;
-  }
-  return true;
-};
-
 const handleAddToCart = () => {
   if (isSoldOut.value) return;
-  if (verifyLogin(locale.value === "kh" ? "បន្ថែមទៅកន្ត្រក" : "add to cart")) {
-    cartStore.addToCart(props.product);
-    showSuccess(
-      locale.value === "kh"
-        ? "បានបន្ថែមទៅក្នុងកន្ត្រកជោគជ័យ!"
-        : "Added to cart successfully!",
-    );
-  }
+  cartStore.addToCart(props.product);
 };
 
 const handleToggleWishlist = () => {
-  if (
-    verifyLogin(
-      locale.value === "kh" ? "បន្ថែមទៅបញ្ជីប្រាថ្នា" : "add to wishlist",
-    )
-  ) {
-    wishlistStore.toggleWishlist(props.product);
-    const isNowAdded = wishlistStore.isInWishlist(props.product.id);
-    if (isNowAdded) {
-      showSuccess(
-        locale.value === "kh"
-          ? "បានបន្ថែមទៅក្នុងបញ្ជីប្រាថ្នា!"
-          : "Added to wishlist!",
-      );
-    } else {
-      showSuccess(
-        locale.value === "kh"
-          ? "បានលុបចេញពីបញ្ជីប្រាថ្នា!"
-          : "Removed from wishlist!",
-      );
-    }
+  wishlistStore.toggleWishlist(props.product);
+  const isNowAdded = wishlistStore.isInWishlist(props.product.id);
+  if (isNowAdded) {
+    showSuccess(
+      locale.value === "kh"
+        ? "បានបន្ថែមទៅក្នុងបញ្ជីប្រាថ្នា!"
+        : "Added to wishlist!",
+    );
+  } else {
+    showSuccess(
+      locale.value === "kh"
+        ? "បានលុបចេញពីបញ្ជីប្រាថ្នា!"
+        : "Removed from wishlist!",
+    );
   }
 };
 </script>

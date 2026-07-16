@@ -3,7 +3,7 @@ export const useAuthStore = defineStore("auth", () => {
   const access_token = useCookie("at", {
     path: "/",
     sameSite: "lax",
-    maxAge: 60 * 60,
+    maxAge: 60 * 60, // 1 hour for standard password login
   });
   const refresh_token = useCookie("rft", {
     path: "/",
@@ -65,6 +65,14 @@ export const useAuthStore = defineStore("auth", () => {
 
     await fetchProfile(true);
 
+    // Sync cart and wishlist with DB on login
+    const cartStore = useCartStore();
+    const wishlistStore = useWishlistStore();
+    await Promise.all([
+      cartStore.syncCartWithDb(),
+      wishlistStore.syncWishlistWithDb(),
+    ]);
+
     return response;
   };
 
@@ -99,6 +107,9 @@ export const useAuthStore = defineStore("auth", () => {
     access_token.value = null;
     refresh_token.value = null;
     userProfile.value = null;
+
+    useCartStore().clearCart();
+    useWishlistStore().clearWishlist();
 
     await navigateTo("/auth/login");
   };

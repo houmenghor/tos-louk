@@ -100,7 +100,6 @@ if (process.client) {
 
 const handleAddToCart = (product) => {
   cartStore.addToCart(product);
-  showSuccess(`${product.title} added to cart!`);
 };
 </script>
 

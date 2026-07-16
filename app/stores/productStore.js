@@ -37,6 +37,7 @@ export const useProductStore = defineStore('product', () => {
     }
 
     const getProductByUuid = async (uuid) => {
+        console.log("getProductByUuid called with:", uuid);
         const response = await $fetch(`/api/products/${uuid}`);
         if (response?.data) {
             currentProduct.value = response.data;
