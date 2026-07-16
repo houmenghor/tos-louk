@@ -20,6 +20,7 @@
       class="wishlist-btn position-absolute z-2"
       :class="{ wishlisted: isWishlisted }"
       @click.stop="toggleWishlist"
+      :aria-label="`Add ${product.title} to wishlist`"
       :title="isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'"
     >
       <i
@@ -32,6 +33,7 @@
     <NuxtLink :prefetch="false"
       :to="generateProductUrl(product)"
       class="quick-view-btn position-absolute z-2"
+      :aria-label="`Quick view ${product.title}`"
       title="View Details"
     >
       <i class="bi bi-eye"></i>
@@ -42,12 +44,19 @@
       :to="generateProductUrl(product)"
       class="image-area text-decoration-none d-block"
       :class="layout === 'list' ? 'image-container-list flex-shrink-0' : ''"
+      :aria-label="`View image of ${product.title}`"
     >
       <NuxtImg
         :src="product.thumbnail || product.images?.[0]?.image_url || product.image || 'https://placehold.co/400x400/png?text=Product'"
         :alt="product.title"
         class="product-img"
         :class="{ 'img-zoomed': hovered }"
+        loading="lazy"
+        decoding="async"
+        width="300"
+        height="300"
+        format="webp"
+        quality="80"
       />
       <!-- Hover overlay CTA (Grid mode only) -->
       <div v-if="layout !== 'list'" class="img-overlay" :class="{ 'overlay-visible': hovered && !isSoldOut }">
@@ -67,7 +76,7 @@
       <!-- Title & Description Group -->
       <div class="title-desc-group">
         <NuxtLink :prefetch="false" :to="generateProductUrl(product)" class="text-decoration-none">
-          <h6 class="product-title" :class="layout === 'list' ? 'list-title fs-6' : ''">{{ product.title }}</h6>
+          <h3 class="product-title fs-6" :class="layout === 'list' ? 'list-title' : ''">{{ product.title }}</h3>
         </NuxtLink>
         <p class="product-desc" :class="layout === 'list' ? 'list-desc' : ''">
           {{ product.description || product.desc || 'Discover our latest premium collection featuring high-quality materials and modern design.' }}
@@ -201,8 +210,8 @@ const handleAddToCart = () => {
 .wishlist-btn {
   top: 14px;
   right: 14px;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 1.5px solid var(--color-border);
   background: var(--color-bg);
@@ -227,10 +236,10 @@ const handleAddToCart = () => {
 
 /* ── Quick View Button ── */
 .quick-view-btn {
-  top: 56px;
+  top: 64px;
   right: 14px;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 1.5px solid var(--color-border);
   background: var(--color-bg);

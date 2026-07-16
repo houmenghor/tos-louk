@@ -592,8 +592,10 @@ onUnmounted(() => {
 .glass-icon-btn {
   color: var(--color-text-secondary) !important;
   border-radius: 50%;
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;

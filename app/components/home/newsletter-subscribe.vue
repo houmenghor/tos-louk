@@ -34,9 +34,9 @@
                 <i
                   class="bi bi-patch-check-fill text-primary fs-1 d-block mb-2"
                 ></i>
-                <h5 class="fw-bold mb-1 success-title">
+                <h3 class="fw-bold mb-1 success-title fs-5">
                   {{ $t('newsletter.success') }}
-                </h5>
+                </h3>
                 <p class="text-muted-custom small mb-0">
                   Welcome to our exclusive inner circle.
                 </p>

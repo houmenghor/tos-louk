@@ -21,7 +21,7 @@
                 :alt="product.title" draggable="false" />
             </div>
             <div class="card-body p-0 mt-auto d-flex flex-column justify-content-end">
-              <h6 class="card-title fw-semibold mb-1 text-truncate">{{ product.title }}</h6>
+              <h3 class="card-title fw-semibold mb-1 text-truncate fs-6">{{ product.title }}</h3>
               <p class="subtitle-text small mb-2 lh-sm text-truncate-2">{{ product.desc }}</p>
               <p class="price-text fw-bold mb-0">
                 ${{ product.price }}

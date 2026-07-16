@@ -6,10 +6,14 @@ import { useSettingStore } from "./settingStore";
 export const useCartStore = defineStore("cart", () => {
   const items = ref([]);
   const isOpen = ref(false);
+  const isInitialized = ref(false);
 
   // Initialize cart from localStorage (SSR-safe)
   const initCart = () => {
     if (process.client) {
+      if (isInitialized.value) return;
+      isInitialized.value = true;
+
       const saved = localStorage.getItem("tos_louk_cart");
       if (saved) {
         try {
@@ -224,6 +228,7 @@ export const useCartStore = defineStore("cart", () => {
 
   const clearCart = () => {
     items.value = [];
+    isInitialized.value = false;
     saveCart();
   };
 

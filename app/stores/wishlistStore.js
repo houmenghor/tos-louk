@@ -4,10 +4,14 @@ import { useAuthStore } from "./authStore";
 
 export const useWishlistStore = defineStore("wishlist", () => {
   const items = ref([]);
+  const isInitialized = ref(false);
 
   // Initialize wishlist from localStorage (SSR-safe)
   const initWishlist = () => {
     if (process.client) {
+      if (isInitialized.value) return;
+      isInitialized.value = true;
+
       const saved = localStorage.getItem("tos_louk_wishlist");
       if (saved) {
         try {
@@ -19,7 +23,8 @@ export const useWishlistStore = defineStore("wishlist", () => {
 
       const authStore = useAuthStore();
       if (authStore.access_token) {
-        if (items.value.length > 0) {
+        const guestItems = items.value.filter((item) => !item.uuid);
+        if (guestItems.length > 0) {
           syncWishlistWithDb();
         } else {
           fetchUserWishlist();
@@ -77,12 +82,13 @@ export const useWishlistStore = defineStore("wishlist", () => {
 
     syncPromise = (async () => {
       try {
-        if (items.value.length === 0) {
+        const guestItems = items.value.filter((item) => !item.uuid);
+        if (guestItems.length === 0) {
           await fetchUserWishlist();
           return;
         }
 
-        const productIds = items.value.map(item => item.id);
+        const productIds = guestItems.map(item => item.id);
         await $fetch("/api/wishlists/sync", {
           method: "POST",
           body: { product_ids: productIds }
@@ -154,6 +160,7 @@ export const useWishlistStore = defineStore("wishlist", () => {
 
   const clearWishlist = () => {
     items.value = [];
+    isInitialized.value = false;
     saveWishlist();
   };
 
