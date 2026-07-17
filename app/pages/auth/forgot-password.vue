@@ -5,7 +5,7 @@
     <div class="row w-100 align-items-center">
       <!-- Glassmorphic Form Column (Left aligned for visual consistency) -->
       <div class="col-12 col-md-6">
-        <div class="glass-card mx-auto">
+        <div class="glass-card mx-auto p-3 p-md-5">
           <form @submit.prevent="handleForgotPassword" autocomplete="off">
             <h2 class="form-title">Forgot Password?</h2>
             <p class="form-subtitle">
@@ -65,7 +65,7 @@ import banner from "/images/auth/forgotPass.png";
 import { useAppToast } from "~/composables/ui/useAppToast";
 import { useField, useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
-import { forgotPasswordSchema } from "~/composables/forms/auth";
+import { getForgotPasswordSchema } from "~/composables/forms/auth";
 import { getApiError } from "~/utils/apiError";
 
 definePageMeta({
@@ -77,8 +77,10 @@ const authStore = useAuthStore();
 const errorMessage = ref("");
 const purpose = "reset_password";
 
+const { t } = useI18n();
+
 const { handleSubmit, isSubmitting } = useForm({
-  validationSchema: toTypedSchema(forgotPasswordSchema),
+  validationSchema: toTypedSchema(getForgotPasswordSchema(t)),
   initialValues: {
     email: "",
   },
@@ -112,7 +114,6 @@ const handleForgotPassword = handleSubmit(async (value) => {
 /* Glassmorphic Container Card */
 .glass-card {
   max-width: 460px;
-  padding: 2.5rem;
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);

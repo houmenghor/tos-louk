@@ -40,9 +40,9 @@
           >
             <span
               v-if="cartStore.isFreeShipping"
-              class="fw-semibold text-success d-flex align-items-center gap-1.5 animate-pulse"
+              class="fw-semibold text-success animate-pulse"
             >
-              <i class="bi bi-truck fs-5"></i> {{ $t('cart.qualifyFreeShipping') }}
+              {{ $t('cart.qualifyFreeShipping') }}
             </span>
             <span v-else class="fw-medium text-muted-custom">
               {{ $t('cart.spendMoreFor', { amount: '$' + cartStore.amountToFreeShipping.toFixed(2) }) }}

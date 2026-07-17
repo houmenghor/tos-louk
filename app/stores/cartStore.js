@@ -8,6 +8,10 @@ export const useCartStore = defineStore("cart", () => {
   const isOpen = ref(false);
   const isInitialized = ref(false);
 
+  // Initialize composables exactly once per store instance
+  const { showSuccess } = useAppToast();
+  const { locale } = useI18n();
+
   // Initialize cart from localStorage (SSR-safe)
   const initCart = () => {
     if (process.client) {
@@ -178,8 +182,6 @@ export const useCartStore = defineStore("cart", () => {
     isOpen.value = true;
 
     if (showToast && import.meta.client) {
-      const { showSuccess } = useAppToast();
-      const { locale } = useI18n();
       const msg =
         locale?.value === "kh"
           ? "បានបន្ថែមទៅក្នុងកន្ត្រកជោគជ័យ!"

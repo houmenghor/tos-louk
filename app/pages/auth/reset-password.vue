@@ -2,7 +2,7 @@
   <div
     class="container min-vh-100 d-flex align-items-center justify-content-center py-5"
   >
-    <div class="glass-card mx-auto text-center">
+    <div class="glass-card mx-auto text-center p-3 p-md-5">
       <form @submit.prevent="handleResetPassword" autocomplete="off">
         <div class="illustration-container mb-3">
           <i class="bi bi-mailbox2 text-primary-brand display-2"></i>
@@ -52,7 +52,7 @@
 import { toTypedSchema } from "@vee-validate/zod";
 import { useField, useForm } from "vee-validate";
 import { ref } from "vue";
-import { resetPasswordSchema } from "~/composables/forms/auth";
+import { getResetPasswordSchema } from "~/composables/forms/auth";
 import { useAppToast } from "~/composables/ui/useAppToast";
 import { getApiError } from "~/utils/apiError";
 
@@ -64,8 +64,10 @@ const authStore = useAuthStore();
 const { showSuccess } = useAppToast();
 const errorMessage = ref("");
 
+const { t } = useI18n();
+
 const { handleSubmit, isSubmitting } = useForm({
-  validationSchema: toTypedSchema(resetPasswordSchema()),
+  validationSchema: toTypedSchema(getResetPasswordSchema(t)),
   initialValues: {
     new_password: "",
     confirm_password: "",
@@ -103,7 +105,6 @@ const handleResetPassword = handleSubmit(async (values) => {
 .glass-card {
   max-width: 440px;
   width: 100%;
-  padding: 3rem 2.5rem;
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
