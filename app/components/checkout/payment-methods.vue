@@ -1,11 +1,11 @@
 <template>
   <div class="checkout-card p-4 p-md-5 rounded-4 border">
-    <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom border-custom">
+    <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom border-custom flex-wrap gap-2">
       <h4 class="fw-bold text-main mb-0 d-flex align-items-center gap-3">
-        <span class="step-badge rounded-circle d-flex align-items-center justify-content-center fw-bold text-white shadow-sm">2</span>
+        <span class="step-badge flex-shrink-0 rounded-circle d-flex align-items-center justify-content-center fw-bold text-white shadow-sm">2</span>
         {{ $t('checkout.paymentMethod') }}
       </h4>
-      <span class="badge bg-success-light text-success border border-success border-opacity-25 rounded-pill text-xs px-3 py-1 fw-semibold">
+      <span class="badge bg-success-light text-success border border-success border-opacity-25 rounded-pill text-xs px-3 py-1 fw-semibold text-nowrap">
         <i class="bi bi-shield-check me-1"></i> Instant Verification
       </span>
     </div>
