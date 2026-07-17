@@ -36,7 +36,7 @@ onMounted(async () => {
   const errorQuery = route.query.error || route.query.message;
 
   if (errorQuery) {
-    showError("Google Auth Error", decodeURIComponent(errorQuery));
+    showError("Google Auth Error: " + decodeURIComponent(errorQuery));
     await navigateTo("/auth/login");
     return;
   }
@@ -59,14 +59,14 @@ onMounted(async () => {
         wishlistStore.syncWishlistWithDb(),
       ]);
 
-      showSuccess("Welcome back!", "Google login successful.");
+      showSuccess("Google login successful. Welcome back!");
       await navigateTo("/", { replace: true });
     } catch (error) {
-      showError("Login failed", getApiError(error, "Could not fetch profile."));
+      showError("Login failed: " + getApiError(error, "Could not fetch profile."));
       await navigateTo("/auth/login");
     }
   } else {
-    showError("Google Auth Error", "No token received.");
+    showError("Google Auth Error: No token received.");
     await navigateTo("/auth/login");
   }
 });

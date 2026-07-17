@@ -81,9 +81,8 @@
     </div>
     <div
       v-else
-      class="alert rounded-4 p-3 mb-4 border border-success bg-success bg-opacity-10 text-xs d-flex align-items-center gap-2.5 text-success fw-bold shadow-sm"
+      class="alert rounded-4 p-3 mb-4 border border-success bg-success bg-opacity-10 text-xs d-flex align-items-center justify-content-center gap-2 text-success fw-bold shadow-sm text-center"
     >
-      <i class="bi bi-check-circle-fill text-success fs-5 flex-shrink-0"></i>
       <span>{{ $t('cart.qualifyFreeShipping') }}</span>
     </div>
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full font-sans user-select-none glass-wrapper">
+  <div class="w-100 font-sans user-select-none glass-wrapper">
     <!-- Top Bar Segment -->
     <div class="glass-top-bar py-2 px-3 sm:px-4">
       <div
@@ -365,9 +365,9 @@
             aria-label="Toggle Theme"
           >
             <ClientOnly>
-              <i :class="isDark ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-stars-fill text-primary-custom'" class="fs-4"></i>
+              <i :class="isDark ? 'bi bi-sun-fill text-main' : 'bi bi-moon-stars-fill text-main'" class="fs-4"></i>
               <template #fallback>
-                <i class="bi bi-moon-stars-fill text-primary-custom fs-4"></i>
+                <i class="bi bi-moon-stars-fill text-main fs-4"></i>
               </template>
             </ClientOnly>
           </button>

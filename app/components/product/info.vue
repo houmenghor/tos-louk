@@ -1,21 +1,23 @@
 <template>
   <div class="d-flex flex-column h-100 p-4 p-md-5 border rounded-4 shadow-sm info-wrapper">
-    <div class="d-flex align-items-center justify-content-between mb-3">
+    <div class="d-flex align-items-center justify-content-between mb-3 gap-2">
       <NuxtLink :prefetch="false" to="/categories"
-        class="badge rounded-pill border text-primary bg-primary-subtle text-decoration-none px-3 py-2 fw-medium">{{
+        class="badge rounded-pill border text-primary bg-primary-subtle text-decoration-none px-3 py-2 fw-medium text-truncate" style="max-width: 70%;">{{
           product?.category || $t('product.categoryDefault') }}</NuxtLink>
-      <span v-if="product?.stock !== undefined && product?.stock !== null" class="fw-semibold small d-flex align-items-center gap-2"
-        :class="`text-${stockStatus.color}`">
-        <span class="rounded-circle flex-shrink-0" style="width: 8px; height: 8px;" :class="`bg-${stockStatus.color}`"></span>
+      <span v-if="product?.stock !== undefined && product?.stock !== null"
+        class="fw-semibold small d-flex align-items-center gap-2 text-nowrap flex-shrink-0" :class="`text-${stockStatus.color}`">
+        <span class="rounded-circle flex-shrink-0" style="width: 8px; height: 8px;"
+          :class="`bg-${stockStatus.color}`"></span>
         <span>{{ stockStatus.text }}</span>
       </span>
     </div>
 
     <h2 class="display-6 fw-bold text-main mb-4" style="line-height: 1.2;">{{ product?.title }}</h2>
 
-    <div class="rounded-3 p-3 mb-4 d-flex align-items-center gap-3 price-box">
+    <div class="rounded-3 p-3 mb-4 d-flex flex-wrap align-items-center gap-2 gap-sm-3 price-box">
       <h2 class="text-main mb-0 fw-bold">${{ product?.price }}</h2>
-      <h5 v-if="product?.oldPrice" class="text-muted-custom mb-0 text-decoration-line-through">${{ product.oldPrice }}</h5>
+      <h5 v-if="product?.oldPrice" class="text-muted-custom mb-0 text-decoration-line-through">${{ product.oldPrice }}
+      </h5>
       <span v-if="product?.oldPrice" class="badge bg-success-subtle text-success rounded-pill px-3 py-2 fw-medium">
         {{ $t('product.save', { amount: (product.oldPrice - product.price).toFixed(2) }) }}
       </span>
@@ -51,9 +53,10 @@
 
     <!-- Action Area -->
     <div class="mt-4">
-      <div class="d-flex gap-3 mb-3">
+      <div class="d-flex flex-wrap gap-2 gap-sm-3 mb-3 action-buttons-container">
         <!-- Quantity Selector -->
-        <div class="quantity-selector d-flex align-items-center border rounded-3 px-2 bg-input-wrapper" style="height: 48px;">
+        <div class="quantity-selector-btn d-flex align-items-center border rounded-3 px-2 bg-input-wrapper"
+          style="height: 48px;">
           <button class="btn btn-link text-main p-0 border-0" style="width: 24px;"
             @click="quantity > 1 ? $emit('update:quantity', quantity - 1) : null">
             <i class="bi bi-dash"></i>
@@ -70,20 +73,22 @@
 
         <!-- Add to Cart -->
         <button
-          class="btn btn-primary-custom flex-grow-1 rounded-3 fw-medium d-flex align-items-center justify-content-center gap-2 shadow-none"
+          class="add-to-cart-btn btn btn-primary-custom flex-grow-1 text-nowrap rounded-3 fw-medium d-flex align-items-center justify-content-center gap-2 shadow-none"
           :disabled="isSoldOut" @click="!isSoldOut && $emit('add-to-cart')" style="height: 48px;">
           <i class="bi bi-bag" v-if="!isSoldOut"></i> {{ isSoldOut ? $t('product.soldOut') : $t('product.addToCart') }}
         </button>
 
         <!-- Wishlist Button -->
         <button
-          class="btn border rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 text-muted-custom"
-          style="width: 48px; height: 48px; background: transparent;" @click="$emit('toggle-wishlist')" title="Wishlist">
+          class="wishlist-btn btn border rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 text-muted-custom"
+          style="width: 48px; height: 48px; background: transparent;" @click="$emit('toggle-wishlist')"
+          title="Wishlist">
           <i class="bi" :class="wishlistStore.isInWishlist(product?.id) ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
         </button>
 
         <!-- Share Button -->
-        <button class="btn border rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 text-muted-custom"
+        <button
+          class="share-btn btn border rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 text-muted-custom"
           style="width: 48px; height: 48px; background: transparent;" @click="copyLink" title="Copy Link">
           <i class="bi bi-share"></i>
         </button>
@@ -92,7 +97,9 @@
       <!-- Extra info Grid -->
       <div class="border rounded-3">
         <div class="p-3 py-3 d-flex align-items-center justify-content-center gap-2 fw-medium text-main text-center">
-          <i class="bi bi-truck text-primary fs-5"></i> {{ $t('product.freeShippingOver', { amount: freeShippingThreshold }) }}
+          <i class="bi bi-truck text-primary fs-5"></i> {{ $t('product.freeShippingOver', {
+            amount:
+          freeShippingThreshold }) }}
         </div>
       </div>
     </div>
@@ -143,7 +150,7 @@ const stockStatus = computed(() => {
   const warning = props.product.stockWarning !== undefined && props.product.stockWarning !== null
     ? Number(props.product.stockWarning)
     : (props.product.stock_warning !== undefined && props.product.stock_warning !== null ? Number(props.product.stock_warning) : 10);
-  
+
   if (stock <= 0) {
     return { text: 'Sold Out', color: 'danger' };
   } else if (stock <= warning) {
@@ -247,5 +254,22 @@ input[type="number"]::-webkit-outer-spin-button {
 .btn-primary-custom:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 20px color-mix(in srgb, var(--color-primary) 30%, transparent) !important;
+}
+
+@media (max-width: 767.98px) {
+  .add-to-cart-btn {
+    order: 4 !important;
+    flex-basis: 100% !important;
+    width: 100% !important;
+  }
+  .quantity-selector-btn {
+    order: 1 !important;
+  }
+  .wishlist-btn {
+    order: 2 !important;
+  }
+  .share-btn {
+    order: 3 !important;
+  }
 }
 </style>

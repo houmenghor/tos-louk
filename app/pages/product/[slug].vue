@@ -1,8 +1,10 @@
 <template>
-  <div class="product-detail-page position-relative overflow-hidden pb-5">
+  <div class="product-detail-page position-relative pb-5">
     <!-- Animated Background Blobs -->
-    <div class="bg-blob blob-1"></div>
-    <div class="bg-blob blob-2"></div>
+    <div class="blobs-wrapper">
+      <div class="bg-blob blob-1"></div>
+      <div class="bg-blob blob-2"></div>
+    </div>
 
     <!-- Top Padding for Fixed Header -->
     <div class="pt-4"></div>
@@ -282,6 +284,17 @@ const toggleWishlist = () => {
 }
 
 /* Background Blobs */
+.blobs-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
 .bg-blob {
   position: absolute;
   border-radius: 50%;

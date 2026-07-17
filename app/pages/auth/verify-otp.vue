@@ -2,7 +2,7 @@
   <div
     class="container min-vh-100 d-flex align-items-center justify-content-center py-5"
   >
-    <div class="glass-card mx-auto text-center">
+    <div class="glass-card mx-auto text-center p-3 p-md-5">
       <form @submit.prevent="handleVerifyOTP" autocomplete="off">
         <!-- Premium Glass Icon Badge -->
         <div class="icon-badge-wrapper mb-4 mx-auto">
@@ -74,7 +74,7 @@
 import { toTypedSchema } from "@vee-validate/zod";
 import { useField, useForm } from "vee-validate";
 import { onMounted, onBeforeUnmount } from "vue";
-import { verifyOtpSchema } from "~/composables/forms/auth";
+import { getVerifyOtpSchema } from "~/composables/forms/auth";
 import { useAppToast } from "~/composables/ui/useAppToast";
 import { useOtpInput } from "~/composables/ui/useOtpInput";
 import { getApiError } from "~/utils/apiError";
@@ -106,8 +106,10 @@ if (!email.value) {
   navigateTo("/auth/register");
 }
 
+const { t } = useI18n();
+
 const { handleSubmit, isSubmitting } = useForm({
-  validationSchema: toTypedSchema(verifyOtpSchema),
+  validationSchema: toTypedSchema(getVerifyOtpSchema(t)),
   initialValues: {
     code: "",
   },
@@ -185,7 +187,6 @@ onBeforeUnmount(() => {
 .glass-card {
   max-width: 460px;
   width: 100%;
-  padding: 3rem 2rem;
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);

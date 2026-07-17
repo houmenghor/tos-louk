@@ -16,16 +16,16 @@
 
       <!-- Glassmorphic Form Column -->
       <div class="col-12 col-md-6">
-        <div class="glass-card mx-auto">
+        <div class="glass-card mx-auto p-3 p-md-5">
           <form @submit.prevent="handleRegister" autocomplete="off">
-            <h2 class="form-title">Create an Account</h2>
+            <h2 class="form-title">{{ $t("auth.createAccount") }}</h2>
             <p class="form-subtitle">
-              Join us today! Please enter your details.
+              {{ $t("auth.createAccountSubtitle") }}
             </p>
 
             <BaseInput
-              label="Full Name"
-              placeholder="Enter your Full Name"
+              :label="$t('auth.fullName')"
+              :placeholder="$t('auth.fullNamePlaceholder')"
               id="full_name"
               v-model="full_name"
               :error="nameError"
@@ -33,8 +33,8 @@
             />
 
             <BaseInput
-              label="Email"
-              placeholder="Enter your email"
+              :label="$t('auth.email')"
+              :placeholder="$t('auth.emailPlaceholder')"
               id="email"
               type="email"
               v-model="email"
@@ -43,8 +43,8 @@
             />
 
             <BaseInputPassword
-              label="Password"
-              placeholder="Enter your password"
+              :label="$t('auth.password')"
+              :placeholder="$t('auth.passwordPlaceholder')"
               id="password"
               v-model="password"
               :error="passwordError"
@@ -52,8 +52,8 @@
             />
 
             <BaseInputPassword
-              label="Confirm Password"
-              placeholder="Confirm your password"
+              :label="$t('auth.confirmPassword')"
+              :placeholder="$t('auth.confirmPasswordPlaceholder')"
               id="password_confirmation"
               v-model="password_confirmation"
               :error="confirmPasswordError"
@@ -68,7 +68,7 @@
               :isLoading="isSubmitting"
               :isDisable="!turnstileToken || isSubmitting"
               class="w-100 mb-2 btn-submit-glass"
-              >Sign Up
+              >{{ $t("auth.signUpButton") }}
             </BaseButton>
 
             <div v-if="errorMessage" class="text-danger small mb-3 text-center">
@@ -77,7 +77,7 @@
 
             <!-- Divider Line -->
             <div class="divider-container mb-2">
-              <span class="divider-text">or</span>
+              <span class="divider-text">{{ $t("auth.or") }}</span>
             </div>
 
             <!-- Google OAuth Sign Up Button -->
@@ -88,11 +88,11 @@
               :isDisable="!turnstileToken"
             >
               <i class="bi bi-google"></i>
-              <span>Sign up with Google</span>
+              <span>{{ $t("auth.signUpGoogle") }}</span>
             </BaseButton>
 
             <!-- Facebook OAuth Sign Up Button -->
-            <BaseButton
+            <!-- <BaseButton
               statusType="button"
               class="w-100 mb-4 btn-facebook-glass"
               @click="handleFacebookRegister"
@@ -100,12 +100,12 @@
             >
               <i class="bi bi-facebook"></i>
               <span>Sign up with Facebook</span>
-            </BaseButton>
+            </BaseButton> -->
 
             <p class="text-center text-secondary-custom mb-0">
-              Already have an account?
+              {{ $t("auth.hasAccount") }}
               <NuxtLink to="/auth/login" class="glass-link-primary fw-bold ms-1"
-                >Login here</NuxtLink
+                >{{ $t("auth.loginHere") }}</NuxtLink
               >
             </p>
           </form>
@@ -119,7 +119,7 @@
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import banner from "/images/auth/banner.png";
-import { registerSchema } from "~/composables/forms/auth";
+import { getRegisterSchema } from "~/composables/forms/auth";
 import { useField, useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useAppToast } from "~/composables/ui/useAppToast";
@@ -143,8 +143,10 @@ const isForcePassword = computed(() => {
   return settingStore.settings?.maintenance?.force_strong_passwords == 1;
 });
 
+const { t } = useI18n();
+
 const dynamicSchema = computed(() => {
-  return toTypedSchema(registerSchema(isForcePassword.value));
+  return toTypedSchema(getRegisterSchema(t, isForcePassword.value));
 });
 
 const { handleSubmit, isSubmitting } = useForm({
@@ -199,19 +201,18 @@ const handleGoogleRegister = () => {
   });
 };
 
-const handleFacebookRegister = () => {
-  navigateTo(`${config.public.apiBase}/auth/facebook/redirect`, {
-    external: true,
-    replace: true,
-  });
-};
+// const handleFacebookRegister = () => {
+//   navigateTo(`${config.public.apiBase}/auth/facebook/redirect`, {
+//     external: true,
+//     replace: true,
+//   });
+// };
 </script>
 
 <style scoped>
 /* Glassmorphic Container Card */
 .glass-card {
   max-width: 460px;
-  padding: 2.5rem;
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);

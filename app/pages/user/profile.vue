@@ -455,7 +455,7 @@ import { useCartStore } from "~/stores/cartStore";
 import { useAppToast } from "~/composables/ui/useAppToast";
 import { useField, useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
-import { profileSchema, changePasswordSchema } from "~/composables/forms/auth";
+import { getProfileSchema, getChangePasswordSchema } from "~/composables/forms/auth";
 import { getApiError } from "~/utils/apiError";
 import BaseInput from "~/components/base/base-input.vue";
 import BaseInputPassword from "~/components/base/base-input-password.vue";
@@ -472,7 +472,7 @@ const wishlistStore = useWishlistStore();
 const cartStore = useCartStore();
 const { showSuccess, showError } = useAppToast();
 const colorMode = useColorMode();
-const { locale, setLocale } = useI18n();
+const { locale, setLocale, t } = useI18n();
 
 // Tab Structure
 const tabs = [
@@ -573,7 +573,7 @@ const profileForm = reactive({
 });
 
 const { handleSubmit: handleProfileSubmit, errors: profileErrors } = useForm({
-  validationSchema: toTypedSchema(profileSchema),
+  validationSchema: toTypedSchema(getProfileSchema(t)),
   initialValues: profileForm,
 });
 
@@ -645,7 +645,7 @@ const {
   errors: passwordErrors,
   resetForm: resetPassForm,
 } = useForm({
-  validationSchema: toTypedSchema(changePasswordSchema(false)),
+  validationSchema: toTypedSchema(getChangePasswordSchema(t, false)),
   initialValues: passwordForm,
 });
 

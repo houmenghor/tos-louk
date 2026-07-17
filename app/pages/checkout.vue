@@ -179,15 +179,18 @@ import { ref, reactive, computed, onMounted, watch, onUnmounted } from "vue";
 import { useCartStore } from "~/stores/cartStore";
 import { useAuthStore } from "~/stores/authStore";
 import { useSettingStore } from "~/stores/settingStore";
+import { getApiError } from '~/utils/apiError';
 import { useAppToast } from "~/composables/ui/useAppToast";
 import { useForm, useField } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
-import { checkoutSchema } from "~/composables/forms/checkout";
+import { getCheckoutSchema } from "~/composables/forms/checkout";
 import CheckoutShippingForm from "~/components/checkout/shipping-form.vue";
 import CheckoutPaymentMethods from "~/components/checkout/payment-methods.vue";
 import CheckoutOrderSummary from "~/components/checkout/order-summary.vue";
 import QrcodeVue from 'qrcode.vue';
 
+const { t } = useI18n();
+const { showSuccess, showError, showWarning } = useAppToast();
 const cartStore = useCartStore();
 const authStore = useAuthStore();
 const settingStore = useSettingStore();
@@ -243,21 +246,18 @@ const startPolling = () => {
       // Update checkoutResponse to trigger the v-else success block
       checkoutResponse.value.payment.method = 'paid';
 
-      const { showSuccess } = useAppToast();
       showSuccess("Payment received successfully!");
       stopPolling();
     })
     .listen('.payment.expired', (e) => {
       if (timerInterval) clearInterval(timerInterval);
       timeRemaining.value = 0; // Triggers the existing Expired Overlay UI
-      const { showError } = useAppToast();
       showError("Payment QR code has expired.");
       stopPolling();
     })
     .listen('.payment.failed', (e) => {
       if (timerInterval) clearInterval(timerInterval);
       realtimeStatus.value = 'failed';
-      const { showError } = useAppToast();
       showError("Payment failed or rejected.");
       stopPolling();
     });
@@ -277,7 +277,7 @@ onUnmounted(() => {
 
 // Setup VeeValidate form management
 const { handleSubmit, errors, values, setFieldValue, resetForm, submitCount, meta } = useForm({
-  validationSchema: toTypedSchema(checkoutSchema),
+  validationSchema: toTypedSchema(getCheckoutSchema(t)),
   initialValues: {
     customer_name: "",
     customer_email: "",
@@ -295,7 +295,6 @@ const { handleSubmit, errors, values, setFieldValue, resetForm, submitCount, met
 const getCurrentLocation = (silent = true) => {
   if (!import.meta.client || !navigator.geolocation) {
     if (!silent) {
-      const { showError } = useAppToast();
       showError("Geolocation is not supported by your browser.");
     }
     return;
@@ -329,15 +328,13 @@ const getCurrentLocation = (silent = true) => {
       }
 
       if (!silent) {
-        const { showSuccess } = useAppToast();
         showSuccess("Real GPS location detected!");
       }
     },
     (error) => {
       isGettingLocation.value = false;
       if (!silent) {
-        const { showWarning } = useAppToast();
-        showWarning("Please allow location access to pin your exact delivery coordinates.");
+        showWarning("Location denied. Please enable GPS in your browser settings to continue.");
       }
       console.error("Geolocation error:", error);
     },
@@ -389,8 +386,6 @@ const submitOrder = handleSubmit(async () => {
   if (cartStore.items.length === 0) return;
 
   if (!values.shipping_latitude || !values.shipping_longitude) {
-    const { showWarning } = useAppToast();
-    showWarning("Please allow location access to pin your exact GPS coordinates before placing your order.");
     getCurrentLocation(false);
     return;
   }
@@ -422,19 +417,16 @@ const submitOrder = handleSubmit(async () => {
       orderSubmitted.value = true;
       cartStore.clearCart();
 
-      const { showSuccess } = useAppToast();
       showSuccess("Your order has been placed successfully!");
 
       if (checkoutResponse.value?.payment?.method === 'khqr') {
         startCountdown();
       }
     } else {
-      const { showError } = useAppToast();
       showError("Failed to submit your order. Please verify your connection or try again.");
     }
   } catch (err) {
-    const { showError } = useAppToast();
-    showError(err?.data?.message || err?.message || "Failed to submit your order.");
+    showError(getApiError(err, "Failed to submit your order."));
   } finally {
     loading.value = false;
   }

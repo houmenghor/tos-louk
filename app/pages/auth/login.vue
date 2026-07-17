@@ -5,16 +5,16 @@
     <div class="row w-100 align-items-center">
       <!-- Form Column -->
       <div class="col-12 col-md-6">
-        <div class="glass-card mx-auto">
+        <div class="glass-card mx-auto p-3 p-md-5">
           <form @submit.prevent="handleLogin" autocomplete="off">
-            <h2 class="form-title">Welcome Back</h2>
+            <h2 class="form-title">{{ $t("auth.welcomeBack") }}</h2>
             <p class="form-subtitle">
-              Welcome back! Please enter your details to login.
+              {{ $t("auth.welcomeBackSubtitle") }}
             </p>
 
             <BaseInput
-              label="Email"
-              placeholder="Enter your email"
+              :label="$t('auth.email')"
+              :placeholder="$t('auth.emailPlaceholder')"
               id="email"
               type="email"
               v-model="email"
@@ -24,8 +24,8 @@
             />
 
             <BaseInputPassword
-              label="Password"
-              placeholder="Enter your password"
+              :label="$t('auth.password')"
+              :placeholder="$t('auth.passwordPlaceholder')"
               id="password"
               v-model="password"
               :error="passwordError"
@@ -38,7 +38,7 @@
                 to="/auth/forgot-password"
                 class="text-forgetpass glass-link-primary small fw-medium"
               >
-                Forgot Password?
+                {{ $t("auth.forgotPassword") }}
               </NuxtLink>
             </div>
 
@@ -50,7 +50,7 @@
               :isLoading="isSubmitting"
               :isDisable="!turnstileToken || isSubmitting"
             >
-              Login
+              {{ $t("auth.loginButton") }}
             </BaseButton>
 
             <div v-if="errorMessage" class="text-danger small mb-3 text-center">
@@ -59,7 +59,7 @@
 
             <!-- Divider Line -->
             <div class="divider-container mb-2">
-              <span class="divider-text">or</span>
+              <span class="divider-text">{{ $t("auth.or") }}</span>
             </div>
 
             <!-- Google OAuth Button -->
@@ -70,11 +70,11 @@
               :isDisable="!turnstileToken"
             >
               <i class="bi bi-google"></i>
-              <span>Sign in with Google</span>
+              <span>{{ $t("auth.signInGoogle") }}</span>
             </BaseButton>
 
             <!-- Facebook OAuth Button -->
-            <BaseButton
+            <!-- <BaseButton
               statusType="button"
               class="w-100 mb-4 btn-facebook-glass"
               @click="handleFacebookLogin"
@@ -82,14 +82,14 @@
             >
               <i class="bi bi-facebook"></i>
               <span>Sign in with Facebook</span>
-            </BaseButton>
+            </BaseButton> -->
 
             <p class="text-center text-secondary-custom mb-0">
-              Don't have an account yet?
+              {{ $t("auth.noAccount") }}
               <NuxtLink
                 to="/auth/register"
                 class="glass-link-primary fw-bold ms-1"
-                >Sign up for free
+                >{{ $t("auth.signUpFree") }}
               </NuxtLink>
             </p>
           </form>
@@ -118,7 +118,7 @@ import banner from "/images/auth/banner.png";
 import { useAppToast } from "~/composables/ui/useAppToast";
 import { useField, useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
-import { loginSchema } from "~/composables/forms/auth";
+import { getLoginSchema } from "~/composables/forms/auth";
 import { getApiError } from "~/utils/apiError";
 
 definePageMeta({
@@ -133,8 +133,10 @@ const turnstileRef = ref(null);
 const turnstileToken = ref("");
 const errorMessage = ref("");
 
+const { t } = useI18n();
+
 const { handleSubmit, isSubmitting } = useForm({
-  validationSchema: toTypedSchema(loginSchema),
+  validationSchema: toTypedSchema(getLoginSchema(t)),
   initialValues: {
     email: "",
     password: "",
@@ -185,19 +187,18 @@ const handleGoogleLogin = () => {
   });
 };
 
-const handleFacebookLogin = () => {
-  navigateTo(`${config.public.apiBase}/auth/facebook/redirect`, {
-    external: true,
-    replace: true,
-  });
-};
+// const handleFacebookLogin = () => {
+//   navigateTo(`${config.public.apiBase}/auth/facebook/redirect`, {
+//     external: true,
+//     replace: true,
+//   });
+// };
 </script>
 
 <style scoped>
 /* Glassmorphic Container Card */
 .glass-card {
   max-width: 460px;
-  padding: 2.5rem;
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
