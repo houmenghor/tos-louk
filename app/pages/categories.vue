@@ -336,7 +336,13 @@
 
         <!-- Product Grid (Right Column on Desktop) -->
         <div class="col-lg-9 col-md-8">
-          <transition-group name="grid" tag="div" class="row g-3 g-md-4">
+          <div v-if="pending" class="row g-3 g-md-4">
+            <div v-for="i in 9" :key="i" :class="viewMode === 'grid' ? 'col-12 col-sm-6 col-lg-4 px-3 px-md-2' : 'col-12 px-3 px-md-2'">
+              <SkeletonProductCard />
+            </div>
+          </div>
+
+          <transition-group v-else name="grid" tag="div" class="row g-3 g-md-4">
             <div v-for="product in paginatedProducts" :key="product.id" :class="viewMode === 'grid' ? 'col-12 col-sm-6 col-lg-4 px-3 px-md-2' : 'col-12 px-3 px-md-2'">
               <CategoryProductCard :product="product" :layout="viewMode" @add-to-cart="handleAddToCart" />
             </div>
@@ -392,7 +398,7 @@ const { showSuccess } = useAppToast();
 const categoryStore = useCategoryStore();
 const { categories } = storeToRefs(categoryStore);
 
-await useAsyncData("categories", async () => {
+const { pending } = await useLazyAsyncData("categories", async () => {
   // Fetch all active categories
   await categoryStore.getCategories({ per_page: 50, parent_id: "null" });
   await fetchDynamicBrands();

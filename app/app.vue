@@ -41,21 +41,31 @@ await Promise.all([
   })
 ]);
 
+const defaultLogo = computed(() => settingStore.settings?.general?.store_logo || `${requestUrl.origin}/tos-louk.webp`);
+const siteName = computed(() => settingStore.settings?.general?.store_name || t('seo.siteName'));
+
 useHead({
   htmlAttrs: {
     lang: computed(() => locale.value || 'km'),
   },
-  titleTemplate: computed(() => `%s | ${t('seo.siteName')}`)
+  titleTemplate: computed(() => `%s | ${siteName.value}`),
+  link: () => [
+    {
+      rel: "icon",
+      type: "image/png",
+      href: defaultLogo.value
+    }
+  ]
 });
 
 useSeoMeta({
   description: () => t('seo.defaultProductDesc'),
   ogDescription: () => t('seo.defaultProductDesc'),
-  ogImage: () => `${requestUrl.origin}/tos-louk.webp`,
+  ogImage: () => defaultLogo.value,
   ogUrl: () => requestUrl.href,
   ogType: 'website',
   twitterCard: 'summary',
-  twitterImage: () => `${requestUrl.origin}/tos-louk.webp`
+  twitterImage: () => defaultLogo.value
 });
 </script>
 

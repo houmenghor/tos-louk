@@ -33,7 +33,13 @@
 
       <!-- 3. Product Grid -->
       <section class="deals-grid position-relative min-vh-50">
-        <transition-group name="grid-fade" tag="div" class="row g-4">
+        <div v-if="pending" class="row g-4">
+          <div class="col-6 col-md-4 col-lg-3" v-for="i in 8" :key="i">
+            <SkeletonProductCard />
+          </div>
+        </div>
+
+        <transition-group v-else-if="filteredProducts.length > 0" name="grid-fade" tag="div" class="row g-4">
           <div 
             class="col-6 col-md-4 col-lg-3" 
             v-for="product in paginatedProducts" 
@@ -47,7 +53,7 @@
         </transition-group>
 
         <!-- Empty State -->
-        <div v-if="filteredProducts.length === 0" class="text-center py-6 empty-state">
+        <div v-else class="text-center py-6 empty-state">
           <div class="empty-icon mb-3">
             <i class="bi bi-tag text-muted opacity-50 display-1"></i>
           </div>
@@ -89,7 +95,7 @@ const cartStore = useCartStore();
 const productStore = useProductStore();
 const { products } = storeToRefs(productStore);
 
-await useAsyncData("discount-products", async () => {
+const { pending } = await useLazyAsyncData("discount-products", async () => {
   if (products.value.length === 0) {
     await productStore.getAllProducts({
       per_page: 50,
