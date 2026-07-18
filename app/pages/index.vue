@@ -28,11 +28,11 @@ const productStore = useProductStore();
 const { t } = useI18n();
 
 useSeoMeta({
-  title: () => t('navbar.home'),
-  ogTitle: () => t('navbar.home')
+  title: computed(() => t('navbar.home')),
+  ogTitle: computed(() => t('navbar.home'))
 });
 
-await useAsyncData("home-products", async () => {
+await useLazyAsyncData("home-products", async () => {
   if (productStore.products.length === 0) {
     await productStore.getAllProducts({
       per_page: 30,
