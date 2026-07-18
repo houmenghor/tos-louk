@@ -17,12 +17,12 @@
           </p>
 
           <div class="d-flex flex-wrap gap-3 mb-4">
-            <button class="btn btn-primary-custom px-4 py-2 shadow-sm text-nowrap">
+            <NuxtLink to="/discount" class="btn btn-primary-custom px-4 py-2 shadow-sm text-nowrap">
               {{ $t('hero.browseItems') }}
-            </button>
-            <button class="btn btn-outline-custom px-4 py-2 shadow-sm d-flex align-items-center gap-2 text-nowrap">
+            </NuxtLink>
+            <NuxtLink to="/categories" class="btn btn-outline-custom px-4 py-2 shadow-sm d-flex align-items-center gap-2 text-nowrap">
               {{ $t('hero.seeAllCategories') }} <i class="bi bi-arrow-right"></i>
-            </button>
+            </NuxtLink>
           </div>
 
           <div class="d-flex flex-wrap gap-4 small subtitle-text mt-3">

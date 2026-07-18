@@ -13,33 +13,6 @@
     </div>
 
     <div class="container">
-
-      <!-- Categories Card Grid -->
-      <div class="row g-4 mb-5">
-        <div v-for="cat in categories" :key="cat.id" class="col-xl-3 col-md-6">
-          <div class="category-card rounded-4 overflow-hidden border shadow-sm d-flex flex-column">
-            <div class="card-content p-4 d-flex flex-column flex-grow-1">
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <i :class="['bi', cat.icon || 'bi-grid', 'text-primary-icon']"></i>
-                <h5 class="fw-bold mb-0 text-main">{{ cat.name }}</h5>
-              </div>
-              <p class="small text-muted-custom mb-4 flex-grow-1 line-clamp-2" :title="cat.description">{{ cat.description }}</p>
-
-              <!-- Subcategory pills -->
-              <div class="d-flex flex-wrap gap-1 mt-auto">
-                <span
-                  v-for="sub in cat.sub_categories || cat.subcategories"
-                  :key="sub.id || sub"
-                  class="sub-pill"
-                >
-                  {{ sub.name || sub }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Catalog Header / Filter bar -->
       <div class="mb-4 p-4 rounded-4 bg-surface filter-bar-container">
         <div class="d-flex flex-column flex-lg-row gap-4 align-items-lg-end">

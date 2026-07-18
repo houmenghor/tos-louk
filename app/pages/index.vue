@@ -21,6 +21,7 @@
 </template>
 
 <script setup>
+import { onMounted } from "vue";
 import { useProductStore } from "~/stores/productStore";
 import { useAsyncData } from "nuxt/app";
 
@@ -32,7 +33,8 @@ useSeoMeta({
   ogTitle: () => t('navbar.home')
 });
 
-await useAsyncData("home-products", async () => {
+
+onMounted(async () => {
   if (productStore.products.length === 0) {
     await productStore.getAllProducts({
       per_page: 30,
@@ -41,7 +43,6 @@ await useAsyncData("home-products", async () => {
       status: 1,
     });
   }
-  return true;
 });
 </script>
 

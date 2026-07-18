@@ -359,30 +359,66 @@
             {{ t("navbar.contact") }}</NuxtLink
           >
           <!-- Mobile Theme Toggle -->
-          <button
-            @click="toggleTheme"
-            class="nav-custom-link mobile-nav-link text-decoration-none btn btn-link p-0 text-start"
+          <div
+            class="nav-custom-link mobile-nav-link text-decoration-none d-flex align-items-center gap-2 border-0 w-100"
             aria-label="Toggle Theme"
+            style="cursor: pointer;"
+            @click="toggleTheme"
           >
             <ClientOnly>
-              <i :class="isDark ? 'bi bi-sun-fill text-main' : 'bi bi-moon-stars-fill text-main'" class="fs-4"></i>
+              <div class="form-check form-switch m-0 p-0 d-flex align-items-center gap-2">
+                <input
+                  class="form-check-input m-0 cursor-pointer"
+                  type="checkbox"
+                  role="switch"
+                  id="mobileThemeSwitch"
+                  :checked="isDark"
+                  @click.stop="toggleTheme"
+                  style="width: 2.5rem; height: 1.25rem; margin-left: 0; float: none; box-shadow: none;"
+                />
+                <label class="form-check-label text-main cursor-pointer m-0" for="mobileThemeSwitch">Dark</label>
+              </div>
               <template #fallback>
-                <i class="bi bi-moon-stars-fill text-main fs-4"></i>
+                <div class="form-check form-switch m-0 p-0 d-flex align-items-center gap-2">
+                  <input
+                    class="form-check-input m-0 cursor-pointer"
+                    type="checkbox"
+                    role="switch"
+                    style="width: 2.5rem; height: 1.25rem; margin-left: 0; float: none; box-shadow: none;"
+                  />
+                  <label class="form-check-label text-main cursor-pointer m-0">Dark</label>
+                </div>
               </template>
             </ClientOnly>
-          </button>
+          </div>
 
-          <!-- Mobile Locale Dropdown -->
-          <div class="mt-1" style="max-width: 160px;">
-            <BaseSelectOption
-              :model-value="locale"
-              @update:modelValue="setLocale"
-              :options="[
-                { value: 'kh', label: 'Khmer (KH)', img: 'https://flagcdn.com/kh.svg' },
-                { value: 'en', label: 'English (EN)', img: 'https://flagcdn.com/gb.svg' }
+          <!-- Mobile Locale Inline Selection -->
+          <div class="mobile-nav-link px-3 mt-3 mb-2 d-flex align-items-center gap-3 w-100">
+            <button
+              @click="setLocale('kh')"
+              :class="[
+                locale === 'kh'
+                  ? 'text-primary-brand fw-bold opacity-100'
+                  : 'text-main opacity-65 fw-normal',
               ]"
-              class="mb-0 w-100"
-            />
+              class="btn btn-link p-0 text-decoration-none border-0 d-inline-flex align-items-center gap-2"
+            >
+              <img src="https://flagcdn.com/kh.svg" width="20" height="15" alt="Cambodia" class="rounded-1 shadow-sm" style="object-fit: cover;" />
+              <span>Khmer</span>
+            </button>
+            <span class="text-main opacity-50">|</span>
+            <button
+              @click="setLocale('en')"
+              :class="[
+                locale === 'en'
+                  ? 'text-primary-brand fw-bold opacity-100'
+                  : 'text-main opacity-65 fw-normal',
+              ]"
+              class="btn btn-link p-0 text-decoration-none border-0 d-inline-flex align-items-center gap-2"
+            >
+              <img src="https://flagcdn.com/gb.svg" width="20" height="15" alt="United Kingdom" class="rounded-1 shadow-sm" style="object-fit: cover;" />
+              <span>English</span>
+            </button>
           </div>
         </nav>
 

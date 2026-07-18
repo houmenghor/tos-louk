@@ -3,6 +3,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: false },
   routeRules: {
+    "/": { swr: 60 }, // Cache the homepage for 60 seconds for instant initial loads
     "/product/**": { isr: 3600 }, // Cache on CDN for 1 hour
   },
 
