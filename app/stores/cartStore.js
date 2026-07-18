@@ -2,15 +2,12 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { useAuthStore } from "./authStore";
 import { useSettingStore } from "./settingStore";
+import { useAppToast } from "~/composables/ui/useAppToast";
 
 export const useCartStore = defineStore("cart", () => {
   const items = ref([]);
   const isOpen = ref(false);
   const isInitialized = ref(false);
-
-  // Initialize composables exactly once per store instance
-  const { showSuccess } = useAppToast();
-  const { locale } = useI18n();
 
   // Initialize cart from localStorage (SSR-safe)
   const initCart = () => {
@@ -182,6 +179,9 @@ export const useCartStore = defineStore("cart", () => {
     isOpen.value = true;
 
     if (showToast && import.meta.client) {
+      const { showSuccess } = useAppToast();
+      const nuxtApp = useNuxtApp();
+      const locale = nuxtApp.$i18n ? nuxtApp.$i18n.locale : { value: 'en' };
       const msg =
         locale?.value === "kh"
           ? "បានបន្ថែមទៅក្នុងកន្ត្រកជោគជ័យ!"
