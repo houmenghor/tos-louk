@@ -47,14 +47,6 @@ export default defineNuxtConfig({
           content: "n75xtsojt79wbf1rp4snnujv1i8vv3",
         },
       ],
-      link: [
-        {
-          rel: "icon",
-          type: "image/png",
-          sizes: "40x40",
-          href: "/tos-louk.webp?v=1",
-        },
-      ],
       script: [
         {
           src: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",

@@ -29,8 +29,8 @@ const productStore = useProductStore();
 const { t } = useI18n();
 
 useSeoMeta({
-  title: () => t('navbar.home'),
-  ogTitle: () => t('navbar.home')
+  title: computed(() => t('navbar.home')),
+  ogTitle: computed(() => t('navbar.home'))
 });
 
 

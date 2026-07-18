@@ -65,14 +65,19 @@ import { useWishlistStore } from '~/stores/wishlistStore';
 import { useProductStore } from '~/stores/productStore';
 import { useAppToast } from '~/composables/ui/useAppToast';
 import { useAuthStore } from '~/stores/authStore';
+import { useSettingStore } from '~/stores/settingStore';
 
 const route = useRoute();
 const cartStore = useCartStore();
 const wishlistStore = useWishlistStore();
 const productStore = useProductStore();
 const authStore = useAuthStore();
+const settingStore = useSettingStore();
 const { showSuccess, showError } = useAppToast();
 const { t, locale } = useI18n();
+const requestUrl = useRequestURL();
+
+const defaultLogo = computed(() => settingStore.settings?.general?.store_logo || `${requestUrl.origin}/tos-louk.webp`);
 
 const { currentProduct } = storeToRefs(productStore);
 
@@ -81,13 +86,12 @@ const selectedColor = ref('#0f172a');
 const selectedSize = ref('M');
 const quantity = ref(1);
 
-const { data: productResponse, pending, error } = useAsyncData(`product-${route.params.slug}`, async () => {
+const { data: productResponse, pending, error } = await useLazyAsyncData(`product-${route.params.slug}`, async () => {
   if (route.params.slug) {
     return await productStore.getProductByUuid(route.params.slug);
   }
   return null;
 }, {
-  lazy: true,
   watch: [() => route.params.slug]
 });
 
@@ -115,7 +119,7 @@ watch(() => route.params.slug, (newSlug) => {
 
 watch(() => currentProduct.value, (newP) => {
   if (newP && !activeImage.value) {
-    activeImage.value = (newP.images && newP.images.length > 0) ? newP.images[0].image_url : (newP.thumbnail || 'https://placehold.co/600x600/png?text=Product');
+    activeImage.value = (newP.images && newP.images.length > 0) ? newP.images[0].image_url : (newP.thumbnail || defaultLogo.value);
   }
 }, { immediate: true });
 
@@ -131,7 +135,7 @@ const product = computed(() => {
       oldPrice: null,
       badge: "",
       category: "PREMIUM",
-      images: ['https://placehold.co/600x600/png?text=Loading...'],
+      images: [defaultLogo.value],
       colors: [],
       sizes: []
     };
@@ -205,26 +209,25 @@ const product = computed(() => {
     stock: p.stock !== undefined && p.stock !== null ? Number(p.stock) : 20,
     stockWarning: p.stockWarning !== undefined ? p.stockWarning : (p.stock_warning !== undefined ? p.stock_warning : 10),
     category: p.category?.name || "PREMIUM",
-    images: (p.images && p.images.length > 0) ? p.images.map(img => img.image_url) : [p.thumbnail || 'https://placehold.co/600x600/png?text=No+Image'],
+    images: (p.images && p.images.length > 0) ? p.images.map(img => img.image_url) : [p.thumbnail || defaultLogo.value],
     colors: extractedColors,
     sizes: extractedSizes,
     variants: p.variants || []
   };
 });
-const requestUrl = useRequestURL();
 
 useSeoMeta({
   title: () => product.value.title,
   ogTitle: () => product.value.title,
   description: () => product.value.description,
   ogDescription: () => product.value.description,
-  ogImage: () => activeImage.value,
+  ogImage: () => product.value.images[0],
   ogUrl: () => requestUrl.href,
   ogType: 'product',
-  twitterCard: 'summary',
+  twitterCard: 'summary_large_image',
   twitterTitle: () => product.value.title,
   twitterDescription: () => product.value.description,
-  twitterImage: () => activeImage.value
+  twitterImage: () => product.value.images[0]
 });
 
 const handleAddToCart = () => {
