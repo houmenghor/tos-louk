@@ -10,26 +10,33 @@
 
       <div class="scroll-track px-3 px-md-0" ref="carouselTrack" @mousedown="startDrag" @mouseleave="stopDrag"
         @mouseup="stopDrag" @mousemove="onDrag" @scroll="handleScroll">
-        <div v-for="product in productsList" :key="product.id" class="product-slide">
-          <div
-            class="card glass-card h-100 border-0 shadow-sm p-3 pointer-events-none d-flex flex-column justify-content-between">
-            <span v-if="product.badge" class="badge custom-badge position-absolute top-0 start-0 m-3 z-1">
-              {{ product.badge }}
-            </span>
-            <div class="image-wrapper d-flex align-items-center justify-content-center mt-4 mb-3">
-              <NuxtImg :src="product?.thumbnail || product?.image" class="w-100 h-100 object-fit-contain"
-                :alt="product.title" draggable="false" />
-            </div>
-            <div class="card-body p-0 mt-auto d-flex flex-column justify-content-end">
-              <h3 class="card-title fw-semibold mb-1 text-truncate fs-6">{{ product.title }}</h3>
-              <p class="subtitle-text small mb-2 lh-sm text-truncate-2">{{ product.desc }}</p>
-              <p class="price-text fw-bold mb-0">
-                ${{ product.price }}
-                <del v-if="product.oldPrice" class="subtitle-text fw-normal small ms-1">${{ product.oldPrice }}</del>
-              </p>
+        <template v-if="productsList.length === 0">
+          <div v-for="n in 5" :key="'skeleton-slide-'+n" class="product-slide">
+            <SkeletonProductCard />
+          </div>
+        </template>
+        <template v-else>
+          <div v-for="product in productsList" :key="product.id" class="product-slide">
+            <div
+              class="card glass-card h-100 border-0 shadow-sm p-3 pointer-events-none d-flex flex-column justify-content-between">
+              <span v-if="product.badge" class="badge custom-badge position-absolute top-0 start-0 m-3 z-1">
+                {{ product.badge }}
+              </span>
+              <div class="image-wrapper d-flex align-items-center justify-content-center mt-4 mb-3">
+                <NuxtImg :src="product?.thumbnail || product?.image" class="w-100 h-100 object-fit-contain"
+                  :alt="product.title" draggable="false" />
+              </div>
+              <div class="card-body p-0 mt-auto d-flex flex-column justify-content-end">
+                <h3 class="card-title fw-semibold mb-1 text-truncate fs-6">{{ product.title }}</h3>
+                <p class="subtitle-text small mb-2 lh-sm text-truncate-2">{{ product.desc }}</p>
+                <p class="price-text fw-bold mb-0">
+                  ${{ product.price }}
+                  <del v-if="product.oldPrice" class="subtitle-text fw-normal small ms-1">${{ product.oldPrice }}</del>
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        </template>
       </div>
 
       <div class="carousel-pagination d-flex justify-content-center align-items-center mt-4">

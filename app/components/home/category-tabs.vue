@@ -2,10 +2,16 @@
   <section class="category-tabs py-6">
     <div class="container">
       <div class="tab-header d-flex justify-content-start justify-content-md-center align-items-center mb-4 mb-md-5 gap-2 gap-md-3 overflow-auto hide-scrollbar py-2">
-        <button v-for="tab in tabs" :key="tab.id" @click="handleSelectTab(tab.id)" class="tab-pill text-nowrap flex-shrink-0"
-          :class="{ active: activeTab === tab.id }">
-          {{ tab.label }}
-        </button>
+        <template v-if="pendingCategories">
+          <button class="tab-pill text-nowrap flex-shrink-0 active">{{ $t('category.all') }}</button>
+          <div v-for="n in 4" :key="'skel-tab-'+n" class="tab-pill text-nowrap flex-shrink-0 placeholder-glow" style="width: 100px; background-color: var(--color-bg-secondary); border-color: transparent;">&nbsp;</div>
+        </template>
+        <template v-else>
+          <button v-for="tab in tabs" :key="tab.id" @click="handleSelectTab(tab.id)" class="tab-pill text-nowrap flex-shrink-0"
+            :class="{ active: activeTab === tab.id }">
+            {{ tab.label }}
+          </button>
+        </template>
       </div>
 
       <transition name="fade" mode="out-in">
@@ -40,9 +46,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { storeToRefs } from "pinia";
-import { useAsyncData } from "nuxt/app";
 import { useProductStore } from "~/stores/productStore";
 import { useCategoryStore } from "~/stores/categoryStore";
 import { useI18n } from "vue-i18n";
@@ -54,9 +59,17 @@ const categoryStore = useCategoryStore();
 const { t } = useI18n();
 const { products } = storeToRefs(productStore);
 
-const { data: fetchedParentCategories } = await useAsyncData("home-category-tabs", () =>
-  categoryStore.getCategories({ per_page: 50, parent_id: "null" })
-);
+const fetchedParentCategories = ref(null);
+const pendingCategories = ref(true);
+
+onMounted(async () => {
+  try {
+    const res = await categoryStore.getCategories({ per_page: 50, parent_id: "null" });
+    fetchedParentCategories.value = res;
+  } finally {
+    pendingCategories.value = false;
+  }
+});
 
 const tabs = computed(() => {
   const list = [{ id: "all", label: t('category.all') }];
