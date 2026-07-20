@@ -178,14 +178,25 @@ const wishlistStore = useWishlistStore();
 const cartStore = useCartStore();
 const { t, locale } = useI18n();
 
-const { data: orderData, status: orderStatus } = useLazyAsyncData("recent-order", () =>
-  $fetch("/api/orders", { query: { per_page: 1 } })
-);
+const { data: orderData, status: orderStatus } = useLazyFetch("/api/orders", {
+  query: { per_page: 1 },
+  key: "recent-order",
+  getCachedData: (key, nuxtApp) => {
+    // Only use cache during initial hydration to prevent stale data on client navigation
+    return nuxtApp.isHydrating ? nuxtApp.payload.data[key] : null;
+  }
+});
 
 const recentOrder = computed(() => {
-  const data = orderData.value?.data;
+  if (!orderData.value) return null;
+  
+  if (Array.isArray(orderData.value)) return orderData.value[0] || null;
+  
+  const data = orderData.value.data;
   if (Array.isArray(data)) return data[0] || null;
-  if (data?.data && Array.isArray(data.data)) return data.data[0] || null;
+  
+  if (data && Array.isArray(data.data)) return data.data[0] || null;
+  
   return null;
 });
 
