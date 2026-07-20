@@ -243,13 +243,14 @@
     "selectDeliveryMethod": "Select Delivery Method"
   },
   "dashboard": {
+    "myDashboard": "My Dashboard",
     "activeMember": "Active Member",
     "welcomeBack": "Welcome back, {name}!",
     "member": "Member",
     "subtitle": "Manage your preferences, track deliveries, and check active community items.",
     "memberSince": "Member since",
     "myWishlist": "My Wishlist",
-    "items": "{count} items",
+    "items": "{count} item | {count} items",
     "viewWishlist": "View wishlist",
     "activeCart": "Active Cart",
     "openCart": "Open cart",

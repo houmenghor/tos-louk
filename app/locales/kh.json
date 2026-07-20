@@ -243,6 +243,7 @@
     "selectDeliveryMethod": "ជ្រើសរើសសេវាដឹកជញ្ជូន"
   },
   "dashboard": {
+    "myDashboard": "ផ្ទាំងគ្រប់គ្រង",
     "activeMember": "សមាជិកសកម្ម",
     "welcomeBack": "សូមស្វាគមន៍ការត្រឡប់មកវិញ, {name}!",
     "member": "សមាជិក",

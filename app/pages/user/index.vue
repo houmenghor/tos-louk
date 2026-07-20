@@ -56,7 +56,7 @@
                   </div>
                   <div class="ms-3 flex-grow-1">
                     <p class="text-muted-custom text-xs fw-bold text-uppercase mb-1">{{ t('dashboard.myWishlist') }}</p>
-                    <h4 class="fw-bold text-main mb-0">{{ wishlistStore.wishlistCount }} Items</h4>
+                    <h4 class="fw-bold text-main mb-0 text-capitalize">{{ t('dashboard.items', wishlistStore.wishlistCount, { count: wishlistStore.wishlistCount }) }}</h4>
                   </div>
                   <i class="bi bi-chevron-right text-muted-custom opacity-50"></i>
                 </div>
@@ -70,7 +70,7 @@
                 </div>
                 <div class="ms-3 flex-grow-1">
                   <p class="text-muted-custom text-xs fw-bold text-uppercase mb-1">{{ t('dashboard.activeCart') }}</p>
-                  <h4 class="fw-bold text-main mb-0">{{ cartStore.cartCount }} Items</h4>
+                  <h4 class="fw-bold text-main mb-0 text-capitalize">{{ t('dashboard.items', cartStore.cartCount, { count: cartStore.cartCount }) }}</h4>
                 </div>
                 <i class="bi bi-chevron-right text-muted-custom opacity-50"></i>
               </div>
@@ -78,23 +78,45 @@
           </div>
 
           <!-- Order Status Tracker -->
-          <div class="tracker-card p-4 rounded-4 shadow-sm">
+          <div v-if="orderStatus === 'pending'" class="tracker-card p-4 rounded-4 shadow-sm placeholder-glow">
+            <div class="d-flex align-items-center justify-content-between mb-4 border-bottom border-custom-glass pb-3">
+              <div class="d-flex align-items-center gap-2">
+                <div class="placeholder rounded-circle" style="width: 28px; height: 28px;"></div>
+                <div class="d-flex flex-column gap-1">
+                  <h5 class="placeholder col-12 mb-0" style="width: 150px;"></h5>
+                  <div class="placeholder col-8 mt-1" style="width: 100px;"></div>
+                </div>
+              </div>
+              <span class="placeholder col-2 rounded-pill px-4 py-2" style="width: 80px;"></span>
+            </div>
+            <div class="timeline-wrapper ps-2 mt-4">
+              <div class="timeline-step mb-4 position-relative">
+                <div class="timeline-circle bg-surface border border-2 border-custom d-flex align-items-center justify-content-center shadow-sm placeholder"></div>
+                <div class="timeline-content ms-4">
+                  <h6 class="placeholder col-6 mb-1"></h6>
+                  <p class="placeholder col-8 mb-0"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-else-if="recentOrder" class="tracker-card p-4 rounded-4 shadow-sm">
             <div class="d-flex align-items-center justify-content-between mb-4 border-bottom border-custom-glass pb-3">
               <div class="d-flex align-items-center gap-2">
                 <i class="bi bi-truck text-primary fs-4"></i>
                 <div>
                   <h5 class="fw-bold text-main mb-0">{{ t('dashboard.recentOrder') }}</h5>
-                  <div class="text-secondary-custom text-xs mt-1">ORD-98231 • {{ t('dashboard.placedDate') }}</div>
+                  <div class="text-secondary-custom text-xs mt-1">{{ recentOrder.order_no || recentOrder.uuid?.split('-')[0].toUpperCase() }} • {{ new Date(recentOrder.created_at).toLocaleDateString() }}</div>
                 </div>
               </div>
-              <span class="badge rounded-pill bg-primary-light text-primary px-3 py-1.5 fw-bold text-xs">
-                {{ t('dashboard.statusShipped') }}
+              <span class="badge rounded-pill bg-primary-light text-primary px-3 py-1.5 fw-bold text-xs text-uppercase">
+                {{ recentOrder.status }}
               </span>
             </div>
 
             <div class="timeline-wrapper ps-2 mt-4">
               <!-- Step 1: Placed -->
-              <div class="timeline-step active-step mb-4 position-relative">
+              <div class="timeline-step active-step mb-4 position-relative" :class="{ 'last-active': recentOrder.status === 'pending' || recentOrder.status === 'processing' }">
                 <div class="timeline-circle bg-primary text-white d-flex align-items-center justify-content-center shadow-sm">
                   <i class="bi bi-check2"></i>
                 </div>
@@ -105,27 +127,34 @@
               </div>
 
               <!-- Step 2: Shipped -->
-              <div class="timeline-step active-step mb-4 position-relative">
-                <div class="timeline-circle bg-primary text-white d-flex align-items-center justify-content-center shadow-sm">
-                  <i class="bi bi-check2"></i>
+              <div class="timeline-step position-relative mb-4" :class="{ 'active-step': recentOrder.status === 'shipped' || recentOrder.status === 'delivered', 'last-active': recentOrder.status === 'shipped' }">
+                <div class="timeline-circle d-flex align-items-center justify-content-center shadow-sm" :class="recentOrder.status === 'shipped' || recentOrder.status === 'delivered' ? 'bg-primary text-white' : 'border border-2 border-custom bg-surface text-muted'">
+                  <i v-if="recentOrder.status === 'shipped' || recentOrder.status === 'delivered'" class="bi bi-check2"></i>
+                  <i v-else class="bi bi-circle"></i>
                 </div>
                 <div class="timeline-content ms-4">
-                  <h6 class="fw-bold text-main text-sm mb-1">{{ t('dashboard.step2Title') }}</h6>
-                  <p class="text-secondary-custom text-xs mb-0">{{ t('dashboard.step2Desc') }}</p>
+                  <h6 class="fw-bold text-sm mb-1" :class="recentOrder.status === 'shipped' || recentOrder.status === 'delivered' ? 'text-main' : 'text-secondary-custom'">{{ t('dashboard.step2Title') }}</h6>
+                  <p class="text-xs mb-0" :class="recentOrder.status === 'shipped' || recentOrder.status === 'delivered' ? 'text-secondary-custom' : 'text-muted-custom'">{{ t('dashboard.step2Desc') }}</p>
                 </div>
               </div>
 
               <!-- Step 3: Delivered -->
-              <div class="timeline-step pending-step position-relative">
-                <div class="timeline-circle border border-2 border-custom bg-surface text-muted d-flex align-items-center justify-content-center">
-                  <i class="bi bi-circle"></i>
+              <div class="timeline-step position-relative" :class="{ 'active-step': recentOrder.status === 'delivered' }">
+                <div class="timeline-circle d-flex align-items-center justify-content-center shadow-sm" :class="recentOrder.status === 'delivered' ? 'bg-primary text-white' : 'border border-2 border-custom bg-surface text-muted'">
+                  <i v-if="recentOrder.status === 'delivered'" class="bi bi-check2"></i>
+                  <i v-else class="bi bi-circle"></i>
                 </div>
                 <div class="timeline-content ms-4">
-                  <h6 class="fw-bold text-secondary-custom text-sm mb-1">{{ t('dashboard.step3Title') }}</h6>
-                  <p class="text-muted-custom text-xs mb-0">{{ t('dashboard.step3Desc') }}</p>
+                  <h6 class="fw-bold text-sm mb-1" :class="recentOrder.status === 'delivered' ? 'text-main' : 'text-secondary-custom'">{{ t('dashboard.step3Title') }}</h6>
+                  <p class="text-xs mb-0" :class="recentOrder.status === 'delivered' ? 'text-secondary-custom' : 'text-muted-custom'">{{ t('dashboard.step3Desc') }}</p>
                 </div>
               </div>
             </div>
+          </div>
+          <div v-else class="tracker-card p-4 rounded-4 shadow-sm text-center py-5">
+            <i class="bi bi-box-seam text-muted-custom fs-2 mb-3 d-block"></i>
+            <h6 class="fw-bold text-main mb-1">No Recent Orders</h6>
+            <p class="text-secondary-custom text-xs mb-0">When you place an order, its status will appear here.</p>
           </div>
         </div>
       </div>
@@ -148,6 +177,28 @@ const authStore = useAuthStore();
 const wishlistStore = useWishlistStore();
 const cartStore = useCartStore();
 const { t, locale } = useI18n();
+
+const { data: orderData, status: orderStatus } = useLazyFetch("/api/orders", {
+  query: { per_page: 1 },
+  key: "recent-order",
+  getCachedData: (key, nuxtApp) => {
+    // Only use cache during initial hydration to prevent stale data on client navigation
+    return nuxtApp.isHydrating ? nuxtApp.payload.data[key] : null;
+  }
+});
+
+const recentOrder = computed(() => {
+  if (!orderData.value) return null;
+  
+  if (Array.isArray(orderData.value)) return orderData.value[0] || null;
+  
+  const data = orderData.value.data;
+  if (Array.isArray(data)) return data[0] || null;
+  
+  if (data && Array.isArray(data.data)) return data.data[0] || null;
+  
+  return null;
+});
 
 // Fetch user dynamic statistics on load
 onMounted(async () => {
@@ -243,6 +294,10 @@ const memberSinceDate = computed(() => {
 
 .active-step::before {
   background-color: var(--color-primary);
+}
+
+.active-step.last-active::before {
+  background-color: var(--color-border);
 }
 
 .text-xs { font-size: 12px; }
