@@ -60,7 +60,17 @@ onMounted(async () => {
       ]);
 
       showSuccess("Google login successful. Welcome back!");
-      await navigateTo("/", { replace: true });
+      
+      let redirectPath = "/";
+      if (process.client) {
+        const storedRedirect = localStorage.getItem("auth_redirect");
+        if (storedRedirect) {
+          redirectPath = storedRedirect;
+          localStorage.removeItem("auth_redirect");
+        }
+      }
+      
+      await navigateTo(redirectPath, { replace: true });
     } catch (error) {
       showError("Login failed: " + getApiError(error, "Could not fetch profile."));
       await navigateTo("/auth/login");

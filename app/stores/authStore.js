@@ -111,7 +111,7 @@ export const useAuthStore = defineStore("auth", () => {
     useCartStore().clearCart();
     useWishlistStore().clearWishlist();
 
-    await navigateTo("/auth/login");
+    await navigateTo("/");
   };
 
   const register = async (payload) => {

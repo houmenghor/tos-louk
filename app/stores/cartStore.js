@@ -131,6 +131,7 @@ export const useCartStore = defineStore("cart", () => {
 
         const payload = guestItems.map((item) => ({
           product_id: item.id,
+          qty: item.quantity,
           quantity: item.quantity,
         }));
 
