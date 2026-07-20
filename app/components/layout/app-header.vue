@@ -527,8 +527,6 @@ const toggleTheme = () => {
 
 onMounted(() => {
   window.addEventListener("scroll", handleScroll);
-  wishlistStore.initWishlist();
-  cartStore.initCart();
 });
 
 onUnmounted(() => {

@@ -390,6 +390,8 @@ const submitOrder = handleSubmit(async () => {
     return;
   }
 
+  if (loading.value) return;
+
   loading.value = true;
   try {
     // Explicitly guarantee any guest items are synced to the DB before checkout

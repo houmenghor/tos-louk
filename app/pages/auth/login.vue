@@ -126,6 +126,7 @@ definePageMeta({
 });
 
 const authStore = useAuthStore();
+const route = useRoute();
 
 const { showSuccess } = useAppToast();
 
@@ -162,7 +163,8 @@ const handleLogin = handleSubmit(async (value) => {
     });
 
     showSuccess("Login successful!");
-    await navigateTo("/");
+    const redirectPath = route.query.redirect || "/";
+    await navigateTo(redirectPath);
   } catch (error) {
     if (error.data?.statusCode === 403) {
       showSuccess(error.data?.message || "Please verify your email address.");
@@ -181,6 +183,12 @@ const handleLogin = handleSubmit(async (value) => {
 const config = useRuntimeConfig();
 
 const handleGoogleLogin = () => {
+  if (process.client) {
+    const redirectPath = route.query.redirect;
+    if (redirectPath) {
+      localStorage.setItem("auth_redirect", redirectPath);
+    }
+  }
   navigateTo(`${config.public.apiBase}/auth/google/redirect`, {
     external: true,
     replace: true,
