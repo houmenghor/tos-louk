@@ -257,7 +257,7 @@ const decreaseQty = (item) => {
 const handleCheckout = () => {
   if (!authStore.access_token) {
     cartStore.toggleCart(false);
-    router.push("/auth/login");
+    router.push({ path: "/auth/login", query: { redirect: "/checkout" } });
   } else {
     cartStore.toggleCart(false);
     router.push("/checkout");

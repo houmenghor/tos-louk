@@ -3,11 +3,21 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSettingStore } from '~/stores/settingStore';
 import { useAuthStore } from '~/stores/authStore';
+import { useCartStore } from '~/stores/cartStore';
+import { useWishlistStore } from '~/stores/wishlistStore';
+import { onMounted } from 'vue';
 
 const { t, locale } = useI18n();
 const requestUrl = useRequestURL();
 const settingStore = useSettingStore();
 const authStore = useAuthStore();
+const cartStore = useCartStore();
+const wishlistStore = useWishlistStore();
+
+onMounted(() => {
+  cartStore.initCart();
+  wishlistStore.initWishlist();
+});
 
 await Promise.all([
   useAsyncData("global-settings", () => settingStore.getSettings()),
