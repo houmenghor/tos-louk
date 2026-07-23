@@ -99,14 +99,27 @@ export const getChangePasswordSchema = (t, isForcePassword = false) => {
       .regex(/[\W_]/, t('validation.passwordSpecial', "Password must contain at least one special character."));
   }
 
+  const baseSchema = {
+    current_password: z.string().min(1, t('validation.currentPasswordRequired', "Current password is required.")),
+    new_password: passwordValidation,
+    confirm_password: z.string().min(1, t('validation.confirmNewPasswordRequired', "Please confirm your new password.")),
+  };
+
   return z
-    .object({
-      current_password: z.string().min(1, t('validation.currentPasswordRequired', "Current password is required.")),
-      new_password: passwordValidation,
-      confirm_password: z.string().min(1, t('validation.confirmNewPasswordRequired', "Please confirm your new password.")),
-    })
+    .object(baseSchema)
     .refine((data) => data.new_password === data.confirm_password, {
       message: t('validation.newPasswordsMatch', "New passwords do not match."),
       path: ["confirm_password"],
     });
 };
+
+export const getEditProfileSchema = (t) => z.object({
+  full_name: z.string().min(1, t('validation.nameRequired', "Full name is required.")),
+  email: z
+    .string()
+    .min(1, t('validation.emailRequired', "Email is required."))
+    .email(t('validation.emailInvalid', "Please enter a valid email address.")),
+  address: z.string().nullable().optional(),
+  country: z.string().nullable().optional(),
+});
+

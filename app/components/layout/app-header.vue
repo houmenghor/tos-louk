@@ -154,6 +154,7 @@
                 type="button"
                 id="profileDropdown"
                 data-bs-toggle="dropdown"
+                data-bs-display="static"
                 aria-expanded="false"
                 aria-label="User Account"
               >
@@ -180,7 +181,7 @@
               </button>
 
               <ul
-                class="dropdown-menu dropdown-menu-end glass-dropdown shadow border-0 mt-3 animate slideIn"
+                class="dropdown-menu dropdown-menu-end glass-dropdown shadow border-0 mt-1 animate slideIn"
                 aria-labelledby="profileDropdown"
               >
                 <!-- Authenticated User Menu -->
@@ -209,6 +210,12 @@
                     <NuxtLink @click="closeProfileDropdown" to="/user" class="dropdown-item py-2 fw-medium">
                       <i class="bi bi-person-circle me-2 text-primary-brand"></i>
                       {{ t("navbar.myDashboard", "My Dashboard") }}
+                    </NuxtLink>
+                  </li>
+                  <li>
+                    <NuxtLink @click="closeProfileDropdown" to="/profile" class="dropdown-item py-2 fw-medium">
+                      <i class="bi bi-person-gear me-2 text-primary-brand"></i>
+                      {{ t("navbar.accountSettings", "Account Settings") }}
                     </NuxtLink>
                   </li>
                   <li>

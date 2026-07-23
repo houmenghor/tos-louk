@@ -273,7 +273,8 @@
     "step2Title": "Shipped from Warehouse",
     "step2Desc": "Dispatched via Fast Express. Tracking: #FE9812A.",
     "step3Title": "Out for Delivery & Received",
-    "step3Desc": "Expected delivery: July 12, 2026."
+    "step3Desc": "Expected delivery: July 12, 2026.",
+    "startShopping": "Start Shopping"
   },
   "validation": {
     "nameRequired": "Full name is required.",

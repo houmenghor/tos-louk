@@ -163,7 +163,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   const updateProfile = async (payload) => {
     const response = await $fetch("/api/auth/profile", {
-      method: "PUT",
+      method: "PATCH",
       body: payload,
     });
 
@@ -177,6 +177,17 @@ export const useAuthStore = defineStore("auth", () => {
       body: payload,
     });
 
+    return response;
+  };
+
+  const changeEmail = async (payload) => {
+    const response = await $fetch("/api/auth/change-email", {
+      method: "PUT",
+      body: payload,
+    });
+    
+    // Refresh profile to get updated email if successful
+    await fetchProfile(true);
     return response;
   };
 
@@ -211,6 +222,7 @@ export const useAuthStore = defineStore("auth", () => {
     resetPassword,
     updateProfile,
     changePassword,
+    changeEmail,
     updateAvatar,
   };
 });

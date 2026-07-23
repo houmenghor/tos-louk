@@ -17,6 +17,7 @@
         :rows="rows || 3"
         @input="$emit('update:modelValue', $event.target.value)"
         @blur="$emit('blur')"
+        @change="$emit('change', $event)"
       ></textarea>
       <input
         v-else
@@ -27,8 +28,10 @@
         :placeholder="placeholder"
         :class="['form-control custom-base-input', { 'is-invalid': error }, { 'has-left-icon': leftIcon }]"
         :disabled="disabled"
+        :accept="accept"
         @input="$emit('update:modelValue', $event.target.value)"
         @blur="$emit('blur')"
+        @change="$emit('change', $event)"
       />
     </div>
     <div v-if="error" class="invalid-feedback">{{ error }}</div>
@@ -46,10 +49,11 @@ defineProps({
   disabled: { type: Boolean, default: false },
   required: { type: Boolean, default: false },
   leftIcon: { type: String, default: "" },
-  rows: { type: [Number, String], default: 3 }
+  rows: { type: [Number, String], default: 3 },
+  accept: { type: String, default: "" }
 });
 
-defineEmits(["update:modelValue", "blur"]);
+defineEmits(["update:modelValue", "blur", "change"]);
 </script>
 
 <style scoped>

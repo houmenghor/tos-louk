@@ -2,83 +2,97 @@
   <div class="user-dashboard-page py-5 min-vh-100 bg-body-custom">
     <div class="container max-w-container">
       <div class="row mb-4">
-        <div class="col-12">
-          <h2 class="fw-bold text-main mb-0">{{ t('dashboard.myDashboard') || 'My Dashboard' }}</h2>
-          <p class="text-muted-custom mt-1">{{ t('dashboard.subtitle') }}</p>
+        <div class="col-12 d-flex align-items-center gap-3">
+          <h2 class="fw-bold text-main mb-0">{{ t('dashboard.myDashboard', 'My Dashboard') }}</h2>
         </div>
       </div>
 
       <div class="row g-4">
-        <!-- Left Column: User Profile Summary -->
+        <!-- Left Column: Profile & Menu List -->
         <div class="col-lg-4">
-          <div class="profile-card p-4 rounded-4 shadow-sm text-center">
-            <div class="avatar-wrapper mx-auto mb-3 position-relative d-flex justify-content-center">
-              <BaseAvatar
-                :src="authStore.userProfile?.profile_image || authStore.userProfile?.userProfile?.profile_image"
-                :name="authStore.userProfile?.full_name || 'Member'"
-                :size="100"
-                border-class="border border-3 border-surface shadow-sm"
-              />
+          <!-- User Profile Card -->
+          <div class="settings-card p-4 rounded-4 mb-4 d-flex align-items-center gap-3">
+            <BaseAvatar
+              :src="authStore.userProfile?.profile_image || authStore.userProfile?.userProfile?.profile_image"
+              :name="authStore.userProfile?.full_name || 'Member'"
+              :size="56"
+              border-class="border border-2 border-surface shadow-sm"
+            />
+            <div class="overflow-hidden">
+              <h5 class="fw-bold text-main mb-1 text-sm text-truncate">
+                {{ authStore.userProfile?.full_name || t('dashboard.member') }}
+              </h5>
+              <p class="text-secondary-custom text-xs mb-0 text-truncate">
+                {{ authStore.userProfile?.email || '' }}
+              </p>
             </div>
-            
-            <h4 class="fw-bold text-main mb-1">
-              {{ authStore.userProfile?.full_name || t('dashboard.member') }}
-            </h4>
-            <p class="text-secondary-custom small mb-3">
-              {{ authStore.userProfile?.email || '' }}
-            </p>
-            
-            <span class="badge rounded-pill bg-primary-light text-primary mb-4 px-3 py-2 fw-medium text-xs">
-              {{ t('dashboard.memberSince') }} {{ memberSinceDate }}
-            </span>
+          </div>
 
-            <div class="d-flex flex-column gap-2 mt-2">
-              <NuxtLink to="/profile" class="btn btn-primary w-100 rounded-pill py-2">
-                <i class="bi bi-person-gear me-2"></i> {{ t('dashboard.editProfile') }}
-              </NuxtLink>
-              <NuxtLink to="/categories" class="btn border border-custom w-100 rounded-pill py-2 action-hover" style="color: var(--color-text);">
-                <i class="bi bi-shop me-2"></i> {{ t('dashboard.shopCatalog') }}
-              </NuxtLink>
-            </div>
+          <!-- Settings & Navigation List -->
+          <div class="settings-card rounded-4 overflow-hidden mb-4 mb-lg-0">
+             <div @click="activeTab = 'overview'" class="nav-list-item p-3 d-flex align-items-center justify-content-between cursor-pointer border-bottom border-custom-glass" :class="{ 'bg-secondary-light': activeTab === 'overview' }">
+                <div class="d-flex align-items-center gap-3">
+                   <div class="icon-box bg-secondary-light rounded-circle d-flex align-items-center justify-content-center">
+                     <i class="bi bi-grid text-secondary-custom"></i>
+                   </div>
+                   <span class="fw-semibold text-main text-sm" :class="{ 'text-primary-brand': activeTab === 'overview' }">Overview</span>
+                </div>
+                <i class="bi bi-chevron-right text-muted-custom"></i>
+             </div>
+
+             <div @click="activeTab = 'personal'" class="nav-list-item p-3 d-flex align-items-center justify-content-between cursor-pointer border-bottom border-custom-glass" :class="{ 'bg-secondary-light': activeTab === 'personal' }">
+                <div class="d-flex align-items-center gap-3">
+                   <div class="icon-box bg-secondary-light rounded-circle d-flex align-items-center justify-content-center">
+                     <i class="bi bi-person text-secondary-custom"></i>
+                   </div>
+                   <span class="fw-semibold text-main text-sm" :class="{ 'text-primary-brand': activeTab === 'personal' }">Personal Info</span>
+                </div>
+                <i class="bi bi-chevron-right text-muted-custom"></i>
+             </div>
+
+             <div @click="activeTab = 'security'" class="nav-list-item p-3 d-flex align-items-center justify-content-between cursor-pointer" :class="{ 'bg-secondary-light': activeTab === 'security' }">
+                <div class="d-flex align-items-center gap-3">
+                   <div class="icon-box bg-secondary-light rounded-circle d-flex align-items-center justify-content-center">
+                     <i class="bi bi-shield-lock text-secondary-custom"></i>
+                   </div>
+                   <span class="fw-semibold text-main text-sm" :class="{ 'text-primary-brand': activeTab === 'security' }">Security & Password</span>
+                </div>
+                <i class="bi bi-chevron-right text-muted-custom"></i>
+             </div>
           </div>
         </div>
 
-        <!-- Right Column: Metrics and Order Tracking -->
+        <!-- Right Column: Dynamic Content Panel -->
         <div class="col-lg-8">
-          
-          <!-- Metrics Row -->
-          <div class="row g-4 mb-4">
-            <div class="col-sm-6">
-              <NuxtLink to="/user/wishlist" class="text-decoration-none">
-                <div class="metric-card p-4 rounded-4 shadow-sm h-100 d-flex align-items-center">
-                  <div class="bg-primary-light text-primary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 54px; height: 54px;">
-                    <i class="bi bi-heart-fill fs-5"></i>
-                  </div>
-                  <div class="ms-3 flex-grow-1">
-                    <p class="text-muted-custom text-xs fw-bold text-uppercase mb-1">{{ t('dashboard.myWishlist') }}</p>
-                    <h4 class="fw-bold text-main mb-0 text-capitalize">{{ t('dashboard.items', wishlistStore.wishlistCount, { count: wishlistStore.wishlistCount }) }}</h4>
-                  </div>
-                  <i class="bi bi-chevron-right text-muted-custom opacity-50"></i>
+          <transition name="fade-slide" mode="out-in">
+            <div v-if="activeTab === 'overview'" key="overview">
+              <!-- 3 Stat Boxes (Matching Figma concept) -->
+              <div class="row g-3 mb-4">
+             <div class="col-4">
+                <NuxtLink to="/user/wishlist" class="text-decoration-none">
+                   <div class="settings-card p-3 p-md-4 rounded-4 text-center stat-hover h-100 d-flex flex-column justify-content-center">
+                      <h3 class="fw-bold text-primary mb-1">{{ wishlistStore.wishlistCount }}</h3>
+                      <p class="text-secondary-custom text-xs mb-0">Wishlist</p>
+                   </div>
+                </NuxtLink>
+             </div>
+             <div class="col-4">
+                <div @click="cartStore.toggleCart(true)" class="settings-card p-3 p-md-4 rounded-4 text-center stat-hover cursor-pointer h-100 d-flex flex-column justify-content-center">
+                   <h3 class="fw-bold text-primary mb-1">{{ cartStore.cartCount }}</h3>
+                   <p class="text-secondary-custom text-xs mb-0">Active Cart</p>
                 </div>
-              </NuxtLink>
-            </div>
-
-            <div class="col-sm-6">
-              <div @click="cartStore.toggleCart(true)" class="metric-card p-4 rounded-4 shadow-sm h-100 d-flex align-items-center cursor-pointer">
-                <div class="bg-primary-light text-primary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 54px; height: 54px;">
-                  <i class="bi bi-cart-fill fs-5"></i>
+             </div>
+             <div class="col-4">
+                <div class="settings-card p-3 p-md-4 rounded-4 text-center stat-hover h-100 d-flex flex-column justify-content-center">
+                   <h3 class="fw-bold text-primary mb-1">{{ orderStatus === 'pending' ? '-' : (recentOrder ? '1' : '0') }}</h3>
+                   <p class="text-secondary-custom text-xs mb-0">Orders</p>
                 </div>
-                <div class="ms-3 flex-grow-1">
-                  <p class="text-muted-custom text-xs fw-bold text-uppercase mb-1">{{ t('dashboard.activeCart') }}</p>
-                  <h4 class="fw-bold text-main mb-0 text-capitalize">{{ t('dashboard.items', cartStore.cartCount, { count: cartStore.cartCount }) }}</h4>
-                </div>
-                <i class="bi bi-chevron-right text-muted-custom opacity-50"></i>
-              </div>
-            </div>
+             </div>
           </div>
 
           <!-- Order Status Tracker -->
-          <div v-if="orderStatus === 'pending'" class="tracker-card p-4 rounded-4 shadow-sm placeholder-glow">
+          <h6 class="fw-bold text-main mb-3 text-sm px-1">Recent Order Tracking</h6>
+          <div v-if="orderStatus === 'pending'" class="settings-card p-4 rounded-4 placeholder-glow">
             <div class="d-flex align-items-center justify-content-between mb-4 border-bottom border-custom-glass pb-3">
               <div class="d-flex align-items-center gap-2">
                 <div class="placeholder rounded-circle" style="width: 28px; height: 28px;"></div>
@@ -100,12 +114,12 @@
             </div>
           </div>
 
-          <div v-else-if="recentOrder" class="tracker-card p-4 rounded-4 shadow-sm">
+          <div v-else-if="recentOrder" class="settings-card p-4 rounded-4">
             <div class="d-flex align-items-center justify-content-between mb-4 border-bottom border-custom-glass pb-3">
               <div class="d-flex align-items-center gap-2">
                 <i class="bi bi-truck text-primary fs-4"></i>
                 <div>
-                  <h5 class="fw-bold text-main mb-0">{{ t('dashboard.recentOrder') }}</h5>
+                  <h5 class="fw-bold text-main mb-0 text-sm">{{ t('dashboard.recentOrder', 'Recent Order') }}</h5>
                   <div class="text-secondary-custom text-xs mt-1">{{ recentOrder.order_no || recentOrder.uuid?.split('-')[0].toUpperCase() }} • {{ new Date(recentOrder.created_at).toLocaleDateString() }}</div>
                 </div>
               </div>
@@ -121,8 +135,8 @@
                   <i class="bi bi-check2"></i>
                 </div>
                 <div class="timeline-content ms-4">
-                  <h6 class="fw-bold text-main text-sm mb-1">{{ t('dashboard.step1Title') }}</h6>
-                  <p class="text-secondary-custom text-xs mb-0">{{ t('dashboard.step1Desc') }}</p>
+                  <h6 class="fw-bold text-main text-sm mb-1">{{ t('dashboard.step1Title', 'Order Placed') }}</h6>
+                  <p class="text-secondary-custom text-xs mb-0">{{ t('dashboard.step1Desc', 'We have received your order.') }}</p>
                 </div>
               </div>
 
@@ -133,8 +147,8 @@
                   <i v-else class="bi bi-circle"></i>
                 </div>
                 <div class="timeline-content ms-4">
-                  <h6 class="fw-bold text-sm mb-1" :class="recentOrder.status === 'shipped' || recentOrder.status === 'delivered' ? 'text-main' : 'text-secondary-custom'">{{ t('dashboard.step2Title') }}</h6>
-                  <p class="text-xs mb-0" :class="recentOrder.status === 'shipped' || recentOrder.status === 'delivered' ? 'text-secondary-custom' : 'text-muted-custom'">{{ t('dashboard.step2Desc') }}</p>
+                  <h6 class="fw-bold text-sm mb-1" :class="recentOrder.status === 'shipped' || recentOrder.status === 'delivered' ? 'text-main' : 'text-secondary-custom'">{{ t('dashboard.step2Title', 'Shipped') }}</h6>
+                  <p class="text-xs mb-0" :class="recentOrder.status === 'shipped' || recentOrder.status === 'delivered' ? 'text-secondary-custom' : 'text-muted-custom'">{{ t('dashboard.step2Desc', 'Your item is on the way.') }}</p>
                 </div>
               </div>
 
@@ -145,17 +159,34 @@
                   <i v-else class="bi bi-circle"></i>
                 </div>
                 <div class="timeline-content ms-4">
-                  <h6 class="fw-bold text-sm mb-1" :class="recentOrder.status === 'delivered' ? 'text-main' : 'text-secondary-custom'">{{ t('dashboard.step3Title') }}</h6>
-                  <p class="text-xs mb-0" :class="recentOrder.status === 'delivered' ? 'text-secondary-custom' : 'text-muted-custom'">{{ t('dashboard.step3Desc') }}</p>
+                  <h6 class="fw-bold text-sm mb-1" :class="recentOrder.status === 'delivered' ? 'text-main' : 'text-secondary-custom'">{{ t('dashboard.step3Title', 'Delivered') }}</h6>
+                  <p class="text-xs mb-0" :class="recentOrder.status === 'delivered' ? 'text-secondary-custom' : 'text-muted-custom'">{{ t('dashboard.step3Desc', 'Order has been delivered.') }}</p>
                 </div>
               </div>
             </div>
           </div>
-          <div v-else class="tracker-card p-4 rounded-4 shadow-sm text-center py-5">
+          
+          <div v-else class="settings-card p-4 rounded-4 text-center py-5">
             <i class="bi bi-box-seam text-muted-custom fs-2 mb-3 d-block"></i>
             <h6 class="fw-bold text-main mb-1">No Recent Orders</h6>
-            <p class="text-secondary-custom text-xs mb-0">When you place an order, its status will appear here.</p>
+            <p class="text-secondary-custom text-xs mb-4">When you place an order, its status will appear here.</p>
+            <NuxtLink to="/categories" class="text-decoration-none">
+              <BaseButton variants="outline-primary" class="rounded-pill px-4 py-2 mt-2">
+                {{ t('dashboard.startShopping', 'Start Shopping') }}
+              </BaseButton>
+            </NuxtLink>
           </div>
+            </div>
+
+            <div v-else-if="activeTab === 'personal'" key="personal" class="d-flex flex-column gap-4">
+              <ProfileAvatarUploader />
+              <ProfileDetailsForm />
+            </div>
+
+            <div v-else-if="activeTab === 'security'" key="security">
+              <ProfileSecurityTab />
+            </div>
+          </transition>
         </div>
       </div>
     </div>
@@ -164,6 +195,12 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from "vue";
+import BaseAvatar from "~/components/base/base-avatar.vue";
+import BaseButton from "~/components/base/base-button.vue";
+import ProfileAvatarUploader from "~/components/profile/profile-avatar-uploader.vue";
+import ProfileDetailsForm from "~/components/profile/profile-details-form.vue";
+import ProfileSecurityTab from "~/components/profile/profile-security-tab.vue";
+
 import { useAuthStore } from "~/stores/authStore";
 import { useWishlistStore } from "~/stores/wishlistStore";
 import { useCartStore } from "~/stores/cartStore";
@@ -177,6 +214,8 @@ const authStore = useAuthStore();
 const wishlistStore = useWishlistStore();
 const cartStore = useCartStore();
 const { t, locale } = useI18n();
+
+const activeTab = ref('overview');
 
 const { data: orderData, status: orderStatus } = useLazyFetch("/api/orders", {
   query: { per_page: 1 },
@@ -207,16 +246,6 @@ onMounted(async () => {
     cartStore.initCart();
   }
 });
-
-// Member since calculation formatted nicely
-const memberSinceDate = computed(() => {
-  if (!authStore.userProfile?.created_at) return locale.value === "kh" ? "កក្កដា ២០២៦" : "July 2026";
-  const date = new Date(authStore.userProfile.created_at);
-  return date.toLocaleDateString(locale.value === "kh" ? "km-KH" : "en-US", {
-    year: "numeric",
-    month: "long",
-  });
-});
 </script>
 
 <style scoped>
@@ -230,36 +259,76 @@ const memberSinceDate = computed(() => {
   max-width: 1040px;
 }
 
-.profile-card,
-.metric-card,
-.tracker-card {
+.settings-card {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border) !important;
+  box-shadow: var(--shadow-sm);
 }
 
-.metric-card {
-  transition: all 0.3s ease;
-}
-
-.metric-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--color-primary) !important;
-}
-
-.action-hover {
-  transition: all 0.3s ease;
+.nav-list-item {
   background-color: transparent;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  color: var(--color-text);
 }
-.action-hover:hover {
+
+.nav-list-item:hover {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text);
+}
+
+.nav-list-item i {
+  transition: all 0.2s ease;
+}
+
+.icon-box {
+  width: 36px;
+  height: 36px;
+}
+
+.bg-secondary-light {
   background-color: var(--color-bg-secondary);
 }
 
-.cursor-pointer {
+
+.stat-hover {
+  transition: all 0.2s ease;
+}
+
+.stat-hover:hover {
+  border-color: var(--color-primary) !important;
+  transform: translateY(-2px);
+}
+
+.custom-select-box {
+  outline: none;
+  box-shadow: none !important;
   cursor: pointer;
 }
 
-.border-custom-glass {
-  border-color: var(--color-border) !important;
+.custom-option {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+.text-primary-brand {
+  color: var(--color-primary) !important;
+}
+
+/* Transitions */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
 }
 
 .timeline-step {
@@ -300,10 +369,26 @@ const memberSinceDate = computed(() => {
   background-color: var(--color-border);
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.border-custom-glass {
+  border-color: var(--color-border) !important;
+}
+
+.action-hover {
+  transition: all 0.3s ease;
+  background-color: transparent;
+}
+.action-hover:hover {
+  background-color: var(--color-bg-secondary);
+}
+
 .text-xs { font-size: 12px; }
 .text-sm { font-size: 14px; }
 .bg-primary-light { background-color: var(--color-primary-light); }
-.text-secondary-custom { color: var(--color-text-secondary); }
+.text-secondary-custom { color: var(--color-text-secondary) !important; }
 .text-muted-custom { color: var(--color-text-secondary); opacity: 0.8; }
 
 </style>
