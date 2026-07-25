@@ -241,8 +241,8 @@ const handleAddToCart = () => {
   cartStore.addToCart(itemToAdd);
 };
 
-const toggleWishlist = () => {
-  wishlistStore.toggleWishlist(product.value);
+const toggleWishlist = async () => {
+  await wishlistStore.toggleWishlist(product.value);
   if (wishlistStore.isInWishlist(product.value.id)) {
     showSuccess(locale.value === "kh" ? "បានបន្ថែមទៅចំណូលចិត្ត!" : "Added to Wishlist!");
   } else {

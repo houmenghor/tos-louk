@@ -160,7 +160,15 @@ export const useWishlistStore = defineStore("wishlist", () => {
     }
   };
 
-  const clearWishlist = () => {
+  const clearWishlist = async (deleteFromDatabase = false) => {
+    if (deleteFromDatabase) {
+      const authStore = useAuthStore();
+      if (authStore.access_token) {
+        await $fetch("/api/wishlists/clear", {
+          method: "DELETE"
+        });
+      }
+    }
     items.value = [];
     isInitialized.value = false;
     saveWishlist();

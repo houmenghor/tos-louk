@@ -1,0 +1,4 @@
+## Package Management & Terminal Execution
+- **Strict Package Manager**: You MUST use `bun` for all package installations, removals, and script executions (e.g., `bun add pinia`, `bun remove <package>`, `bun run dev`). NEVER use `npm`, `yarn`, or `pnpm`.
+- **Documentation Verification**: Before installing any new tool, module, or dependency, you MUST search the official documentation to verify the exact, up-to-date installation command. Do not guess or rely on historical data.
+- **CLI Executions**: When running one-off terminal commands or scripts without installing them globally, strictly use `bunx` (e.g., `bunx prettier --write .`).

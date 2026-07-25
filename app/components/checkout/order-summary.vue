@@ -1,5 +1,5 @@
 <template>
-  <div class="summary-card p-4 rounded-4 border sticky-top" style="top: 90px; z-index: 10;">
+  <div class="summary-card p-3 p-md-4 rounded-4 border sticky-top" style="top: 90px; z-index: 10;">
     <div class="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom border-custom">
       <h5 class="fw-bold text-main mb-0 d-flex align-items-center gap-2">
         {{ $t('checkout.orderSummary') }}
@@ -109,19 +109,26 @@
     </div>
 
     <!-- Submit Button -->
-    <button
-      @click="emit('submit')"
-      :disabled="loading || cartStore.items.length === 0"
-      class="btn btn-primary-custom rounded-pill w-100 py-3.5 fw-bold fs-6 shadow-hover transition-all d-flex align-items-center justify-content-center gap-2"
-    >
-      <span v-if="loading" class="spinner-border spinner-border-sm" role="status"></span>
-      <span>{{ loading ? $t('checkout.processing') : $t('checkout.placeOrder') }}</span>
-    </button>
+    <div class="d-flex gap-3">
+      <BaseButton @click="$emit('back')" variants="outline-primary" class="px-4 flex-shrink-0 fw-semibold">
+        <i class="bi bi-arrow-left me-2"></i> Back
+      </BaseButton>
+      <BaseButton
+        @click="emit('submit')"
+        :disabled="loading || cartStore.items.length === 0"
+        :isLoading="loading"
+        variants="primary"
+        class="w-100 fw-bold fs-6 shadow-hover transition-all d-flex align-items-center justify-content-center gap-2"
+      >
+        <span>{{ loading ? $t('checkout.processing') : $t('checkout.placeOrder') }}</span>
+      </BaseButton>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from "vue";
+import BaseButton from "~/components/base/base-button.vue";
 import { useCartStore } from "~/stores/cartStore";
 
 const props = defineProps({
@@ -135,7 +142,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["submit"]);
+const emit = defineEmits(["submit", "back"]);
 const cartStore = useCartStore();
 
 const grandTotal = computed(() => {

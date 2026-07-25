@@ -1,8 +1,7 @@
 <template>
-  <div class="checkout-card p-4 p-md-5 rounded-4 border mb-4">
+  <div class="checkout-card p-3 p-md-4 rounded-4 border mb-4">
     <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom border-custom flex-wrap gap-2">
       <h4 class="fw-bold text-main mb-0 d-flex align-items-center gap-3">
-        <span class="step-badge flex-shrink-0 rounded-circle d-flex align-items-center justify-content-center fw-bold text-white shadow-sm">1</span>
         {{ $t('checkout.shippingInfo') }}
       </h4>
       <span class="secure-badge rounded-pill px-3 py-1 text-xs d-flex align-items-center gap-1.5 fw-semibold text-nowrap">
@@ -10,7 +9,7 @@
       </span>
     </div>
 
-    <div class="row g-4">
+    <div class="row gx-3">
       <!-- Full Name -->
       <div class="col-md-6">
         <BaseInput
@@ -70,20 +69,6 @@
           class="mb-0 custom-checkout-select"
           searchable
         />
-
-        <!-- Location verification warning note on mismatch -->
-        <div v-if="form.shipping_latitude && form.shipping_longitude && !isLocationMismatch" class="text-success text-xxs fw-semibold d-flex align-items-center gap-1 mt-2">
-          {{ $t('checkout.locVerified') }}
-        </div>
-        <div v-if="isLocationMismatch" class="alert alert-warning py-2 px-3 mt-2 rounded-3 text-xxs d-flex align-items-start gap-2 mb-0">
-          <i class="bi bi-exclamation-triangle-fill text-warning mt-0.5"></i>
-          <span v-if="form.shipping_province === 'Phnom Penh'">
-            {{ $t('checkout.locWarningOutsidePP') }}
-          </span>
-          <span v-else>
-            {{ $t('checkout.locWarningInsidePP') }}
-          </span>
-        </div>
       </div>
 
       <!-- Street Address -->
@@ -131,12 +116,20 @@
           left-icon="bi bi-journal-text"
         />
       </div>
+      
+      <!-- Wizard Actions -->
+      <div class="col-12 mt-4">
+        <BaseButton @click="$emit('next')" variants="primary" class="w-100 fw-bold">
+          Continue to Payment <i class="bi bi-arrow-right ms-2"></i>
+        </BaseButton>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, reactive } from "vue";
+import BaseButton from "~/components/base/base-button.vue";
 import { CAMBODIA_PROVINCES } from "~/utils/provinces";
 
 const { locale } = useI18n();
@@ -166,7 +159,7 @@ const showFieldErr = (field) => {
   return props.errors[field] && (props.submitCount > 0 || touchedFields[field]);
 };
 
-const emit = defineEmits(["updateField"]);
+const emit = defineEmits(["updateField", "next"]);
 
 const updateField = (field, value) => {
   emit("updateField", field, value);
