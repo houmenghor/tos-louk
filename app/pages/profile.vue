@@ -26,13 +26,6 @@
               <i class="bi bi-person fs-5"></i>
               <span class="fw-semibold text-sm">Personal Info</span>
             </button>
-
-            <button @click="activeTab = 'security'"
-              class="settings-nav-link d-flex align-items-center gap-3 px-3 py-2.5 text-start transition-all w-100 rounded-3"
-              :class="{ active: activeTab === 'security' }">
-              <i class="bi bi-shield-lock fs-5"></i>
-              <span class="fw-semibold text-sm">Security & Password</span>
-            </button>
           </div>
         </div>
 
@@ -43,15 +36,11 @@
               <ProfileAvatarUploader />
               <ProfileDetailsForm />
             </div>
-
-            <div v-else-if="activeTab === 'security'" key="security">
-              <ProfileSecurityTab />
-            </div>
           </transition>
         </div>
       </div>
     </div>
-  </div>
+  </div>e
 </template>
 
 <script setup>
@@ -61,10 +50,14 @@ import { useCartStore } from "~/stores/cartStore";
 
 import ProfileAvatarUploader from "~/components/profile/profile-avatar-uploader.vue";
 import ProfileDetailsForm from "~/components/profile/profile-details-form.vue";
-import ProfileSecurityTab from "~/components/profile/profile-security-tab.vue";
 
 definePageMeta({
   layout: "default",
+  middleware: [
+    function (to, from) {
+      return navigateTo("/user?tab=personal");
+    }
+  ]
 });
 
 const wishlistStore = useWishlistStore();

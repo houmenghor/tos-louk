@@ -7,8 +7,7 @@
       >
         <div class="fw-medium tracking-wide text-white small d-flex align-items-center justify-content-center justify-content-md-start gap-2 text-center order-2 order-md-1">
           <i class="bi bi-truck text-white opacity-90 fs-6"></i>
-          <span v-if="locale === 'kh'">ដឹកជញ្ជូនឥតគិតថ្លៃសម្រាប់ការទិញលើសពី {{ freeShippingThreshold }}</span>
-          <span v-else>FREE DELIVERY OVER {{ freeShippingThreshold }}</span>
+          <span>{{ $t('navbar.freeDelivery', 'FREE DELIVERY OVER') }} {{ freeShippingThreshold }}</span>
         </div>
 
         <div class="d-none d-md-flex align-items-center gap-3 small order-1 order-md-2">
@@ -213,7 +212,7 @@
                     </NuxtLink>
                   </li>
                   <li>
-                    <NuxtLink @click="closeProfileDropdown" to="/profile" class="dropdown-item py-2 fw-medium">
+                    <NuxtLink @click="closeProfileDropdown" to="/user?tab=personal" class="dropdown-item py-2 fw-medium">
                       <i class="bi bi-person-gear me-2 text-primary-brand"></i>
                       {{ t("navbar.accountSettings", "Account Settings") }}
                     </NuxtLink>
@@ -383,7 +382,7 @@
                   @click.stop="toggleTheme"
                   style="width: 2.5rem; height: 1.25rem; margin-left: 0; float: none; box-shadow: none;"
                 />
-                <label class="form-check-label text-main cursor-pointer m-0" for="mobileThemeSwitch">Dark</label>
+                <label class="form-check-label text-main cursor-pointer m-0" for="mobileThemeSwitch">{{ $t('navbar.themeDark', 'Dark') }}</label>
               </div>
               <template #fallback>
                 <div class="form-check form-switch m-0 p-0 d-flex align-items-center gap-2">
@@ -393,7 +392,7 @@
                     role="switch"
                     style="width: 2.5rem; height: 1.25rem; margin-left: 0; float: none; box-shadow: none;"
                   />
-                  <label class="form-check-label text-main cursor-pointer m-0">Dark</label>
+                  <label class="form-check-label text-main cursor-pointer m-0">{{ $t('navbar.themeDark', 'Dark') }}</label>
                 </div>
               </template>
             </ClientOnly>
@@ -411,7 +410,7 @@
               class="btn btn-link p-0 text-decoration-none border-0 d-inline-flex align-items-center gap-2"
             >
               <img src="https://flagcdn.com/kh.svg" width="20" height="15" alt="Cambodia" class="rounded-1 shadow-sm" style="object-fit: cover;" />
-              <span>Khmer</span>
+              <span>{{ $t('navbar.langKhmer', 'Khmer') }}</span>
             </button>
             <span class="text-main opacity-50">|</span>
             <button
@@ -424,7 +423,7 @@
               class="btn btn-link p-0 text-decoration-none border-0 d-inline-flex align-items-center gap-2"
             >
               <img src="https://flagcdn.com/gb.svg" width="20" height="15" alt="United Kingdom" class="rounded-1 shadow-sm" style="object-fit: cover;" />
-              <span>English</span>
+              <span>{{ $t('navbar.langEnglish', 'English') }}</span>
             </button>
           </div>
         </nav>

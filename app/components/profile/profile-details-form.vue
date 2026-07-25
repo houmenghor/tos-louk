@@ -108,9 +108,9 @@ const { showSuccess, showError } = useAppToast();
 const { locale, t } = useI18n();
 
 const genderOptions = computed(() => [
-  { value: "Male", label: locale.value === "kh" ? "ប្រុស" : "Male" },
-  { value: "Female", label: locale.value === "kh" ? "ស្រី" : "Female" },
-  { value: "Other", label: locale.value === "kh" ? "ផ្សេងៗ" : "Other" },
+  { value: 1, label: locale.value === "kh" ? "ប្រុស" : "Male" },
+  { value: 2, label: locale.value === "kh" ? "ស្រី" : "Female" },
+  { value: 3, label: locale.value === "kh" ? "ផ្សេងៗ" : "Other" },
 ]);
 
 const originalEmail = ref("");
@@ -149,12 +149,13 @@ const populateProfileFields = () => {
     profileForm.full_name = authStore.userProfile.full_name || "";
     profileForm.email = authStore.userProfile.email || "";
     originalEmail.value = authStore.userProfile.email || "";
-    profileForm.phone =
-      authStore.userProfile.phone || authStore.userProfile.phone_number || "";
-    profileForm.gender = authStore.userProfile.gender || "";
-    profileForm.dob = authStore.userProfile.dob || "";
-    profileForm.address = authStore.userProfile.address || "";
-    profileForm.country = authStore.userProfile.country || "";
+
+    const details = authStore.userProfile.userProfile || {};
+    profileForm.phone = details.phone || "";
+    profileForm.gender = details.gender !== undefined && details.gender !== null ? Number(details.gender) : "";
+    profileForm.dob = details.date_of_birth || "";
+    profileForm.address = details.street || "";
+    profileForm.country = details.country || "";
   }
 };
 
@@ -176,9 +177,9 @@ const submitProfile = handleProfileSubmit(async () => {
     const payload = {
       full_name: profileForm.full_name,
       phone: profileForm.phone || null,
-      gender: profileForm.gender || null,
-      dob: profileForm.dob || null,
-      address: profileForm.address || null,
+      gender: profileForm.gender !== "" && profileForm.gender !== null ? Number(profileForm.gender) : null,
+      date_of_birth: profileForm.dob || null,
+      street: profileForm.address || null,
       country: profileForm.country || null,
     };
     await authStore.updateProfile(payload);

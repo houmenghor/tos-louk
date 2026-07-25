@@ -15,7 +15,11 @@
     "logout": "Logout",
     "myAccount": "My Account",
     "myDashboard": "My Dashboard",
-    "myWishlist": "My Wishlist"
+    "myWishlist": "My Wishlist",
+    "langKhmer": "Khmer",
+    "langEnglish": "English",
+    "themeDark": "Dark",
+    "freeDelivery": "FREE DELIVERY OVER"
   },
   "profile": {
     "title": "My Profile",
@@ -84,7 +88,7 @@
   "category": {
     "all": "All",
     "noProducts": "No products found in this category yet.",
-    "viewAll": "View All Products \u2192"
+    "viewAll": "View All Products →"
   },
   "apiError": {
     "401": "Invalid email or password. Please check your credentials and try again.",
@@ -240,7 +244,16 @@
     "locWarningOutsidePP": "Your location seems to be outside Phnom Penh. Please note that provincial deliveries incur a $2.00 delivery fee.",
     "locWarningInsidePP": "Your location seems to be in Phnom Penh. Please double-check your selected province.",
     "deliveryMethod": "Delivery Method",
-    "selectDeliveryMethod": "Select Delivery Method"
+    "selectDeliveryMethod": "Select Delivery Method",
+    "qrScanned": "QR scanned",
+    "confirmPaymentApp": "Confirm the payment in your banking app.",
+    "paymentFailed": "Payment Failed",
+    "qrExpired": "QR Expired",
+    "scanHelper": "Scan with mobile banking app that supports KHQR",
+    "expiresIn": "Expires in",
+    "stepShipping": "Shipping",
+    "stepPayment": "Payment",
+    "stepSummary": "Summary"
   },
   "dashboard": {
     "myDashboard": "My Dashboard",
@@ -274,7 +287,8 @@
     "step2Desc": "Dispatched via Fast Express. Tracking: #FE9812A.",
     "step3Title": "Out for Delivery & Received",
     "step3Desc": "Expected delivery: July 12, 2026.",
-    "startShopping": "Start Shopping"
+    "startShopping": "Start Shopping",
+    "appearance": "Appearance Settings"
   },
   "validation": {
     "nameRequired": "Full name is required.",
@@ -299,5 +313,34 @@
     "currentPasswordRequired": "Current password is required.",
     "confirmNewPasswordRequired": "Please confirm your new password.",
     "newPasswordsMatch": "New passwords do not match."
+  },
+  "categories": {
+    "home": "Home",
+    "category": "Category",
+    "search": "Search",
+    "searchPlaceholder": "Search categories and products...",
+    "priceRange": "Price Range",
+    "sortBy": "Sort By",
+    "view": "View",
+    "activeFilters": "Active Filters",
+    "clearAll": "Clear All",
+    "categories": "Categories",
+    "min": "Min",
+    "max": "Max",
+    "applyFilter": "Apply Filter",
+    "filterByBrand": "Filter by Brand",
+    "searchBrandsPlaceholder": "Search brands...",
+    "noProductsFound": "No Products Found",
+    "tryAdjustingFilters": "Try adjusting your filters or search query.",
+    "sortFeatured": "Sort: Featured",
+    "sortPriceLow": "Price: Low to High",
+    "sortPriceHigh": "Price: High to Low",
+    "allPrices": "All Prices",
+    "under50": "Under $50",
+    "50to100": "$50 to $100",
+    "over100": "Over $100",
+    "12perPage": "12 per page",
+    "24perPage": "24 per page",
+    "36perPage": "36 per page"
   }
 }

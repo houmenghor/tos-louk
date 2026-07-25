@@ -1,8 +1,7 @@
 <template>
-  <div class="checkout-card p-4 p-md-5 rounded-4 border">
+  <div class="checkout-card p-3 p-md-4 rounded-4 border">
     <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom border-custom flex-wrap gap-2">
       <h4 class="fw-bold text-main mb-0 d-flex align-items-center gap-3">
-        <span class="step-badge flex-shrink-0 rounded-circle d-flex align-items-center justify-content-center fw-bold text-white shadow-sm">2</span>
         {{ $t('checkout.paymentMethod') }}
       </h4>
       <span class="badge bg-success-light text-success border border-success border-opacity-25 rounded-pill text-xs px-3 py-1 fw-semibold text-nowrap">
@@ -82,11 +81,23 @@
           />
         </label>
       </div>
+
+      <!-- Wizard Actions -->
+      <div class="col-12 mt-4 d-flex gap-3">
+        <BaseButton @click="$emit('back')" variants="outline-primary" class="px-4 flex-shrink-0 fw-semibold">
+          <i class="bi bi-arrow-left me-2"></i> Back
+        </BaseButton>
+        <BaseButton @click="$emit('next')" variants="primary" class="w-100 fw-bold d-flex align-items-center justify-content-center gap-2">
+          Continue to Review <i class="bi bi-arrow-right"></i>
+        </BaseButton>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import BaseButton from "~/components/base/base-button.vue";
+
 defineProps({
   paymentMethod: {
     type: String,
@@ -94,7 +105,7 @@ defineProps({
   },
 });
 
-const emit = defineEmits(["update:paymentMethod"]);
+const emit = defineEmits(["update:paymentMethod", "back", "next"]);
 </script>
 
 <style scoped>

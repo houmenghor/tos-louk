@@ -212,7 +212,7 @@ const submitEmail = handleEmailSubmit(async () => {
   try {
     await authStore.changeEmail({ new_email: emailForm.new_email });
     pendingEmailCookie.value = emailForm.new_email;
-    showSuccess("Verification code sent to your new email.");
+    showSuccess("Verification code sent to your new email. If you don't receive it within a few minutes, please check your spam or junk folder.");
     resetEmailForm();
     startTimer();
     setTimeout(() => { document.getElementById("inline-otp-0")?.focus(); }, 100);

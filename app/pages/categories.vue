@@ -5,9 +5,9 @@
       <div class="container d-flex">
         <!-- <h4 class="fw-bold mb-0 text-main mx-auto position-absolute start-50 translate-middle-x" style="color: #002d5b;">Category</h4> -->
         <div class="breadcrumb-text small">
-          <NuxtLink to="/" class="text-primary text-decoration-none">Home</NuxtLink>
+          <NuxtLink to="/" class="text-primary text-decoration-none">{{ $t('navbar.home') }}</NuxtLink>
           <span class="text-muted-custom mx-2">/</span>
-          <span class="text-muted-custom">Category</span>
+          <span class="text-muted-custom">{{ $t('navbar.categories') }}</span>
         </div>
       </div>
     </div>
@@ -19,14 +19,14 @@
           
           <!-- Search -->
           <div class="flex-grow-1">
-            <label class="form-label fw-bold mb-2 small" style="font-size: 15px; color: var(--color-text);">Search</label>
+            <label class="form-label fw-bold mb-2 small text-main">{{ $t('categories.search') }}</label>
             <div class="input-group">
               <input 
                 type="text" 
                 v-model="searchQuery" 
                 @keyup.enter="handleSearch"
                 class="form-control top-filter-input" 
-                placeholder="Search categories and products..."
+                :placeholder="$t('categories.searchPlaceholder')"
               >
               <button @click="handleSearch" class="btn btn-primary-custom d-flex align-items-center justify-content-center px-4 search-addon-btn" type="button">
                 <i class="bi bi-search text-white"></i>
@@ -36,11 +36,11 @@
 
           <!-- Price Range -->
           <div class="filter-dropdown-wrapper" style="min-width: 160px;">
-            <label class="form-label fw-bold mb-2 small" style="font-size: 15px; color: var(--color-text);">Price Range</label>
+            <label class="form-label fw-bold mb-2 small text-main">{{ $t('categories.priceRange') }}</label>
             <BaseSelectOption 
               v-model="priceRangeSelect" 
               :options="priceOptions"
-              placeholder="All Prices"
+              :placeholder="$t('categories.allPrices')"
               class="top-filter-select"
               style="margin-bottom: 0 !important;"
             />
@@ -48,11 +48,11 @@
 
           <!-- Sort By -->
           <div class="filter-dropdown-wrapper" style="min-width: 160px;">
-            <label class="form-label fw-bold mb-2 small" style="font-size: 15px; color: var(--color-text);">Sort By</label>
+            <label class="form-label fw-bold mb-2 small text-main">{{ $t('categories.sortBy') }}</label>
             <BaseSelectOption 
               v-model="sortBy" 
               :options="sortOptions"
-              placeholder="Featured"
+              :placeholder="$t('categories.featured')"
               class="top-filter-select"
               style="margin-bottom: 0 !important;"
             />
@@ -61,7 +61,7 @@
           <!-- View -->
           <div class="d-flex align-items-end gap-3 flex-wrap flex-sm-nowrap">
             <div>
-              <label class="form-label fw-bold mb-2 small d-block" style="font-size: 15px; color: var(--color-text);">View</label>
+              <label class="form-label fw-bold mb-2 small d-block text-main">{{ $t('categories.view') }}</label>
               <div class="d-flex gap-2">
                 <button 
                   class="btn view-toggle-btn d-flex align-items-center justify-content-center" 
@@ -99,7 +99,7 @@
           <hr class="my-4" style="border-color: var(--color-border); opacity: 0.5;">
           <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
             <div class="d-flex align-items-center flex-wrap gap-2">
-              <span class="fw-bold me-2 text-main">Active Filters:</span>
+              <span class="fw-bold me-2 text-main">{{ $t('categories.activeFilters') }}:</span>
               
               <!-- Search Pill -->
               <span v-if="searchQuery" class="badge position-relative overflow-hidden d-flex align-items-center gap-2 px-3 py-2 border-0 fw-medium rounded-pill" style="color: var(--color-primary); z-index: 1;">
@@ -139,7 +139,7 @@
             </div>
 
             <button @click="resetFilters" class="btn btn-outline-primary-custom px-4 rounded-pill fw-medium clear-all-btn d-flex align-items-center justify-content-center" style="height: 38px;">
-              Clear All
+              {{ $t('categories.clearAll') }}
             </button>
           </div>
         </template>
@@ -153,7 +153,7 @@
           <div class="sidebar-filters d-flex flex-column gap-4">
             <!-- Categories Accordion Widget -->
             <div class="product-categories-widget widget-item mb-4">
-              <h3 class="widget-title">Categories</h3>
+              <h3 class="widget-title">{{ $t('navbar.categories') }}</h3>
               <ul class="category-tree list-unstyled mb-0">
                 <li v-for="cat in categories" :key="cat.id" class="category-item">
                   <div class="category-header d-flex justify-content-between align-items-center" @click="toggleAccordion(cat.id)">
@@ -178,16 +178,15 @@
               </ul>
             </div>
 
-            <!-- Price Range Widget -->
             <div class="filter-widget p-3 border rounded-3 bg-card">
               <h5 class="fw-bold mb-3 widget-title position-relative ps-3">
-                Price Range
+                {{ $t('categories.priceRange') }}
               </h5>
               <div
                 class="d-flex justify-content-between mb-2 small text-muted-custom"
               >
-                <span>Min: ${{ tempMinPrice }}</span>
-                <span>Max: ${{ tempMaxPrice }}</span>
+                <span>{{ $t('categories.min') }}: ${{ tempMinPrice }}</span>
+                <span>{{ $t('categories.max') }}: ${{ tempMaxPrice }}</span>
               </div>
 
               <!-- Double Range Slider Track -->
@@ -236,14 +235,14 @@
                 @click="applyPriceFilter"
                 class="btn btn-primary-custom w-100 py-2 btn-sm fw-bold"
               >
-                Apply Filter
+                {{ $t('categories.applyFilter') }}
               </button>
             </div>
 
             <!-- Filter by Brand Widget -->
             <div class="filter-widget p-3 border rounded-3 bg-card">
               <h5 class="fw-bold mb-3 widget-title position-relative ps-3">
-                Filter by Brand
+                {{ $t('categories.filterByBrand') }}
               </h5>
 
               <!-- Search Brand input -->
@@ -253,7 +252,7 @@
                   @keyup.enter="applyBrandFilter"
                   type="text"
                   class="form-control form-control-sm border bg-input ps-3 pe-4"
-                  placeholder="Search brands..."
+                  :placeholder="$t('categories.searchBrandsPlaceholder')"
                 />
                 <i
                   class="bi bi-search position-absolute end-0 top-50 translate-middle-y me-2 small text-muted-custom"
@@ -293,13 +292,13 @@
                   @click="clearBrandFilter"
                   class="btn btn-link btn-sm p-0 text-decoration-none text-muted-custom hover-primary"
                 >
-                  Clear All
+                  {{ $t('categories.clearAll') }}
                 </button>
                 <button
                   @click="applyBrandFilter"
                   class="btn btn-primary-custom py-1.5 px-3 btn-sm fw-bold"
                 >
-                  Apply Filter
+                  {{ $t('categories.applyFilter') }}
                 </button>
               </div>
             </div>
@@ -326,15 +325,15 @@
               class="col-12 text-center py-5"
             >
               <i class="bi bi-inbox-fill text-muted display-1 d-block mb-3"></i>
-              <h4 class="fw-bold text-main">No Products Found</h4>
+              <h4 class="fw-bold text-main">{{ $t('categories.noProductsFound') }}</h4>
               <p class="subtitle-text">
-                Try adjusting your filters or search query.
+                {{ $t('categories.tryAdjustingFilters') }}
               </p>
               <button
                 @click="resetFilters"
                 class="btn btn-primary-custom px-4 py-2 mt-2"
               >
-                Clear all filters
+                {{ $t('categories.clearAll') }}
               </button>
             </div>
           </transition-group>

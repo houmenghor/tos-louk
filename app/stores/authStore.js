@@ -167,7 +167,7 @@ export const useAuthStore = defineStore("auth", () => {
       body: payload,
     });
 
-    userProfile.value = response.data || response;
+    await fetchProfile(true);
     return response;
   };
 

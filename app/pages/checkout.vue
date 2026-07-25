@@ -52,20 +52,17 @@
                 style="width: 56px; height: 56px;">
                 <i class="bi bi-check-lg text-success fs-2" style="margin-top: 2px;"></i>
               </div>
-              <h3 class="mb-2 fw-semibold"
-                style="color: #003366; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-                QR scanned</h3>
-              <p class="text-secondary" style="font-size: 1.1rem; color: #5a6b8c;">Confirm the payment in your banking
-                app.</p>
+              <h3 class="mb-2 fw-semibold text-main">
+                {{ $t('checkout.qrScanned') }}</h3>
+              <p class="text-secondary-custom fs-5">{{ $t('checkout.confirmPaymentApp') }}</p>
             </div>
 
             <!-- KHQR Ticket Design (Hidden when Scanned) -->
-            <div v-else class="khqr-ticket bg-white shadow-sm mb-3 position-relative overflow-hidden"
-              style="width: 280px; border-radius: 16px; border: 1px solid #f3f4f6;">
+            <div v-else class="khqr-ticket bg-surface shadow-sm mb-3 position-relative overflow-hidden"
+              style="width: 280px; border-radius: 16px; border: 1px solid var(--color-border);">
               <!-- Red Header -->
-              <div class="khqr-header text-white text-center py-3 position-relative" style="background-color: #e51d20;">
-                <h4 class="fw-bold mb-0 tracking-wide d-flex align-items-center justify-content-center"
-                  style="font-family: 'Arial', sans-serif;">
+              <div class="khqr-header text-white text-center py-3 position-relative bg-danger">
+                <h4 class="fw-bold mb-0 tracking-wide d-flex align-items-center justify-content-center">
                   KH<span style="font-weight: 300;">QR</span>
                 </h4>
                 <!-- Cut out corner effect -->
@@ -75,19 +72,18 @@
 
               <!-- Account & Amount Info -->
               <div class="px-4 py-3 text-start">
-                <p class="text-uppercase mb-1"
-                  style="color: #2b3a55; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px;">
+                <p class="text-uppercase mb-1 text-main fw-semibold small" style="letter-spacing: 0.5px;">
                   {{ settingStore.general?.store_name || 'TOS LOUK' }}
                 </p>
                 <div class="d-flex align-items-baseline gap-1">
-                  <h3 class="fw-bold mb-0 text-dark">{{ checkoutResponse.payment.amount }}</h3>
-                  <span class="text-muted fw-semibold" style="font-size: 0.75rem;">USD</span>
+                  <h3 class="fw-bold mb-0 text-main">{{ checkoutResponse.payment.amount }}</h3>
+                  <span class="text-secondary-custom fw-semibold small">USD</span>
                 </div>
               </div>
 
               <!-- Dashed Separator -->
               <div class="px-3">
-                <hr class="m-0" style="border-top: 2px dashed #d1d5db; border-bottom: none; opacity: 1;">
+                <hr class="m-0" style="border-top: 2px dashed var(--color-border); border-bottom: none; opacity: 1;">
               </div>
 
               <!-- QR Code Area -->
@@ -97,31 +93,31 @@
                 <!-- Center Logo Overlay -->
                 <div
                   class="position-absolute top-50 start-50 translate-middle bg-dark text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm"
-                  style="width: 40px; height: 40px; border: 3.5px solid white;">
-                  <span class="fw-bold" style="font-size: 1.1rem; margin-top: -2px;">$</span>
+                  style="width: 40px; height: 40px; border: 3.5px solid var(--color-surface);">
+                  <span class="fw-bold fs-5" style="margin-top: -2px;">$</span>
                 </div>
 
                 <!-- Expired / Failed Overlay -->
                 <div v-if="timeRemaining <= 0 || realtimeStatus === 'failed'"
-                  class="position-absolute top-0 start-0 w-100 h-100 bg-white bg-opacity-90 d-flex flex-column align-items-center justify-content-center">
+                  class="position-absolute top-0 start-0 w-100 h-100 bg-surface bg-opacity-90 d-flex flex-column align-items-center justify-content-center">
                   <i class="bi bi-x-circle text-danger fs-1 mb-2"></i>
-                  <span class="fw-bold text-danger">{{ realtimeStatus === 'failed' ? 'Payment Failed' : 'QR Expired'
+                  <span class="fw-bold text-danger">{{ realtimeStatus === 'failed' ? $t('checkout.paymentFailed') : $t('checkout.qrExpired')
                     }}</span>
                 </div>
               </div>
             </div>
 
             <!-- Helper text (Hidden when Scanned) -->
-            <p v-if="realtimeStatus !== 'scanned'" class="text-secondary-custom mb-3 text-center"
-              style="max-width: 250px; font-size: 0.9rem; line-height: 1.4;">
-              Scan with mobile banking app that supports KHQR
+            <p v-if="realtimeStatus !== 'scanned'" class="text-secondary-custom mb-3 text-center small"
+              style="max-width: 250px; line-height: 1.4;">
+              {{ $t('checkout.scanHelper') }}
             </p>
 
             <!-- Timer (Hidden when Scanned) -->
             <div v-if="realtimeStatus !== 'scanned'"
               class="text-danger fw-semibold d-flex align-items-center justify-content-center gap-2">
               <i class="bi bi-clock-history"></i>
-              <span>Expires in: {{ countdownText }}</span>
+              <span>{{ $t('checkout.expiresIn') }}: {{ countdownText }}</span>
             </div>
           </div>
 
@@ -137,7 +133,7 @@
             </p>
           </div>
           <div class="d-flex justify-content-center gap-3 flex-wrap pt-2">
-            <NuxtLink to="/user/profile"
+            <NuxtLink to="/user"
               class="btn btn-primary-custom rounded-pill px-4 py-3 fw-semibold transition-all d-flex align-items-center gap-2">
               <i class="bi bi-box-seam"></i> {{ $t('checkout.viewOrders') }}
             </NuxtLink>
@@ -148,28 +144,112 @@
         </div>
       </div>
 
-      <!-- Main Checkout Modular Grid -->
-      <div v-else class="row g-4">
-        <!-- Left Column: Shipping & Payment Details -->
-        <div class="col-lg-7 col-xl-8">
-          <CheckoutShippingForm
-            :form="values"
-            :errors="errors"
-            :submit-count="submitCount"
-            :meta="meta"
-            @updateField="setFieldValue"
-          />
+      <!-- Main Checkout Wizard -->
+      <template v-else>
+        <!-- Premium Stepper UI -->
+      <div class="checkout-stepper mb-5 mx-auto" style="max-width: 500px; padding-bottom: 2.5rem;">
+        <div class="d-flex align-items-center">
+          
+          <!-- Step 1 -->
+          <div class="position-relative d-flex justify-content-center">
+            <div class="step-circle rounded-circle d-flex align-items-center justify-content-center transition-stepper fw-bold fs-5"
+                 :class="currentStep >= 1 ? 'active-step' : 'inactive-step'"
+                 style="width: 44px; height: 44px; z-index: 2;">
+              <i v-if="currentStep > 1" class="bi bi-check-lg fs-4 fade-in"></i>
+              <span v-else class="fade-in">1</span>
+            </div>
+            <div class="position-absolute mt-2 pt-1 text-xs fw-bold text-center transition-stepper text-nowrap" 
+                 style="top: 100%;"
+                 :class="currentStep >= 1 ? 'text-main' : 'text-secondary-custom'">
+              {{ $t('checkout.stepShipping') }}
+            </div>
+          </div>
 
-          <CheckoutPaymentMethods :payment-method="values.payment_method" @update:paymentMethod="(val) => {
-            setFieldValue('payment_method', val);
-          }" />
-        </div>
+          <!-- Line 1 to 2 -->
+          <div class="flex-grow-1 transition-stepper mx-2" 
+               :style="{
+                 height: '3px',
+                 background: currentStep >= 2 ? 'linear-gradient(90deg, var(--color-primary), #00dc82)' : 'var(--color-border)',
+                 boxShadow: currentStep >= 2 ? '0 0 8px rgba(3, 185, 113, 0.4)' : 'none',
+                 borderRadius: '3px'
+               }">
+          </div>
 
-        <!-- Right Column: Order Summary (Sticky Card) -->
-        <div class="col-lg-5 col-xl-4">
-          <CheckoutOrderSummary :delivery-fee="currentDeliveryFee" :loading="loading" @submit="submitOrder" />
+          <!-- Step 2 -->
+          <div class="position-relative d-flex justify-content-center">
+            <div class="step-circle rounded-circle d-flex align-items-center justify-content-center transition-stepper fw-bold fs-5"
+                 :class="currentStep >= 2 ? 'active-step' : 'inactive-step'"
+                 style="width: 44px; height: 44px; z-index: 2;">
+              <i v-if="currentStep > 2" class="bi bi-check-lg fs-4 fade-in"></i>
+              <span v-else class="fade-in">2</span>
+            </div>
+            <div class="position-absolute mt-2 pt-1 text-xs fw-bold text-center transition-stepper text-nowrap" 
+                 style="top: 100%;"
+                 :class="currentStep >= 2 ? 'text-main' : 'text-secondary-custom'">
+              {{ $t('checkout.stepPayment') }}
+            </div>
+          </div>
+
+          <!-- Line 2 to 3 -->
+          <div class="flex-grow-1 transition-stepper mx-2" 
+               :style="{
+                 height: '3px',
+                 background: currentStep >= 3 ? 'linear-gradient(90deg, var(--color-primary), #00dc82)' : 'var(--color-border)',
+                 boxShadow: currentStep >= 3 ? '0 0 8px rgba(3, 185, 113, 0.4)' : 'none',
+                 borderRadius: '3px'
+               }">
+          </div>
+
+          <!-- Step 3 -->
+          <div class="position-relative d-flex justify-content-center">
+            <div class="step-circle rounded-circle d-flex align-items-center justify-content-center transition-stepper fw-bold fs-5"
+                 :class="currentStep === 3 ? 'active-step' : 'inactive-step'"
+                 style="width: 44px; height: 44px; z-index: 2;">
+              <span class="fade-in">3</span>
+            </div>
+            <div class="position-absolute mt-2 pt-1 text-xs fw-bold text-center transition-stepper text-nowrap" 
+                 style="top: 100%;"
+                 :class="currentStep === 3 ? 'text-main' : 'text-secondary-custom'">
+              {{ $t('checkout.stepSummary') }}
+            </div>
+          </div>
+
         </div>
       </div>
+
+      <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+          <div v-if="currentStep === 1" key="step1" class="w-100">
+            <CheckoutShippingForm
+              :form="values"
+              :errors="errors"
+              :submit-count="localSubmitCount"
+              :meta="meta"
+              @updateField="setFieldValue"
+              @next="validateAndNextStep(1)"
+            />
+          </div>
+
+          <div v-else-if="currentStep === 2" key="step2" class="w-100">
+            <CheckoutPaymentMethods 
+              :payment-method="values.payment_method" 
+              @update:paymentMethod="(val) => { setFieldValue('payment_method', val); }" 
+              @back="currentStep = 1"
+              @next="currentStep = 3"
+            />
+          </div>
+
+          <div v-else-if="currentStep === 3" key="step3" class="w-100">
+            <CheckoutOrderSummary 
+              :delivery-fee="currentDeliveryFee" 
+              :loading="loading" 
+              @back="currentStep = 2"
+              @submit="submitOrder" 
+            />
+          </div>
+        </div>
+      </div>
+      </template>
     </div>
   </div>
 </template>
@@ -206,6 +286,9 @@ const timeRemaining = ref(300);
 const realtimeStatus = ref('pending');
 let timerInterval = null;
 let pollInterval = null;
+
+const currentStep = ref(1);
+const localSubmitCount = ref(0);
 
 const countdownText = computed(() => {
   const minutes = Math.floor(timeRemaining.value / 60);
@@ -276,7 +359,7 @@ onUnmounted(() => {
 });
 
 // Setup VeeValidate form management
-const { handleSubmit, errors, values, setFieldValue, resetForm, submitCount, meta } = useForm({
+const { handleSubmit, errors, values, setFieldValue, resetForm, submitCount, meta, validate } = useForm({
   validationSchema: toTypedSchema(getCheckoutSchema(t)),
   initialValues: {
     customer_name: "",
@@ -291,6 +374,22 @@ const { handleSubmit, errors, values, setFieldValue, resetForm, submitCount, met
     payment_method: "bakong",
   },
 });
+
+const validateAndNextStep = async (step) => {
+  localSubmitCount.value++;
+  const { valid, errors: formErrors } = await validate();
+  
+  if (step === 1) {
+    const step1Fields = ['customer_name', 'customer_email', 'customer_phone', 'shipping_province', 'shipping_street', 'delivery_method'];
+    const hasStep1Errors = step1Fields.some(field => formErrors[field]);
+    if (!hasStep1Errors) {
+      currentStep.value = 2;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      showWarning("Please fill in all required shipping fields correctly.");
+    }
+  }
+};
 
 const getCurrentLocation = (silent = true) => {
   if (!import.meta.client || !navigator.geolocation) {
@@ -384,11 +483,6 @@ const currentDeliveryFee = computed(() => {
 
 const submitOrder = handleSubmit(async () => {
   if (cartStore.items.length === 0) return;
-
-  if (!values.shipping_latitude || !values.shipping_longitude) {
-    getCurrentLocation(false);
-    return;
-  }
 
   if (loading.value) return;
 
@@ -497,5 +591,47 @@ const submitOrder = handleSubmit(async () => {
   background-color: var(--color-bg-secondary);
   border-color: var(--color-text-secondary);
   color: var(--color-text);
+}
+
+.bg-theme-main {
+  background-color: var(--color-bg);
+}
+
+.bg-surface {
+  background-color: var(--color-surface);
+}
+
+.border-custom {
+  border-color: var(--color-border) !important;
+}
+
+/* Premium Stepper Styles */
+.transition-stepper {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.active-step {
+  background: linear-gradient(135deg, var(--color-primary), #00dc82);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(3, 185, 113, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  border: 2px solid transparent;
+  transform: scale(1.15);
+  z-index: 5;
+}
+
+.inactive-step {
+  background: var(--color-surface);
+  color: var(--color-text-muted, #888);
+  border: 2px solid var(--color-border);
+  box-shadow: none;
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
 }
 </style>
