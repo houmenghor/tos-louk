@@ -26,6 +26,9 @@
 
     <!-- Add to Cart Offcanvas Sidebar -->
     <CartOffcanvas />
+
+    <!-- Animated Chatbot Feature -->
+    <AnimatedChatbot />
   </div>
 </template>
 
@@ -34,6 +37,7 @@ import { ref, onMounted, onUnmounted } from "vue";
 import AppHeader from "~/components/layout/app-header.vue";
 import AppFooter from "~/components/layout/app-footer.vue";
 import CartOffcanvas from "~/components/common/cart-offcanvas.vue";
+import AnimatedChatbot from "~/components/common/animated-chatbot.vue";
 
 const showScrollTop = ref(false);
 const isLaunching = ref(false);
