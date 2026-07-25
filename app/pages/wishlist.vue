@@ -36,7 +36,7 @@
           <BaseButton
             variants="outline-danger"
             size="sm"
-            @click="wishlistStore.clearWishlist"
+            @click="wishlistStore.clearWishlist(true)"
           >
             <i class="bi bi-trash-fill"></i> Clear All
           </BaseButton>

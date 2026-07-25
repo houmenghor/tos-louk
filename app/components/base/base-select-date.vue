@@ -1,8 +1,8 @@
 <template>
   <div class="mb-3 position-relative" ref="containerRef">
     <!-- Input Label -->
-    <label v-if="label" class="form-label">
-      {{ label }} <span v-if="required" class="text-danger">*</span>
+    <label v-if="label" class="form-label text-xs fw-semibold text-uppercase tracking-wider mb-1.5">
+      {{ label }} <span v-if="required">*</span>
     </label>
 
     <!-- Input field trigger -->

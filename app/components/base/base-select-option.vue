@@ -2,7 +2,7 @@
   <div class="mb-3 position-relative" ref="containerRef">
     <!-- Field Label -->
     <label v-if="label" class="form-label text-xs fw-semibold text-uppercase tracking-wider mb-1.5">
-      {{ label }} <span v-if="required" class="text-danger">*</span>
+      {{ label }} <span v-if="required">*</span>
     </label>
 
     <!-- Select Trigger Input -->

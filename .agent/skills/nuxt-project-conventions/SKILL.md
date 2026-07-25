@@ -15,6 +15,7 @@ When working on this project, you MUST read and strictly adhere to the following
 - **For security guardrails and performance optimizations:** Read `references/security_rules.md`
 - **For package management and terminal execution rules:** Read `references/tooling_and_environment.md`
 - **For version control and clean commit messages:** Read `references/git_and_workflow.md`
+- **For project architecture and directory placement:** Read `references/project_structure.md`
 
 ## When to use this skill
 - Use this whenever creating or refactoring pages, components, composables, stores, or server API routes.

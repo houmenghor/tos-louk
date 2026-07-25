@@ -1,12 +1,11 @@
-export default defineEventHandler(async (event) => {
-  const body = await readRawBody(event, false);
-  const headers = getHeaders(event);
+import { readFormData } from "h3";
 
-  return await $apiFetch(event, "/me/avatar", {
+export default defineEventHandler(async (event) => {
+  const formData = await readFormData(event);
+  formData.append('_method', 'PATCH');
+
+  return await $apiFetch(event, "/me", {
     method: "POST",
-    headers: {
-      "content-type": headers["content-type"],
-    },
-    body,
+    body: formData,
   });
 });

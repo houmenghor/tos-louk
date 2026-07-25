@@ -1,6 +1,6 @@
 import { ref, computed } from "vue";
 
-export const useOtpInput = (length = 6, initialCountdown = 600) => {
+export const useOtpInput = (length = 6, initialCountdown = 600, prefix = "otp-") => {
   // Fill the array with empty strings based on the length
   const otpDigits = ref(Array(length).fill(""));
   const countdown = ref(initialCountdown);
@@ -42,7 +42,7 @@ export const useOtpInput = (length = 6, initialCountdown = 600) => {
     otpDigits.value[index] = value.toUpperCase().replace(/[^A-Z0-9]/g, "");
 
     if (otpDigits.value[index] && index < length - 1) {
-      const nextInput = document.getElementById(`otp-${index + 1}`);
+      const nextInput = document.getElementById(`${prefix}${index + 1}`);
       nextInput?.focus();
     }
   };
@@ -50,7 +50,7 @@ export const useOtpInput = (length = 6, initialCountdown = 600) => {
   // Jump back on Backspace
   const handleBackspace = (event, index) => {
     if (!otpDigits.value[index] && index > 0) {
-      const prevInput = document.getElementById(`otp-${index - 1}`);
+      const prevInput = document.getElementById(`${prefix}${index - 1}`);
       prevInput?.focus();
     }
   };
@@ -70,7 +70,7 @@ export const useOtpInput = (length = 6, initialCountdown = 600) => {
 
     // Auto-focus the next empty input or the last input
     const nextIndex = Math.min(cleanData.length, length - 1);
-    document.getElementById(`otp-${nextIndex}`)?.focus();
+    document.getElementById(`${prefix}${nextIndex}`)?.focus();
   };
 
   return {

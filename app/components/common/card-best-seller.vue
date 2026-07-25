@@ -156,8 +156,8 @@ const handleAddToCart = () => {
   cartStore.addToCart(props.product);
 };
 
-const handleToggleWishlist = () => {
-  wishlistStore.toggleWishlist(props.product);
+const handleToggleWishlist = async () => {
+  await wishlistStore.toggleWishlist(props.product);
   const isNowAdded = wishlistStore.isInWishlist(props.product.id);
   if (isNowAdded) {
     showSuccess(
