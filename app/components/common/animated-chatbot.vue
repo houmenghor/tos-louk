@@ -50,11 +50,27 @@
       <!-- The Robot Sprite -->
       <div class="chatbot-robot" :class="{ 'sprite-animated': isMoving }"></div>
     </div>
+
+    <!-- Hidden Preloader for New Browser Sessions -->
+    <div style="display: none;" aria-hidden="true">
+      <img src="/chatbot-run.png" alt="" />
+      <img src="/chatbot-hi-transparent.png" alt="" />
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, nextTick } from "vue";
+import { ref, nextTick, onMounted } from "vue";
+
+// Preload assets immediately on page mount for new browser sessions
+onMounted(() => {
+  if (process.client) {
+    const img1 = new Image();
+    img1.src = "/chatbot-run.png";
+    const img2 = new Image();
+    img2.src = "/chatbot-hi-transparent.png";
+  }
+});
 
 const isVisible = ref(false);
 const isMoving = ref(false);
@@ -176,7 +192,7 @@ const scrollToBottom = async () => {
   width: 150px;  
   height: 186px; 
   background-image: url('/chatbot-run.png');
-  background-size: 1500px auto; 
+  background-size: 1500px 100%; 
   background-repeat: no-repeat;
   flex-shrink: 0;
 }

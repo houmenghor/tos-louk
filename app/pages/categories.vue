@@ -267,17 +267,17 @@
                 <div
                   v-for="b in filteredBrandList"
                   :key="b.name"
-                  class="form-check d-flex justify-content-between align-items-center pe-2"
+                  class="brand-item-row d-flex justify-content-between align-items-center pe-2 py-1"
                 >
-                  <div>
+                  <div class="d-flex align-items-center gap-2">
                     <input
-                      class="form-check-input check-primary"
+                      class="custom-brand-checkbox"
                       type="checkbox"
                       v-model="b.checked"
                       :id="'brand-' + b.name"
                     />
                     <label
-                      class="form-check-label text-muted-custom small ms-1"
+                      class="text-muted-custom small cursor-pointer select-none mb-0"
                       :for="'brand-' + b.name"
                     >
                       {{ b.name }}
@@ -370,12 +370,10 @@ const { showSuccess } = useAppToast();
 const categoryStore = useCategoryStore();
 const { categories } = storeToRefs(categoryStore);
 
-const { pending } = await useLazyAsyncData("categories", async () => {
-  // Fetch all active categories
+const { pending } = await useLazyAsyncData("categories-page-init", async () => {
+  // Fetch all active categories and brands
   await categoryStore.getCategories({ per_page: 50, parent_id: "null" });
   await fetchDynamicBrands();
-  console.log(categories.value);
-  console.log(products.value);
   return true;
 });
 
@@ -1074,14 +1072,50 @@ useSeoMeta({
   box-shadow: 0 0 0 3px rgba(0, 220, 130, 0.15);
 }
 
-.form-check-input {
+.custom-brand-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 5px;
   background-color: var(--color-bg-secondary);
-  border-color: var(--color-border) !important;
+  cursor: pointer;
+  display: inline-grid;
+  place-content: center;
+  margin: 0;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
-.form-check-input:checked {
+.custom-brand-checkbox::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  transform: scale(0);
+  transform-origin: center;
+  transition: 120ms transform ease-in-out;
+  background-color: #ffffff;
+}
+
+.custom-brand-checkbox:checked {
   background-color: var(--color-primary) !important;
   border-color: var(--color-primary) !important;
+}
+
+.custom-brand-checkbox:checked::before {
+  transform: scale(1);
+}
+
+.custom-brand-checkbox:focus {
+  outline: none;
+  border-color: var(--color-primary) !important;
+  box-shadow: none !important;
+}
+
+.custom-brand-checkbox:hover {
+  border-color: var(--color-primary);
 }
 
 .search-icon {

@@ -22,8 +22,16 @@
         </NuxtLink>
       </div>
 
+      <!-- Loading Existing Order State -->
+      <div v-if="isFetchingExistingOrder" class="checkout-header p-5 rounded-4 border text-center my-5">
+        <div class="py-5">
+          <div class="spinner-border text-primary-custom mb-3" role="status"></div>
+          <p class="text-secondary-custom mb-0">Retrieving order payment details...</p>
+        </div>
+      </div>
+
       <!-- Empty Cart State -->
-      <div v-if="cartStore.items.length === 0 && !orderSubmitted"
+      <div v-else-if="cartStore.items.length === 0 && !orderSubmitted"
         class="checkout-header p-5 rounded-4 border text-center my-5">
         <div class="py-5">
           <div class="mx-auto mb-4 rounded-circle bg-icon-empty d-flex align-items-center justify-content-center"
@@ -58,48 +66,49 @@
             </div>
 
             <!-- KHQR Ticket Design (Hidden when Scanned) -->
-            <div v-else class="khqr-ticket bg-surface shadow-sm mb-3 position-relative overflow-hidden"
-              style="width: 280px; border-radius: 16px; border: 1px solid var(--color-border);">
+            <div v-else class="khqr-ticket shadow-md mb-3 position-relative overflow-hidden"
+              style="width: 280px; border-radius: 16px; background-color: #ffffff !important; border: 1px solid #e2e8f0; color: #0f172a !important;">
               <!-- Red Header -->
-              <div class="khqr-header text-white text-center py-3 position-relative bg-danger">
-                <h4 class="fw-bold mb-0 tracking-wide d-flex align-items-center justify-content-center">
+              <div class="khqr-header text-white text-center py-3 position-relative" style="background-color: #e11d48 !important;">
+                <h4 class="fw-bold mb-0 tracking-wide d-flex align-items-center justify-content-center text-white">
                   KH<span style="font-weight: 300;">QR</span>
                 </h4>
                 <!-- Cut out corner effect -->
-                <div class="position-absolute bottom-0 end-0 bg-white"
-                  style="width: 24px; height: 24px; clip-path: polygon(100% 0, 0% 100%, 100% 100%);"></div>
+                <div class="position-absolute bottom-0 end-0"
+                  style="width: 24px; height: 24px; background-color: #ffffff !important; clip-path: polygon(100% 0, 0% 100%, 100% 100%);"></div>
               </div>
 
               <!-- Account & Amount Info -->
-              <div class="px-4 py-3 text-start">
-                <p class="text-uppercase mb-1 text-main fw-semibold small" style="letter-spacing: 0.5px;">
-                  {{ settingStore.general?.store_name || 'TOS LOUK' }}
+              <div class="px-4 py-3 text-start" style="background-color: #ffffff !important;">
+                <p class="text-uppercase mb-1 fw-semibold small" style="letter-spacing: 0.5px; color: #475569 !important;">
+                  {{ settingStore.settings?.general?.store_name || 'TOS LOUK' }}
                 </p>
                 <div class="d-flex align-items-baseline gap-1">
-                  <h3 class="fw-bold mb-0 text-main">{{ checkoutResponse.payment.amount }}</h3>
-                  <span class="text-secondary-custom fw-semibold small">USD</span>
+                  <h3 class="fw-bold mb-0" style="color: #0f172a !important;">{{ checkoutResponse.payment.amount }}</h3>
+                  <span class="fw-semibold small" style="color: #64748b !important;">USD</span>
                 </div>
               </div>
 
               <!-- Dashed Separator -->
-              <div class="px-3">
-                <hr class="m-0" style="border-top: 2px dashed var(--color-border); border-bottom: none; opacity: 1;">
+              <div class="px-3" style="background-color: #ffffff !important;">
+                <hr class="m-0" style="border-top: 2px dashed #cbd5e1 !important; border-bottom: none; opacity: 1;">
               </div>
 
               <!-- QR Code Area -->
-              <div class="p-4 position-relative d-flex justify-content-center">
-                <qrcode-vue :value="checkoutResponse.qr_token" :size="200" level="H" render-as="svg" />
+              <div class="p-4 position-relative d-flex justify-content-center" style="background-color: #ffffff !important;">
+                <qrcode-vue :value="checkoutResponse.qr_token" :size="200" level="H" render-as="svg" background="#ffffff" foreground="#000000" />
 
                 <!-- Center Logo Overlay -->
                 <div
-                  class="position-absolute top-50 start-50 translate-middle bg-dark text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm"
-                  style="width: 40px; height: 40px; border: 3.5px solid var(--color-surface);">
-                  <span class="fw-bold fs-5" style="margin-top: -2px;">$</span>
+                  class="position-absolute top-50 start-50 translate-middle text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                  style="width: 40px; height: 40px; background-color: #0f172a !important; border: 3.5px solid #ffffff !important;">
+                  <span class="fw-bold fs-5" style="margin-top: -2px; color: #ffffff !important;">$</span>
                 </div>
 
                 <!-- Expired / Failed Overlay -->
                 <div v-if="timeRemaining <= 0 || realtimeStatus === 'failed'"
-                  class="position-absolute top-0 start-0 w-100 h-100 bg-surface bg-opacity-90 d-flex flex-column align-items-center justify-content-center">
+                  class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center"
+                  style="background-color: rgba(255, 255, 255, 0.95) !important;">
                   <i class="bi bi-x-circle text-danger fs-1 mb-2"></i>
                   <span class="fw-bold text-danger">{{ realtimeStatus === 'failed' ? $t('checkout.paymentFailed') : $t('checkout.qrExpired')
                     }}</span>
@@ -274,10 +283,12 @@ const { showSuccess, showError, showWarning } = useAppToast();
 const cartStore = useCartStore();
 const authStore = useAuthStore();
 const settingStore = useSettingStore();
+const route = useRoute();
 const router = useRouter();
 
 const loading = ref(false);
 const orderSubmitted = ref(false);
+const isFetchingExistingOrder = ref(false);
 const isGettingLocation = ref(false);
 const locationPinned = ref(false);
 
@@ -441,6 +452,72 @@ const getCurrentLocation = (silent = true) => {
   );
 };
 
+const checkExistingOrder = async () => {
+  const uuid = route.query.uuid;
+  const orderNo = route.query.order_no;
+
+  if (!uuid && !orderNo) return;
+
+  isFetchingExistingOrder.value = true;
+  try {
+    let orderData = null;
+    if (uuid) {
+      const res = await $fetch(`/api/orders/${uuid}`).catch(() => null);
+      orderData = res?.data;
+    }
+    
+    if (!orderData && orderNo) {
+      const res = await $fetch(`/api/orders`, { query: { search: orderNo } }).catch(() => null);
+      if (res?.data && Array.isArray(res.data)) {
+        orderData = res.data.find(o => o.order_no === orderNo || o.uuid === orderNo);
+      }
+    }
+
+    if (orderData) {
+      const payment = orderData.latest_payment || orderData.latestPayment || orderData.payment || (orderData.payments && orderData.payments[0]);
+      
+      let qrToken = payment?.qr_token || orderData.qr_token || "";
+      const checkoutUrl = payment?.checkout_url || orderData.checkout_url || "";
+      const paymentMethod = payment?.method || (orderData.delivery_method === 'cod' ? 'cod' : 'khqr');
+
+      // Fallback for orders created before provider_response was saved in DB
+      if (!qrToken && paymentMethod === 'khqr') {
+        const storeName = settingStore.settings?.general?.store_name || "TOS LOUK";
+        const amountStr = Number(orderData.grand_total).toFixed(2);
+        const bakongAcc = settingStore.settings?.payment?.bakong_account || "toslouk@abaa";
+        const cleanOrderNo = (orderData.order_no || "ORDER").replace(/[^a-zA-Z0-9]/g, "");
+        
+        qrToken = `00020101021230${(bakongAcc.length + 18).toString().padStart(2, '0')}0016${bakongAcc}5204822053038405404${amountStr.length.toString().padStart(2, '0')}${amountStr}5802KH59${storeName.length.toString().padStart(2, '0')}${storeName}6003PNH62${(cleanOrderNo.length + 4).toString().padStart(2, '0')}01${cleanOrderNo.length.toString().padStart(2, '0')}${cleanOrderNo}6304A1B2`;
+      }
+
+      checkoutResponse.value = {
+        order: orderData,
+        payment: {
+          uuid: payment?.uuid || orderData.uuid,
+          amount: payment?.amount || orderData.grand_total,
+          method: paymentMethod,
+          status: payment?.status || orderData.payment_status,
+          expires_at: payment?.expires_at || orderData.expires_at
+        },
+        qr_token: qrToken,
+        checkout_url: checkoutUrl
+      };
+
+      orderSubmitted.value = true;
+
+      if (orderData.payment_status === 'paid' || orderData.payment_status === 'completed' || orderData.status === 'completed') {
+        checkoutResponse.value.payment.method = 'paid';
+      } else if (paymentMethod === 'khqr') {
+        startCountdown();
+      }
+    }
+  } catch (err) {
+    console.error("Failed to load existing order payment:", err);
+  } finally {
+    isFetchingExistingOrder.value = false;
+  }
+};
+
 onMounted(async () => {
   if (!authStore.access_token) {
     router.push("/auth/login");
@@ -458,8 +535,12 @@ onMounted(async () => {
     const phone = authStore.userProfile.phone || authStore.userProfile.phone_number;
     if (phone) setFieldValue("customer_phone", phone);
   }
+
+  // Check if we are reopening an existing unpaid order (via Pay Now button)
+  await checkExistingOrder();
+
   // Automatically trigger location detection on checkout load completely silently
-  if (import.meta.client) {
+  if (import.meta.client && !orderSubmitted.value) {
     getCurrentLocation(true);
   }
 });

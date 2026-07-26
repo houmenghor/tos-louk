@@ -17,7 +17,7 @@
         </div>
 
         <!-- Filter Pills -->
-        <div class="deals-filters d-flex gap-2 overflow-auto pb-2 pb-md-0 hide-scrollbar">
+        <div class="deals-filters d-flex gap-3 overflow-auto p-1 hide-scrollbar">
           <button 
             v-for="filter in filters" 
             :key="filter.id"
@@ -225,7 +225,7 @@ useSeoMeta({
 
 .filter-pill {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1.5px solid var(--color-border);
   color: var(--color-text-secondary);
   padding: 8px 20px;
   border-radius: 999px;
@@ -235,6 +235,8 @@ useSeoMeta({
   cursor: pointer;
   display: flex;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .filter-pill:hover {
@@ -242,13 +244,15 @@ useSeoMeta({
   color: var(--color-text);
   transform: translateY(-2px);
   border-color: var(--color-primary);
+  z-index: 3;
 }
 
 .filter-pill.active {
   background: var(--color-primary);
   color: white;
   border-color: var(--color-primary);
-  box-shadow: 0 4px 15px rgba(0, 220, 130, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 220, 130, 0.18);
+  z-index: 2;
 }
 
 /* ── Vue Transition Group Animations ── */
