@@ -5,7 +5,7 @@ export const useCategoryStore = defineStore("category", () => {
   const categories = ref([]);
   const currentCategory = ref(null);
 
-  const getCategories = async (params = {}) => {
+  const getCategories = async (params = {}, force = false) => {
     const query = {};
     if (params.per_page) query.per_page = params.per_page;
     if (params.page !== undefined && params.page !== null) query.page = params.page;
@@ -14,6 +14,13 @@ export const useCategoryStore = defineStore("category", () => {
     if (params.parent_id !== undefined && params.parent_id !== null) query.parent_id = params.parent_id;
     if (params.column) query.column = params.column;
     if (params.sort) query.sort = typeof params.sort === "string" ? params.sort.toLowerCase() : params.sort;
+
+    const isDefaultParentFetch = !params.search && (!params.page || params.page === 1) && (params.parent_id === "null" || params.parent_id === null);
+
+    // If cached data is available, return immediately with ZERO network calls
+    if (!force && isDefaultParentFetch && categories.value.length > 0) {
+      return { data: categories.value };
+    }
 
     const response = await $fetch("/api/categories", { query });
     if (response?.data !== undefined) {

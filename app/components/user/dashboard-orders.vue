@@ -44,7 +44,7 @@
           <div class="text-secondary-custom text-xs">
             Total: <span class="fw-bold text-main text-sm ms-1">${{ Number(order.grand_total).toFixed(2) }}</span>
           </div>
-          <NuxtLink v-if="order.payment_status === 'pending'" :to="`/checkout?order_no=${order.order_no}`" class="btn btn-primary-custom btn-xs rounded-pill px-3 py-1.5 fw-semibold text-xs text-white">
+          <NuxtLink v-if="order.payment_status === 'pending'" :to="`/checkout?order_no=${order.order_no}&uuid=${order.uuid}`" class="btn btn-primary-custom btn-xs rounded-pill px-3 py-1.5 fw-semibold text-xs text-white">
             {{ t('dashboard.payNow', 'Pay Now') }}
           </NuxtLink>
         </div>
