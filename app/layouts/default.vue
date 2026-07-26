@@ -11,10 +11,10 @@
     <!-- 3. Optional: Your footer component -->
     <AppFooter />
 
-    <!-- Scroll to Top floating navigation button -->
+    <!-- Scroll to Top floating navigation button (Landing Page Only) -->
     <transition name="fade">
       <button
-        v-show="showScrollTop"
+        v-if="isLandingPage && showScrollTop"
         @click="scrollToTop"
         class="scroll-top-btn d-flex align-items-center justify-content-center shadow"
         :class="{ launching: isLaunching }"
@@ -33,16 +33,27 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import { useRoute } from "vue-router";
 import AppHeader from "~/components/layout/app-header.vue";
 import AppFooter from "~/components/layout/app-footer.vue";
 import CartOffcanvas from "~/components/common/cart-offcanvas.vue";
 import AnimatedChatbot from "~/components/common/animated-chatbot.vue";
 
+const route = useRoute();
+const isLandingPage = computed(() => {
+  const normalizedPath = route.path.replace(/^\/(kh|en)/, "") || "/";
+  return normalizedPath === "/" || route.name === "index" || String(route.name || "").startsWith("index");
+});
+
 const showScrollTop = ref(false);
 const isLaunching = ref(false);
 
 const checkScroll = () => {
+  if (!isLandingPage.value) {
+    showScrollTop.value = false;
+    return;
+  }
   // Only update scroll position if we are not actively launching
   if (!isLaunching.value) {
     if (window.scrollY > 300) {
@@ -52,6 +63,10 @@ const checkScroll = () => {
     }
   }
 };
+
+watch(() => route.path, () => {
+  checkScroll();
+}, { immediate: true });
 
 const scrollToTop = () => {
   isLaunching.value = true;

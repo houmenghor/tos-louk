@@ -10,7 +10,7 @@ export const useProductStore = defineStore('product', () => {
         has_pages: false
     });
 
-    const getAllProducts = async (params = {}) => {
+    const getAllProducts = async (params = {}, force = false) => {
         const query = {}
 
         if (params.per_page) query.per_page = params.per_page;
@@ -24,6 +24,11 @@ export const useProductStore = defineStore('product', () => {
         if (params.min_price !== undefined && params.min_price !== null) query.min_price = params.min_price;
         if (params.max_price !== undefined && params.max_price !== null) query.max_price = params.max_price;
         if (params.brand) query.brand = params.brand;
+
+        const isDefaultFetch = !params.search && (!params.page || params.page === 1) && !params.category_id && !params.brand && !params.collection;
+        if (!force && isDefaultFetch && products.value.length > 0) {
+            return { data: products.value, paginate: pagination.value };
+        }
 
         const response = await $fetch('/api/products', { query });
 
@@ -86,8 +91,16 @@ export const useProductStore = defineStore('product', () => {
         return await getFilteredProducts(params);
     }
 
-    const getBrands = async (params = {}) => {
+    const brandsList = ref([]);
+
+    const getBrands = async (params = {}, force = false) => {
+        if (!force && brandsList.value.length > 0 && (!params || Object.keys(params).length === 0)) {
+            return brandsList.value;
+        }
         const response = await $fetch('/api/brands', { query: params });
+        if (response?.data) {
+            brandsList.value = response.data;
+        }
         return response?.data || [];
     }
 

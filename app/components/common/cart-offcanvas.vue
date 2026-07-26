@@ -173,7 +173,7 @@
           <BaseButton
             variants="primary"
             size="md"
-            @click="cartStore.toggleCart(false)"
+            @click="handleStartShopping"
           >
             {{ $t('cart.startShopping') }} <i class="bi bi-arrow-right"></i>
           </BaseButton>
@@ -262,6 +262,11 @@ const handleCheckout = () => {
     cartStore.toggleCart(false);
     router.push("/checkout");
   }
+};
+
+const handleStartShopping = () => {
+  cartStore.toggleCart(false);
+  router.push("/categories");
 };
 
 onMounted(() => {

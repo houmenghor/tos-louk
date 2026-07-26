@@ -59,8 +59,10 @@ const categoryStore = useCategoryStore();
 const { t } = useI18n();
 const { products } = storeToRefs(productStore);
 
-const fetchedParentCategories = ref(null);
-const pendingCategories = ref(true);
+const fetchedParentCategories = ref(
+  categoryStore.categories.length > 0 ? { data: categoryStore.categories } : null
+);
+const pendingCategories = ref(categoryStore.categories.length === 0);
 
 onMounted(async () => {
   try {
@@ -84,19 +86,26 @@ const tabs = computed(() => {
 const activeTab = ref("all");
 const categoryFilteredProducts = ref([]);
 const loadingCategoryTab = ref(false);
+const tabCategoryCache = ref({});
 
 const handleSelectTab = async (tabId) => {
   activeTab.value = tabId;
+  if (tabId === "all") {
+    categoryFilteredProducts.value = [];
+    return;
+  }
+  if (tabCategoryCache.value[tabId]) {
+    categoryFilteredProducts.value = tabCategoryCache.value[tabId];
+    return;
+  }
   loadingCategoryTab.value = true;
-  categoryFilteredProducts.value = [];
   try {
     const params = { per_page: 12, status: 1, column: 'created_at', sort: 'desc' };
-    if (tabId !== "all") {
-      params.category_id = tabId;
-    }
+    params.category_id = tabId;
     const res = await productStore.getFilteredProducts(params);
     if (res?.data) {
       categoryFilteredProducts.value = res.data;
+      tabCategoryCache.value[tabId] = res.data;
     }
   } catch (err) {
     console.error("Failed to filter products by category:", err);
@@ -167,12 +176,14 @@ const handleAddToCart = (product) => {
 .tab-pill {
   padding: 8px 24px;
   border-radius: 50px;
-  border: 1px solid var(--color-border);
+  border: 1.5px solid var(--color-border);
   background: var(--color-surface);
   color: var(--color-text-secondary);
   font-weight: 500;
   transition: all 0.3s;
   scroll-snap-align: start;
+  position: relative;
+  z-index: 1;
 }
 
 @media (max-width: 576px) {
@@ -186,6 +197,8 @@ const handleAddToCart = (product) => {
   background: var(--color-primary);
   color: #fff;
   border-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(0, 220, 130, 0.18);
+  z-index: 2;
 }
 
 .btn-primary-custom {

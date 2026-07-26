@@ -2,7 +2,6 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { useAuthStore } from "./authStore";
 import { useSettingStore } from "./settingStore";
-import { useAppToast } from "~/composables/ui/useAppToast";
 
 export const useCartStore = defineStore("cart", () => {
   const items = ref([]);
@@ -151,7 +150,7 @@ export const useCartStore = defineStore("cart", () => {
     return syncPromise;
   };
 
-  const addToCart = async (product, qty = 1, showToast = true) => {
+  const addToCart = async (product, qty = 1) => {
     const authStore = useAuthStore();
 
     // Optimistic instant update for live data
@@ -178,17 +177,6 @@ export const useCartStore = defineStore("cart", () => {
     }
     saveCart();
     isOpen.value = true;
-
-    if (showToast && import.meta.client) {
-      const { showSuccess } = useAppToast();
-      const nuxtApp = useNuxtApp();
-      const locale = nuxtApp.$i18n ? nuxtApp.$i18n.locale : { value: 'en' };
-      const msg =
-        locale?.value === "kh"
-          ? "បានបន្ថែមទៅក្នុងកន្ត្រកជោគជ័យ!"
-          : "Added to cart successfully!";
-      showSuccess(msg);
-    }
 
     if (authStore.access_token) {
       await $fetch("/api/carts", {
